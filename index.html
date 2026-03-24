@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NestWord — Daily Word Casino</title>
+<meta name="description" content="The daily word game where hidden words pay out big. Bonus jackpot points for consecutive letters!">
+<meta property="og:title" content="NestWord — I just scored big. Can you beat me?">
+<meta property="og:description" content="Find words hidden inside today's NestWord. Bonus points for consecutive letters! Free daily puzzle.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Share+Tech+Mono&family=Fredoka+One&display=swap" rel="stylesheet">
+<script src="words.js"></script>
+<script src="dictionary.js"></script>
+<style>
+:root {
+  --bg:#07070f;
+  --felt:#0c150e;
+  --panel:#10101e;
+  --panel2:#181830;
+  --panel3:#20203c;
+  --rim:#2c2c52;
+  --rim2:#3e3e70;
+  --gold:#f5c842;
+  --gold2:#ffe066;
+  --gold-d:rgba(245,200,66,.13);
+  --gold-b:rgba(245,200,66,.38);
+  --ng:#3dff78;
+  --ng-d:rgba(61,255,120,.11);
+  --ng-b:rgba(61,255,120,.32);
+  --np:#d43dff;
+  --np-d:rgba(212,61,255,.13);
+  --np-b:rgba(212,61,255,.38);
+  --nr:#ff3d5a;
+  --nr-d:rgba(255,61,90,.12);
+  --nr-b:rgba(255,61,90,.36);
+  --nb:#3dc8ff;
+  --nb-d:rgba(61,200,255,.10);
+  --tx:#f0e8d0;
+  --tx2:#90886a;
+  --tx3:#50483a;
+  --fn:'Fredoka One',cursive;
+  --fn2:'Boogaloo',cursive;
+  --mo:'Share Tech Mono',monospace;
+  --r:8px;--r2:14px;--tr:.16s ease;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+body{
+  background:var(--bg);
+  color:var(--tx);
+  font-family:var(--fn2);
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;
+  padding:0 14px 80px;
+  position:relative;overflow-x:hidden;
+}
+
+/* scanlines */
+body::before{
+  content:'';position:fixed;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.07) 3px,rgba(0,0,0,.07) 4px);
+  pointer-events:none;z-index:900;
+}
+
+/* suit watermark */
+.suits-bg{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  display:flex;flex-direction:column;gap:60px;justify-content:center;
+  overflow:hidden;
+}
+.suits-row{
+  font-size:80px;color:rgba(255,255,255,.022);
+  white-space:nowrap;letter-spacing:30px;
+  animation:drift 60s linear infinite;
+}
+.suits-row:nth-child(even){animation-direction:reverse;}
+@keyframes drift{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ── HEADER ── */
+header{
+  width:100%;max-width:640px;
+  position:relative;z-index:10;
+  padding:14px 0 10px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:2px solid var(--rim);
+}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-icon{
+  width:40px;height:40px;
+  background:var(--gold-d);
+  border:2px solid var(--gold-b);
+  border-radius:var(--r);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;
+}
+.logo-text{
+  display:flex;flex-direction:column;line-height:1;
+}
+.logo-name{
+  font-family:var(--fn);font-size:26px;font-weight:400;
+  color:var(--gold);
+  text-shadow:0 0 20px rgba(245,200,66,.4);
+  letter-spacing:1px;
+}
+.logo-tag{font-size:11px;color:var(--tx2);font-family:var(--mo);letter-spacing:1px;}
+.hdr-r{display:flex;align-items:center;gap:8px;}
+
+.streak-chip{
+  display:flex;align-items:center;gap:5px;
+  background:var(--panel2);
+  border:2px solid var(--gold-b);
+  border-radius:20px;
+  padding:5px 12px;
+  font-family:var(--fn);font-size:16px;color:var(--gold);
+  cursor:pointer;
+  transition:all var(--tr);
+  text-shadow:0 0 10px rgba(245,200,66,.3);
+}
+.streak-chip:hover{background:var(--panel3);border-color:var(--gold);}
+
+.ico-btn{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--panel2);border:2px solid var(--rim2);
+  color:var(--tx2);font-size:14px;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-family:var(--fn);transition:all var(--tr);
+}
+.ico-btn:hover{background:var(--panel3);color:var(--tx);border-color:var(--gold-b);}
+
+/* ── MARQUEE BANNER ── */
+.marquee-wrap{
+  width:100%;max-width:640px;
+  margin-top:14px;
+  overflow:hidden;
+  background:var(--panel);
+  border:2px solid var(--rim);
+  border-radius:var(--r);
+  position:relative;z-index:10;
+}
+.marquee-inner{
+  display:flex;align-items:center;
+  white-space:nowrap;
+  animation:marquee 20s linear infinite;
+  padding:8px 0;
+  font-family:var(--mo);font-size:12px;color:var(--tx2);
+  letter-spacing:1px;
+}
+.marquee-inner span{margin:0 32px;}
+.marquee-inner .hi{color:var(--gold);}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ── THEME BAR ── */
+.theme-bar{
+  width:100%;max-width:640px;
+  margin-top:12px;
+  padding:10px 14px;
+  background:var(--felt);
+  border:2px solid var(--rim);
+  border-radius:var(--r);
+  display:flex;align-items:center;justify-content:space-between;
+  position:relative;z-index:10;
+}
+.th-l{display:flex;align-items:center;gap:8px;}
+.th-em{font-size:20px;}
+.th-name{font-family:var(--fn);font-size:16px;color:var(--tx);}
+.th-desc{font-size:11px;color:var(--tx2);font-family:var(--mo);}
+.th-date{font-size:11px;color:var(--tx2);font-family:var(--mo);text-align:right;}
+
+/* ── BIG WORD DISPLAY ── */
+.word-section{
+  width:100%;max-width:640px;
+  margin-top:22px;
+  text-align:center;
+  position:relative;z-index:10;
+}
+.word-lbl{
+  font-size:11px;letter-spacing:3px;color:var(--tx2);
+  text-transform:uppercase;font-family:var(--mo);margin-bottom:10px;
+}
+
+/* Casino sign frame around the word */
+.word-frame{
+  background:var(--panel);
+  border:3px solid var(--rim2);
+  border-radius:var(--r2);
+  padding:18px 20px 16px;
+  position:relative;
+  box-shadow:0 0 0 1px var(--rim), inset 0 0 40px rgba(0,0,0,.5);
+}
+.word-frame::before,
+.word-frame::after{
+  content:'★ ★ ★';
+  position:absolute;
+  left:50%;transform:translateX(-50%);
+  font-size:10px;color:var(--gold-b);
+  letter-spacing:8px;
+}
+.word-frame::before{top:-1px;transform:translateX(-50%) translateY(-50%);background:var(--panel);padding:0 8px;}
+.word-frame::after{bottom:-1px;transform:translateX(-50%) translateY(50%);background:var(--panel);padding:0 8px;}
+
+.big-word{
+  font-family:var(--fn);
+  font-size:clamp(30px,8vw,58px);
+  color:var(--gold);
+  letter-spacing:6px;
+  text-transform:uppercase;
+  text-shadow:0 0 30px rgba(245,200,66,.35), 0 2px 0 rgba(0,0,0,.8);
+  word-break:break-all;
+  line-height:1;
+}
+.big-word span{
+  display:inline-block;
+  transition:color .15s,transform .15s,text-shadow .15s;
+}
+.big-word span.hl{
+  color:var(--nb);
+  transform:translateY(-3px) scale(1.1);
+  text-shadow:0 0 16px rgba(61,200,255,.6);
+}
+
+/* corner bulbs */
+.bulb{
+  position:absolute;width:8px;height:8px;border-radius:50%;
+  background:var(--gold);
+  box-shadow:0 0 6px var(--gold),0 0 12px var(--gold-b);
+  animation:bulb-blink 2.4s ease-in-out infinite;
+}
+.bulb:nth-child(1){top:8px;left:8px;}
+.bulb:nth-child(2){top:8px;right:8px;animation-delay:.4s;}
+.bulb:nth-child(3){bottom:8px;left:8px;animation-delay:.8s;}
+.bulb:nth-child(4){bottom:8px;right:8px;animation-delay:1.2s;}
+@keyframes bulb-blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── SCORE STRIP ── */
+.score-strip{
+  width:100%;max-width:640px;
+  margin-top:14px;
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:8px;position:relative;z-index:10;
+}
+.sc-card{
+  background:var(--panel);
+  border:2px solid var(--rim);
+  border-radius:var(--r);
+  padding:10px 8px;
+  text-align:center;
+  transition:border-color var(--tr);
+}
+.sc-card.active{border-color:var(--gold-b);}
+.sc-val{
+  font-family:var(--fn);font-size:24px;line-height:1;
+  text-shadow:0 0 12px currentColor;
+}
+.sc-val.gold{color:var(--gold);}
+.sc-val.grn{color:var(--ng);}
+.sc-val.pur{color:var(--np);}
+.sc-val.wht{color:var(--tx);}
+.sc-lbl{font-size:9px;color:var(--tx2);font-family:var(--mo);margin-top:3px;letter-spacing:.5px;text-transform:uppercase;}
+
+/* ── TIMER ── */
+.timer-section{
+  width:100%;max-width:640px;
+  margin-top:14px;position:relative;z-index:10;
+}
+.timer-row{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:7px;
+}
+.timer-disp{
+  font-family:var(--fn);font-size:32px;color:var(--tx);
+  text-shadow:0 0 10px rgba(240,232,208,.2);
+  transition:color .3s,text-shadow .3s;
+  line-height:1;
+}
+.timer-disp.urg{
+  color:var(--nr);
+  text-shadow:0 0 16px rgba(255,61,90,.5);
+  animation:timer-pulse .5s ease-in-out infinite alternate;
+}
+@keyframes timer-pulse{from{opacity:1}to{opacity:.6}}
+.timer-hint{font-size:12px;color:var(--tx2);font-family:var(--mo);}
+
+.t-track{
+  width:100%;height:8px;
+  background:var(--panel2);
+  border-radius:4px;
+  border:1px solid var(--rim);
+  overflow:hidden;
+}
+.t-fill{
+  height:100%;border-radius:4px;
+  background:linear-gradient(90deg,var(--ng),var(--gold));
+  transition:width 1s linear,background .5s;
+  width:100%;
+  box-shadow:0 0 8px rgba(61,255,120,.4);
+}
+.t-fill.urg{
+  background:linear-gradient(90deg,var(--nr),#ff8040);
+  box-shadow:0 0 8px rgba(255,61,90,.5);
+}
+
+/* ── INPUT ── */
+.input-sec{width:100%;max-width:640px;margin-top:14px;position:relative;z-index:10;}
+.input-row{display:flex;gap:10px;}
+
+.word-in{
+  flex:1;
+  background:var(--panel);
+  border:2px solid var(--rim2);
+  border-radius:var(--r);
+  color:var(--gold);
+  font-family:var(--mo);font-size:22px;font-weight:400;
+  text-transform:uppercase;letter-spacing:4px;
+  padding:13px 16px;outline:none;
+  transition:border-color var(--tr),background var(--tr),box-shadow var(--tr);
+  caret-color:var(--gold);
+}
+.word-in::placeholder{color:var(--tx3);letter-spacing:2px;font-size:14px;}
+.word-in:focus{
+  border-color:var(--gold-b);
+  background:var(--panel2);
+  box-shadow:0 0 0 3px var(--gold-d), inset 0 0 20px rgba(245,200,66,.05);
+}
+.word-in.shake{animation:shake .3s ease;border-color:var(--nr);}
+.word-in.pulse-g{animation:pulseg .35s ease;border-color:var(--ng);}
+.word-in.pulse-p{animation:pulsep .35s ease;border-color:var(--np);}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes pulseg{0%,100%{box-shadow:none}50%{box-shadow:0 0 0 4px var(--ng-d),0 0 20px var(--ng-d)}}
+@keyframes pulsep{0%,100%{box-shadow:none}50%{box-shadow:0 0 0 4px var(--np-d),0 0 20px var(--np-d)}}
+
+.sub-btn{
+  background:var(--gold);color:#0a0a14;
+  border:none;border-radius:var(--r);
+  font-family:var(--fn);font-size:17px;
+  padding:13px 22px;cursor:pointer;
+  transition:all var(--tr);white-space:nowrap;
+  box-shadow:0 0 16px var(--gold-d);
+}
+.sub-btn:hover{background:var(--gold2);box-shadow:0 0 24px var(--gold-b);transform:translateY(-1px);}
+.sub-btn:active{transform:scale(.97);}
+.sub-btn:disabled{opacity:.3;cursor:not-allowed;transform:none;box-shadow:none;}
+
+.fb{
+  min-height:22px;font-size:13px;font-family:var(--mo);
+  margin-top:8px;padding-left:2px;
+  transition:color var(--tr);
+}
+.fb.good{color:var(--ng);}
+.fb.bonus{
+  color:var(--np);
+  text-shadow:0 0 8px rgba(212,61,255,.5);
+  font-size:14px;font-family:var(--fn);
+}
+.fb.bad{color:var(--nr);}
+.fb.info{color:var(--tx2);}
+
+/* ── LEGEND ── */
+.legend{
+  width:100%;max-width:640px;
+  margin-top:10px;
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  position:relative;z-index:10;
+}
+.leg{display:flex;align-items:center;gap:6px;font-size:12px;font-family:var(--mo);color:var(--tx2);}
+.leg-dot{width:12px;height:12px;border-radius:3px;}
+.leg-dot.std{background:var(--ng-d);border:1px solid var(--ng-b);}
+.leg-dot.bon{background:var(--np-d);border:1px solid var(--np-b);}
+
+/* ── FOUND WORDS ── */
+.found-sec{
+  width:100%;max-width:640px;
+  margin-top:18px;position:relative;z-index:10;
+}
+.found-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:10px;
+  padding-bottom:8px;
+  border-bottom:1px solid var(--rim);
+}
+.found-ttl{font-family:var(--fn);font-size:16px;color:var(--tx);}
+.found-ct{font-size:12px;color:var(--tx2);font-family:var(--mo);}
+
+.words-grid{display:flex;flex-wrap:wrap;gap:7px;min-height:40px;}
+
+/* Casino chip style word tags */
+.chip{
+  border-radius:20px;
+  padding:5px 14px;
+  font-family:var(--mo);font-size:13px;letter-spacing:1px;
+  position:relative;
+  animation:chip-in .25s cubic-bezier(.34,1.56,.64,1);
+  cursor:default;
+}
+.chip.std{
+  background:var(--ng-d);
+  border:1.5px solid var(--ng-b);
+  color:var(--ng);
+}
+.chip.bon{
+  background:var(--np-d);
+  border:1.5px solid var(--np-b);
+  color:var(--np);
+  box-shadow:0 0 10px var(--np-d);
+  animation:chip-in .25s cubic-bezier(.34,1.56,.64,1), neon-pulse 2.5s ease-in-out infinite;
+}
+.chip.bon::after{content:'★';font-size:9px;margin-left:4px;vertical-align:top;margin-top:2px;display:inline-block;}
+.chip.missed{opacity:.3;text-decoration:line-through;animation:none;}
+@keyframes chip-in{0%{transform:scale(.4) rotate(-8deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
+@keyframes neon-pulse{
+  0%,100%{box-shadow:0 0 8px var(--np-d);}
+  50%{box-shadow:0 0 16px rgba(212,61,255,.25);}
+}
+
+/* ── PROGRESS ── */
+.prog-sec{
+  width:100%;max-width:640px;
+  margin-top:18px;
+  background:var(--felt);
+  border:2px solid var(--rim);
+  border-radius:var(--r2);
+  padding:16px 18px;
+  position:relative;z-index:10;
+}
+.prog-lbl{font-size:12px;color:var(--tx2);font-family:var(--mo);margin-bottom:8px;}
+.prog-track{
+  width:100%;height:10px;
+  background:var(--panel2);
+  border-radius:5px;
+  border:1px solid var(--rim);
+  overflow:hidden;margin-bottom:14px;
+}
+.prog-fill{
+  height:100%;border-radius:5px;
+  background:linear-gradient(90deg,var(--ng),var(--nb),var(--gold));
+  transition:width .4s ease;width:0%;
+  box-shadow:0 0 8px rgba(61,255,120,.3);
+}
+.prog-stats{display:flex;gap:16px;flex-wrap:wrap;}
+.pst{text-align:center;}
+.pst-n{font-family:var(--fn);font-size:20px;line-height:1;text-shadow:0 0 8px currentColor;}
+.pst-n.gold{color:var(--gold);}
+.pst-n.grn{color:var(--ng);}
+.pst-n.pur{color:var(--np);}
+.pst-n.wht{color:var(--tx);}
+.pst-l{font-size:9px;color:var(--tx2);font-family:var(--mo);margin-top:3px;text-transform:uppercase;letter-spacing:.5px;}
+
+/* ── AD SLOT ── */
+.ad-slot{
+  width:100%;max-width:640px;margin-top:22px;
+  min-height:90px;
+  background:var(--panel);
+  border:2px dashed var(--rim2);
+  border-radius:var(--r);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--tx3);font-size:11px;font-family:var(--mo);letter-spacing:1px;
+  position:relative;z-index:10;
+}
+
+/* ── FOOTER ── */
+footer{
+  width:100%;max-width:640px;margin-top:32px;
+  padding-top:16px;
+  border-top:2px solid var(--rim);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:8px;position:relative;z-index:10;
+}
+.foot-l{font-size:11px;color:var(--tx3);font-family:var(--mo);}
+.foot-l a{color:var(--tx2);text-decoration:none;}
+.foot-l a:hover{color:var(--gold);}
+.foot-r{display:flex;gap:14px;}
+.foot-r a{font-size:11px;color:var(--tx3);font-family:var(--mo);text-decoration:none;}
+.foot-r a:hover{color:var(--gold);}
+
+/* ══════════════════════════════════════════════════
+   OVERLAYS
+══════════════════════════════════════════════════ */
+.ov{
+  position:fixed;inset:0;
+  background:rgba(7,7,15,.94);
+  display:flex;align-items:center;justify-content:center;
+  z-index:500;padding:14px;
+  backdrop-filter:blur(6px);
+}
+.ov.off{display:none;}
+
+.modal{
+  background:var(--panel);
+  border:2px solid var(--rim2);
+  border-radius:var(--r2);
+  padding:28px 24px;
+  max-width:440px;width:100%;
+  text-align:center;
+  max-height:92vh;overflow-y:auto;
+  position:relative;
+  box-shadow:0 0 60px rgba(245,200,66,.08);
+}
+.modal-corner{
+  position:absolute;width:10px;height:10px;border-radius:50%;
+  background:var(--gold);
+  box-shadow:0 0 8px var(--gold),0 0 16px var(--gold-b);
+  animation:bulb-blink 2s infinite;
+}
+.modal-corner:nth-child(1){top:10px;left:10px;}
+.modal-corner:nth-child(2){top:10px;right:10px;animation-delay:.5s;}
+.modal-corner:nth-child(3){bottom:10px;left:10px;animation-delay:1s;}
+.modal-corner:nth-child(4){bottom:10px;right:10px;animation-delay:1.5s;}
+
+.m-ico{font-size:48px;margin-bottom:8px;}
+.m-ttl{
+  font-family:var(--fn);font-size:30px;
+  color:var(--gold);
+  text-shadow:0 0 20px rgba(245,200,66,.4);
+  margin-bottom:6px;
+}
+.m-sub{font-size:13px;color:var(--tx2);line-height:1.6;margin-bottom:20px;font-family:var(--mo);}
+.m-word{
+  font-family:var(--fn);font-size:32px;letter-spacing:5px;
+  color:var(--gold);
+  text-shadow:0 0 24px rgba(245,200,66,.5);
+  margin-bottom:5px;
+}
+.m-theme{font-size:11px;color:var(--tx2);font-family:var(--mo);margin-bottom:22px;}
+
+/* End screen points display */
+.pts-display{
+  background:var(--felt);
+  border:2px solid var(--gold-b);
+  border-radius:var(--r);
+  padding:18px;
+  margin-bottom:16px;
+  box-shadow:0 0 24px var(--gold-d);
+}
+.pts-main{
+  font-family:var(--fn);font-size:46px;
+  color:var(--gold);
+  text-shadow:0 0 24px rgba(245,200,66,.5);
+  line-height:1;
+}
+.pts-denom{font-family:var(--fn);font-size:20px;color:var(--tx2);}
+.pts-sub{font-size:12px;color:var(--tx2);font-family:var(--mo);margin-top:5px;}
+
+.end-grid{
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  gap:8px;margin-bottom:16px;
+}
+.eg{
+  background:var(--panel2);
+  border:1px solid var(--rim2);
+  border-radius:var(--r);padding:10px 6px;
+}
+.eg-n{font-family:var(--fn);font-size:22px;line-height:1;text-shadow:0 0 8px currentColor;}
+.eg-l{font-size:9px;color:var(--tx2);font-family:var(--mo);margin-top:3px;text-transform:uppercase;}
+
+/* Share sheet */
+.share-sheet{
+  background:var(--felt);
+  border:2px solid var(--rim);
+  border-radius:var(--r);
+  padding:14px;margin-bottom:12px;text-align:left;
+}
+.share-ttl{
+  font-family:var(--fn);font-size:14px;color:var(--tx2);
+  margin-bottom:10px;letter-spacing:1px;
+}
+.share-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.sh-btn{
+  display:flex;align-items:center;gap:8px;
+  background:var(--panel2);
+  border:1.5px solid var(--rim2);
+  border-radius:var(--r);
+  padding:9px 12px;
+  cursor:pointer;transition:all var(--tr);
+  font-family:var(--mo);font-size:12px;color:var(--tx);
+  text-decoration:none;
+}
+.sh-btn:hover{background:var(--panel3);border-color:var(--gold-b);color:var(--gold);}
+.sh-ico{font-size:16px;flex-shrink:0;}
+.sh-copy{
+  grid-column:1/-1;justify-content:center;
+  background:var(--gold-d);
+  border-color:var(--gold-b);color:var(--gold);
+  font-family:var(--fn);font-size:14px;
+}
+.sh-copy:hover{background:rgba(245,200,66,.22);color:var(--gold2);}
+.share-msg{font-size:12px;color:var(--ng);font-family:var(--mo);text-align:center;min-height:16px;margin-bottom:6px;}
+
+/* Buttons */
+.btn-p{
+  width:100%;padding:14px;
+  background:var(--gold);color:#07070f;
+  border:none;border-radius:var(--r);
+  font-family:var(--fn);font-size:18px;
+  cursor:pointer;transition:all var(--tr);
+  margin-bottom:8px;
+  box-shadow:0 0 20px var(--gold-d);
+}
+.btn-p:hover{background:var(--gold2);box-shadow:0 0 28px var(--gold-b);}
+.btn-s{
+  width:100%;padding:11px;
+  background:transparent;color:var(--tx2);
+  border:2px solid var(--rim2);border-radius:var(--r);
+  font-family:var(--fn2);font-size:15px;
+  cursor:pointer;transition:all var(--tr);margin-bottom:6px;
+}
+.btn-s:hover{background:var(--panel2);color:var(--tx);border-color:var(--gold-b);}
+
+/* ── HOW TO PLAY ── */
+.how-ov{
+  position:fixed;inset:0;
+  background:rgba(7,7,15,.94);
+  display:flex;align-items:center;justify-content:center;
+  z-index:600;padding:14px;backdrop-filter:blur(6px);
+}
+.how-ov.off{display:none;}
+.how-box{
+  background:var(--panel);
+  border:2px solid var(--rim2);
+  border-radius:var(--r2);
+  padding:26px 22px;
+  max-width:400px;width:100%;
+  max-height:92vh;overflow-y:auto;
+  box-shadow:0 0 40px rgba(245,200,66,.07);
+}
+.how-ttl{font-family:var(--fn);font-size:24px;color:var(--gold);margin-bottom:18px;text-align:center;}
+.how-row{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;}
+.how-n{
+  width:26px;height:26px;min-width:26px;
+  background:var(--gold-d);border:2px solid var(--gold-b);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:var(--fn);font-size:13px;color:var(--gold);
+}
+.how-t{font-size:13px;color:var(--tx2);line-height:1.65;font-family:var(--mo);}
+.how-t strong{color:var(--tx);}
+.how-t .bon{color:var(--np);}
+.ex-box{
+  background:var(--felt);border:2px solid var(--rim);
+  border-radius:var(--r);padding:12px 14px;margin:12px 0;
+}
+.ex-big{font-family:var(--fn);font-size:22px;letter-spacing:3px;color:var(--gold);margin-bottom:10px;}
+.ex-lbl{font-size:10px;color:var(--tx2);font-family:var(--mo);margin-bottom:5px;letter-spacing:.5px;}
+.ex-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
+.ex-c{border-radius:20px;padding:3px 10px;font-size:11px;font-family:var(--mo);}
+.ex-c.std{background:var(--ng-d);border:1px solid var(--ng-b);color:var(--ng);}
+.ex-c.bon{background:var(--np-d);border:1px solid var(--np-b);color:var(--np);}
+
+.pts-tbl{width:100%;border-collapse:collapse;font-family:var(--mo);font-size:12px;margin:10px 0;}
+.pts-tbl th{text-align:left;color:var(--tx2);font-weight:400;padding:5px 8px;border-bottom:1px solid var(--rim);}
+.pts-tbl td{padding:5px 8px;color:var(--tx);}
+.pts-tbl .g{color:var(--ng);}
+.pts-tbl .p{color:var(--np);}
+
+/* ── ACCOUNT PANEL ── */
+.a-panel{
+  position:fixed;top:0;right:0;
+  width:280px;height:100vh;
+  background:var(--panel);
+  border-left:2px solid var(--rim2);
+  padding:20px 16px;
+  transform:translateX(100%);
+  transition:transform .28s cubic-bezier(.4,0,.2,1);
+  z-index:700;overflow-y:auto;
+}
+.a-panel.open{transform:translateX(0);}
+.ap-close{
+  position:absolute;top:12px;right:12px;
+  background:var(--panel2);border:2px solid var(--rim);
+  border-radius:50%;width:28px;height:28px;
+  font-size:16px;color:var(--tx2);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.ap-close:hover{border-color:var(--gold-b);color:var(--gold);}
+.ap-ttl{font-family:var(--fn);font-size:20px;color:var(--gold);margin-bottom:18px;}
+.ap-sec{margin-bottom:18px;}
+.ap-lbl{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx2);font-family:var(--mo);margin-bottom:8px;}
+.ap-in{
+  width:100%;background:var(--panel2);border:1.5px solid var(--rim2);
+  border-radius:var(--r);color:var(--tx);font-family:var(--mo);
+  font-size:13px;padding:9px 12px;outline:none;margin-bottom:7px;
+}
+.ap-in:focus{border-color:var(--gold-b);}
+.ap-btn{
+  width:100%;padding:10px;background:var(--gold);color:#07070f;
+  border:none;border-radius:var(--r);
+  font-family:var(--fn);font-size:15px;cursor:pointer;
+}
+.ap-btn:hover{background:var(--gold2);}
+
+.sk-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:7px;}
+.sk-d{
+  aspect-ratio:1;border-radius:3px;
+  background:var(--panel2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;color:var(--tx2);font-family:var(--mo);
+}
+.sk-d.played{background:var(--ng-d);color:var(--ng);border:1px solid var(--ng-b);}
+.sk-d.today{border:1px solid var(--gold-b);}
+
+@media(max-width:480px){
+  .score-strip{grid-template-columns:repeat(2,1fr);}
+  .modal{padding:22px 16px;}
+  .end-grid{gap:6px;}
+  .share-grid{grid-template-columns:1fr;}
+  .sh-copy{grid-column:1;}
+  .big-word{letter-spacing:3px;}
+}
+</style>
+</head>
+<body>
+
+<!-- Suit watermark -->
+<div class="suits-bg" aria-hidden="true">
+  <div class="suits-row">♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣</div>
+  <div class="suits-row">♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠</div>
+  <div class="suits-row">♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣</div>
+  <div class="suits-row">♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠</div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">🎰</div>
+    <div class="logo-text">
+      <span class="logo-name">NestWord</span>
+      <span class="logo-tag">DAILY WORD CASINO · ALL SPARK</span>
+    </div>
+  </div>
+  <div class="hdr-r">
+    <div class="streak-chip" onclick="openPanel()">🔥 <span id="streakNum">0</span></div>
+    <button class="ico-btn" onclick="showHow()">?</button>
+  </div>
+</header>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-inner">
+    <span>♠ PLAY TODAY'S NESTWORD</span>
+    <span class="hi">★ BONUS POINTS FOR CONSECUTIVE LETTERS ★</span>
+    <span>♥ FIND WORDS FORWARD AND REVERSE</span>
+    <span class="hi">♦ DAILY NEW WORD AT MIDNIGHT ♦</span>
+    <span>♣ SHARE YOUR SCORE AND CHALLENGE FRIENDS</span>
+    <span class="hi">★ PLAY FREE AT PLAYNESTWORD.COM ★</span>
+    <span>♠ PLAY TODAY'S NESTWORD</span>
+    <span class="hi">★ BONUS POINTS FOR CONSECUTIVE LETTERS ★</span>
+    <span>♥ FIND WORDS FORWARD AND REVERSE</span>
+    <span class="hi">♦ DAILY NEW WORD AT MIDNIGHT ♦</span>
+    <span>♣ SHARE YOUR SCORE AND CHALLENGE FRIENDS</span>
+    <span class="hi">★ PLAY FREE AT PLAYNESTWORD.COM ★</span>
+  </div>
+</div>
+
+<!-- THEME BAR -->
+<div class="theme-bar" id="themeBar">
+  <div class="th-l">
+    <span class="th-em" id="thEm">🌿</span>
+    <div>
+      <div class="th-name" id="thName">Loading...</div>
+      <div class="th-desc" id="thDesc"></div>
+    </div>
+  </div>
+  <div class="th-date" id="thDate"></div>
+</div>
+
+<!-- BIG WORD -->
+<div class="word-section">
+  <div class="word-lbl">Today's NestWord</div>
+  <div class="word-frame">
+    <div class="bulb"></div><div class="bulb"></div>
+    <div class="bulb"></div><div class="bulb"></div>
+    <div class="big-word" id="bigWord">—</div>
+  </div>
+</div>
+
+<!-- SCORE STRIP -->
+<div class="score-strip">
+  <div class="sc-card" id="scCardPts">
+    <div class="sc-val gold" id="scPts">0</div>
+    <div class="sc-lbl">Your Points</div>
+  </div>
+  <div class="sc-card">
+    <div class="sc-val wht" id="scMax">?</div>
+    <div class="sc-lbl">Max Points</div>
+  </div>
+  <div class="sc-card">
+    <div class="sc-val pur" id="scBonus">0</div>
+    <div class="sc-lbl">Bonus ★ Pts</div>
+  </div>
+  <div class="sc-card">
+    <div class="sc-val grn" id="scWords">0</div>
+    <div class="sc-lbl">Words Found</div>
+  </div>
+</div>
+
+<!-- TIMER -->
+<div class="timer-section">
+  <div class="timer-row">
+    <div class="timer-disp" id="timerDisp">1:30</div>
+    <div class="timer-hint" id="timerHint">Press Start to begin</div>
+  </div>
+  <div class="t-track"><div class="t-fill" id="tFill"></div></div>
+</div>
+
+<!-- INPUT -->
+<div class="input-sec">
+  <div class="input-row">
+    <input type="text" class="word-in" id="wordIn" placeholder="TYPE A WORD..."
+      maxlength="20" autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" disabled/>
+    <button class="sub-btn" id="subBtn" onclick="submit()" disabled>ENTER</button>
+  </div>
+  <div class="fb info" id="fb">Start the game to begin finding words</div>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="leg"><div class="leg-dot std"></div>Standard word</div>
+  <div class="leg"><div class="leg-dot bon"></div>★ Bonus — consecutive letters (2× points)</div>
+</div>
+
+<!-- FOUND WORDS -->
+<div class="found-sec">
+  <div class="found-hdr">
+    <span class="found-ttl">♠ Words Found</span>
+    <span class="found-ct" id="foundCt">0 words</span>
+  </div>
+  <div class="words-grid" id="wGrid"></div>
+</div>
+
+<!-- PROGRESS -->
+<div class="prog-sec">
+  <div class="prog-lbl" id="progLbl">Find words to track your progress</div>
+  <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+  <div class="prog-stats">
+    <div class="pst"><div class="pst-n gold" id="psPts">0</div><div class="pst-l">pts earned</div></div>
+    <div class="pst"><div class="pst-n wht" id="psMax">?</div><div class="pst-l">pts possible</div></div>
+    <div class="pst"><div class="pst-n pur" id="psBon">0</div><div class="pst-l">bonus pts</div></div>
+    <div class="pst"><div class="pst-n grn" id="psWds">0</div><div class="pst-l">words</div></div>
+    <div class="pst"><div class="pst-n gold" id="psBest">0</div><div class="pst-l">best ever</div></div>
+  </div>
+</div>
+
+<!-- AD SLOT -->
+<div class="ad-slot">
+  <!-- Google AdSense — replace with your ad unit after approval -->
+  <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins> -->
+  AD SPACE — GOOGLE ADSENSE
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-l">&copy; <span id="fyear"></span> <a href="https://allsparkenterprisesltd.ca" target="_blank">All Spark Enterprises Ltd.</a></div>
+  <div class="foot-r">
+    <a href="#" onclick="showHow();return false;">How to Play</a>
+    <a href="#" onclick="openPanel();return false;">My Stats</a>
+    <a href="mailto:hello@allsparkenterprisesltd.ca">Contact</a>
+  </div>
+</footer>
+
+<!-- ════════════════ START OVERLAY ════════════════ -->
+<div class="ov" id="startOv">
+  <div class="modal">
+    <div class="modal-corner"></div><div class="modal-corner"></div>
+    <div class="modal-corner"></div><div class="modal-corner"></div>
+    <div class="m-ico" id="stIco">🎰</div>
+    <div class="m-ttl">NestWord</div>
+    <div class="m-sub" id="stSub">Find as many words hidden inside today's word as you can. Bonus points for consecutive letters — forward or reverse!</div>
+    <div class="m-word" id="stWord">—</div>
+    <div class="m-theme" id="stTheme"></div>
+    <button class="btn-p" id="stBtn" onclick="startGame()">🎲 PLAY TODAY'S WORD</button>
+    <button class="btn-s" onclick="showHow()">How to Play</button>
+    <div style="font-size:11px;color:var(--tx2);font-family:var(--mo);margin-top:10px;line-height:1.7;">
+      Min 3 letters · Real English words · No proper nouns<br>
+      ★ Consecutive letters forward or reverse = 2× points
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ END OVERLAY ════════════════ -->
+<div class="ov off" id="endOv">
+  <div class="modal">
+    <div class="modal-corner"></div><div class="modal-corner"></div>
+    <div class="modal-corner"></div><div class="modal-corner"></div>
+    <div class="m-ico" id="endIco">🏆</div>
+    <div class="m-ttl" id="endTtl">PAYOUT!</div>
+    <div class="m-sub" id="endSub">Here's your final score</div>
+
+    <div class="pts-display">
+      <div class="pts-main"><span id="endPts">0</span> <span class="pts-denom">/ <span id="endMax">?</span></span></div>
+      <div class="pts-sub">points earned · <span id="endPct">0</span>% of maximum · <span id="endStrk">0</span>🔥 streak</div>
+    </div>
+
+    <div class="end-grid">
+      <div class="eg"><div class="eg-n" style="color:var(--ng)" id="endWds">0</div><div class="eg-l">words found</div></div>
+      <div class="eg"><div class="eg-n" style="color:var(--np)" id="endBon">0</div><div class="eg-l">bonus ★ pts</div></div>
+      <div class="eg"><div class="eg-n" style="color:var(--gold)" id="endBest">0</div><div class="eg-l">personal best</div></div>
+    </div>
+
+    <div class="share-sheet">
+      <div class="share-ttl">♠ Share Your Score</div>
+      <div class="share-grid">
+        <a class="sh-btn" href="#" onclick="shareFB();return false;"><span class="sh-ico">📘</span>Facebook</a>
+        <a class="sh-btn" href="#" onclick="shareWA();return false;"><span class="sh-ico">💬</span>WhatsApp</a>
+        <a class="sh-btn" href="#" onclick="shareSMS();return false;"><span class="sh-ico">📱</span>Text Message</a>
+        <a class="sh-btn" href="#" onclick="shareTT();return false;"><span class="sh-ico">🎵</span>TikTok</a>
+        <a class="sh-btn sh-copy" href="#" onclick="shareCopy();return false;"><span class="sh-ico">📋</span>Copy to Clipboard</a>
+      </div>
+    </div>
+    <div class="share-msg" id="shareMsg"></div>
+    <button class="btn-s" onclick="showMissed()">Reveal All Words</button>
+    <button class="btn-s" onclick="bonusRound()">♦ Bonus Round (new word)</button>
+    <div style="font-size:11px;color:var(--tx2);font-family:var(--mo);margin-top:10px;">New daily word every midnight!</div>
+  </div>
+</div>
+
+<!-- ════════════════ HOW TO PLAY ════════════════ -->
+<div class="how-ov off" id="howOv">
+  <div class="how-box">
+    <div class="how-ttl">♣ How to Play</div>
+    <div class="how-row">
+      <div class="how-n">1</div>
+      <div class="how-t">You are given a <strong>big word</strong>. Find as many real English words hidden inside it as possible. Words must be <strong>3+ letters</strong>.</div>
+    </div>
+    <div class="how-row">
+      <div class="how-n">2</div>
+      <div class="how-t"><strong>Standard words</strong> can use any of the available letters in any order — like an anagram.</div>
+    </div>
+    <div class="how-row">
+      <div class="how-n">3</div>
+      <div class="how-t"><span class="bon">★ BONUS words</span> are letters that appear <strong>consecutively</strong> inside the big word — reading left→right <em>or</em> right→left — without rearranging. These score <strong>2× points!</strong></div>
+    </div>
+    <div class="ex-box">
+      <div class="ex-big">BLACKSMITH</div>
+      <div class="ex-lbl">★ BONUS — consecutive (forward or reverse)</div>
+      <div class="ex-row">
+        <span class="ex-c bon">BLACK</span>
+        <span class="ex-c bon">LACK</span>
+        <span class="ex-c bon">SMITH</span>
+        <span class="ex-c bon">ACK</span>
+      </div>
+      <div class="ex-lbl">Standard — letters in any order</div>
+      <div class="ex-row">
+        <span class="ex-c std">SILK</span>
+        <span class="ex-c std">MAIL</span>
+        <span class="ex-c std">SLIM</span>
+        <span class="ex-c std">HIM</span>
+      </div>
+    </div>
+    <div class="how-row">
+      <div class="how-n">4</div>
+      <div class="how-t"><strong>Points by word length:</strong></div>
+    </div>
+    <table class="pts-tbl">
+      <tr><th>Length</th><th class="g">Standard</th><th class="p">★ Bonus</th></tr>
+      <tr><td>3 letters</td><td class="g">1 pt</td><td class="p">2 pts</td></tr>
+      <tr><td>4 letters</td><td class="g">2 pts</td><td class="p">4 pts</td></tr>
+      <tr><td>5 letters</td><td class="g">3 pts</td><td class="p">6 pts</td></tr>
+      <tr><td>6+ letters</td><td class="g">5 pts</td><td class="p">10 pts</td></tr>
+    </table>
+    <div class="how-row" style="margin-top:12px;">
+      <div class="how-n">5</div>
+      <div class="how-t">You have <strong>90 seconds</strong>. Your score shows <strong>your points / max possible</strong>. Share it to challenge friends on any platform!</div>
+    </div>
+    <button class="btn-p" onclick="closeHow()" style="margin-top:14px;">🎲 LET'S PLAY!</button>
+  </div>
+</div>
+
+<!-- ════════════════ ACCOUNT PANEL ════════════════ -->
+<div class="a-panel" id="aPanel">
+  <button class="ap-close" onclick="closePanel()">×</button>
+  <div class="ap-ttl">♥ My Stats</div>
+  <div class="ap-sec">
+    <div class="ap-lbl">Current Streak</div>
+    <div style="font-family:var(--fn);font-size:40px;color:var(--gold);text-shadow:0 0 16px rgba(245,200,66,.4);" id="apStreak">0 🔥</div>
+  </div>
+  <div class="ap-sec">
+    <div class="ap-lbl">Last 7 Days</div>
+    <div class="sk-grid" id="skGrid"></div>
+  </div>
+  <div class="ap-sec">
+    <div class="ap-lbl">Personal Best</div>
+    <div style="font-family:var(--fn);font-size:28px;color:var(--gold);text-shadow:0 0 12px rgba(245,200,66,.3);" id="apBest">0 pts</div>
+  </div>
+  <div class="ap-sec">
+    <div class="ap-lbl">Save Streak (optional)</div>
+    <input class="ap-in" type="text" placeholder="Display name" id="apName">
+    <input class="ap-in" type="email" placeholder="Email address" id="apEmail">
+    <button class="ap-btn" id="apSaveBtn" onclick="saveAcct()">Save My Streak</button>
+    <div style="font-size:11px;color:var(--tx2);font-family:var(--mo);margin-top:8px;line-height:1.5;">
+      Streak saves automatically on this device. Optional account protects it across devices.
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     GAME LOGIC
+════════════════════════════════════════════ -->
+<script>
+const DUR = 90;
+let G = {
+  word:"",theme:null,possible:[],found:[],pts:0,bonusPts:0,
+  timer:DUR,iv:null,running:false,done:false,
+  streak:0,best:0,history:{},day:0
+};
+
+function init() {
+  loadStore();
+  const thKey = getTodayTheme();
+  const td = THEMES[thKey];
+  const word = getTodayWord();
+  G.word=word; G.theme=td; G.day=getDayNumber();
+  const ds = getTodayDateStr();
+
+  document.getElementById("thEm").textContent = td.emoji;
+  document.getElementById("thName").textContent = td.name;
+  document.getElementById("thDesc").textContent = td.desc;
+  document.getElementById("thDate").textContent = ds;
+  document.getElementById("themeBar").style.borderColor = td.color+"55";
+  document.getElementById("stIco").textContent = td.emoji;
+  document.getElementById("stWord").textContent = word;
+  document.getElementById("stWord").style.color = td.color;
+  document.getElementById("stTheme").textContent = td.name+" · "+ds;
+  document.getElementById("fyear").textContent = new Date().getFullYear();
+  document.getElementById("streakNum").textContent = G.streak;
+
+  renderWord(word);
+  G.possible = findAllValidWords(word);
+  const maxPts = totalPossiblePoints(G.possible);
+  document.getElementById("scMax").textContent = maxPts;
+  document.getElementById("psMax").textContent = maxPts;
+  document.getElementById("psBest").textContent = G.best;
+
+  const k = "d"+G.day;
+  if (G.history[k]) {
+    const p = G.history[k];
+    document.getElementById("stSub").textContent =
+      "Already played today! You scored "+p.pts+"/"+maxPts+" pts. New word at midnight!";
+    document.getElementById("stBtn").textContent = "See My Results";
+    document.getElementById("stBtn").onclick = () => {
+      document.getElementById("startOv").classList.add("off");
+      showEnd(p.pts, p.bonus||0, p.words||[], p.streak||G.streak);
+    };
+  }
+  updatePanel();
+}
+
+function renderWord(w) {
+  document.getElementById("bigWord").innerHTML =
+    w.split("").map(c=>`<span>${c}</span>`).join("");
+}
+
+function hlWord(typed) {
+  const spans=[...document.getElementById("bigWord").querySelectorAll("span")];
+  const avail={};
+  for(const c of G.word.toLowerCase()) avail[c]=(avail[c]||0)+1;
+  spans.forEach(s=>s.classList.remove("hl"));
+  for(const c of typed.toLowerCase()){
+    const i=spans.findIndex(s=>
+      s.textContent.toLowerCase()===c&&!s.classList.contains("hl")&&(avail[c]||0)>0
+    );
+    if(i!==-1){spans[i].classList.add("hl");avail[c]--;}
+  }
+}
+
+function startGame() {
+  document.getElementById("startOv").classList.add("off");
+  const inp=document.getElementById("wordIn");
+  inp.disabled=false;
+  document.getElementById("subBtn").disabled=false;
+  inp.focus();
+  setFB("Type a word and press Enter","info");
+  G.running=true;G.done=false;G.found=[];G.pts=0;G.bonusPts=0;
+  G.timer=DUR;
+  document.getElementById("wGrid").innerHTML="";
+  ["scPts","scBonus","scWords","psPts","psBon","psWds"].forEach(id=>{
+    document.getElementById(id).textContent="0";
+  });
+  document.getElementById("progFill").style.width="0%";
+  document.getElementById("progLbl").textContent="Find words to track your progress";
+  tickUI();
+  G.iv=setInterval(()=>{G.timer--;tickUI();if(G.timer<=0)endGame();},1000);
+}
+
+function tickUI(){
+  const m=Math.floor(G.timer/60),s=G.timer%60;
+  document.getElementById("timerDisp").textContent=m+":"+String(s).padStart(2,"0");
+  document.getElementById("tFill").style.width=((G.timer/DUR)*100)+"%";
+  const urg=G.timer<=15;
+  document.getElementById("timerDisp").classList.toggle("urg",urg);
+  document.getElementById("tFill").classList.toggle("urg",urg);
+  if(G.running) document.getElementById("timerHint").textContent=urg?"Almost out of time!":"Keep finding words!";
+}
+
+function endGame(){
+  clearInterval(G.iv);G.running=false;G.done=true;
+  document.getElementById("wordIn").disabled=true;
+  document.getElementById("subBtn").disabled=true;
+  document.getElementById("timerDisp").textContent="0:00";
+  document.getElementById("timerHint").textContent="Time's up!";
+  if(G.pts>G.best) G.best=G.pts;
+  const prevK="d"+(G.day-1);
+  G.streak=G.history[prevK]?(G.history[prevK].streak||0)+1:1;
+  const k="d"+G.day;
+  G.history[k]={pts:G.pts,bonus:G.bonusPts,words:[...G.found],streak:G.streak};
+  document.getElementById("streakNum").textContent=G.streak;
+  saveStore();updatePanel();
+  showEnd(G.pts,G.bonusPts,G.found,G.streak);
+}
+
+function showEnd(pts,bonusPts,words,streak){
+  const max=totalPossiblePoints(G.possible);
+  const pct=max>0?Math.round((pts/max)*100):0;
+  let ico="🌱",ttl="KEEP PLAYING!";
+  if(pct>=80){ico="🏆";ttl="JACKPOT!";}
+  else if(pct>=60){ico="🎰";ttl="BIG WINNER!";}
+  else if(pct>=40){ico="🎲";ttl="NICE ROLL!";}
+  else if(pct>=20){ico="🃏";ttl="GETTING WARM!";}
+  document.getElementById("endIco").textContent=ico;
+  document.getElementById("endTtl").textContent=ttl;
+  document.getElementById("endSub").textContent="You scored "+pct+"% of the maximum points!";
+  document.getElementById("endPts").textContent=pts;
+  document.getElementById("endMax").textContent=max;
+  document.getElementById("endPct").textContent=pct;
+  document.getElementById("endStrk").textContent=streak;
+  document.getElementById("endWds").textContent=words.length;
+  document.getElementById("endBon").textContent=bonusPts+" pts";
+  document.getElementById("endBest").textContent=G.best+" pts";
+  document.getElementById("endOv").classList.remove("off");
+}
+
+document.getElementById("wordIn").addEventListener("keydown",function(e){
+  if(e.key==="Enter")submit();
+  if(G.running)setTimeout(()=>hlWord(this.value),0);
+});
+document.getElementById("wordIn").addEventListener("input",function(){
+  if(G.running)hlWord(this.value);
+});
+
+function submit(){
+  if(!G.running)return;
+  const inp=document.getElementById("wordIn");
+  const raw=inp.value.trim().toUpperCase();
+  inp.value="";hlWord("");
+  if(!raw)return;
+  if(raw.length<3){setFB("Minimum 3 letters","bad");shake();return;}
+  if(G.found.includes(raw)){setFB("Already found "+raw+"!","bad");shake();return;}
+  if(!isContained(raw.toLowerCase(),G.word.toLowerCase())){
+    setFB(raw+" uses letters not in "+G.word,"bad");shake();return;
+  }
+  if(!isValidWord(raw)){setFB(raw+" is not a valid word","bad");shake();return;}
+
+  const isBonus=isConsecutive(raw.toLowerCase(),G.word.toLowerCase());
+  const pts=getPoints(raw,isBonus);
+  G.found.push(raw);G.pts+=pts;
+  if(isBonus)G.bonusPts+=pts;
+  addChip(raw,isBonus);
+
+  if(isBonus){
+    setFB("★ BONUS! "+raw+" = +"+pts+" pts","bonus");
+    pulseP();
+  } else {
+    setFB("+"+pts+" pts — "+raw,"good");
+    pulseG();
+  }
+
+  const wc=G.found.length;
+  const max=totalPossiblePoints(G.possible);
+  document.getElementById("scPts").textContent=G.pts;
+  document.getElementById("scBonus").textContent=G.bonusPts;
+  document.getElementById("scWords").textContent=wc;
+  document.getElementById("psPts").textContent=G.pts;
+  document.getElementById("psBon").textContent=G.bonusPts;
+  document.getElementById("psWds").textContent=wc;
+  document.getElementById("psBest").textContent=Math.max(G.best,G.pts);
+  document.getElementById("foundCt").textContent=wc+" word"+(wc!==1?"s":"");
+  const pct=Math.min(Math.round((G.pts/max)*100),100);
+  document.getElementById("progFill").style.width=pct+"%";
+  document.getElementById("progLbl").textContent=pct+"% of maximum points scored";
+}
+
+function addChip(word,isBonus,missed){
+  const el=document.createElement("div");
+  el.className="chip "+(isBonus?"bon":"std")+(missed?" missed":"");
+  el.textContent=word;
+  document.getElementById("wGrid").appendChild(el);
+}
+
+function setFB(msg,type){
+  const el=document.getElementById("fb");
+  el.textContent=msg;el.className="fb "+type;
+  if(type!=="info")setTimeout(()=>{
+    if(G.running){el.textContent="Keep finding words...";el.className="fb info";}
+  },2500);
+}
+function shake(){const e=document.getElementById("wordIn");e.classList.add("shake");setTimeout(()=>e.classList.remove("shake"),350);}
+function pulseG(){const e=document.getElementById("wordIn");e.classList.add("pulse-g");setTimeout(()=>e.classList.remove("pulse-g"),400);}
+function pulseP(){const e=document.getElementById("wordIn");e.classList.add("pulse-p");setTimeout(()=>e.classList.remove("pulse-p"),400);}
+
+function buildShareText(){
+  const max=totalPossiblePoints(G.possible);
+  const pct=max>0?Math.round((G.pts/max)*100):0;
+  return (
+    "🎰 NestWord Daily — "+getTodayDateStr()+"\n"+
+    "Today's word: "+G.word+"\n"+
+    "Score: "+G.pts+"/"+max+" pts ("+pct+"%)\n"+
+    "Words: "+G.found.length+" found | Bonus ★: "+G.bonusPts+" pts | "+G.streak+"🔥 streak\n"+
+    "Can you beat me? 👉 https://playnestword.com"
+  );
+}
+function shareFB(){
+  window.open("https://www.facebook.com/sharer/sharer.php?u="+encodeURIComponent("https://playnestword.com")+"&quote="+encodeURIComponent(buildShareText()),"_blank","width=600,height=400");
+  showSM("Opening Facebook...");
+}
+function shareWA(){
+  window.open("https://wa.me/?text="+encodeURIComponent(buildShareText()),"_blank");
+  showSM("Opening WhatsApp...");
+}
+function shareSMS(){
+  window.location.href="sms:?body="+encodeURIComponent(buildShareText());
+  showSM("Opening Messages...");
+}
+function shareTT(){shareCopy();showSM("Copied! Paste as your TikTok caption.");}
+function shareCopy(){
+  const txt=buildShareText();
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(txt).then(()=>showSM("✓ Copied! Paste anywhere."));
+  } else {
+    const ta=document.createElement("textarea");
+    ta.value=txt;document.body.appendChild(ta);ta.select();
+    document.execCommand("copy");document.body.removeChild(ta);
+    showSM("✓ Copied!");
+  }
+}
+function showSM(msg){
+  const el=document.getElementById("shareMsg");
+  el.textContent=msg;
+  setTimeout(()=>{el.textContent="";},3500);
+}
+
+function showMissed(){
+  document.getElementById("endOv").classList.add("off");
+  const found=new Set(G.found);
+  G.possible.forEach(w=>{if(!found.has(w.word))addChip(w.word,w.bonus,true);});
+  document.getElementById("foundCt").textContent="All "+G.possible.length+" possible words";
+}
+
+function bonusRound(){
+  const keys=Object.keys(WORD_BANK);
+  const tk=keys[Math.floor(Math.random()*keys.length)];
+  const words=WORD_BANK[tk];
+  const word=words[Math.floor(Math.random()*words.length)].replace(/\s/g,"");
+  G.word=word;G.theme=THEMES[tk];
+  G.possible=findAllValidWords(word);
+  const max=totalPossiblePoints(G.possible);
+  document.getElementById("scMax").textContent=max;
+  document.getElementById("psMax").textContent=max;
+  renderWord(word);
+  document.getElementById("endOv").classList.add("off");
+  startGame();
+}
+
+function showHow(){
+  document.getElementById("startOv").classList.add("off");
+  document.getElementById("howOv").classList.remove("off");
+}
+function closeHow(){
+  document.getElementById("howOv").classList.add("off");
+  if(!G.running&&!G.done)document.getElementById("startOv").classList.remove("off");
+}
+
+function openPanel(){document.getElementById("aPanel").classList.add("open");updatePanel();}
+function closePanel(){document.getElementById("aPanel").classList.remove("open");}
+function updatePanel(){
+  document.getElementById("apStreak").textContent=G.streak+" 🔥";
+  document.getElementById("apBest").textContent=G.best+" pts";
+  const grid=document.getElementById("skGrid");grid.innerHTML="";
+  const days=["Su","Mo","Tu","We","Th","Fr","Sa"];
+  for(let i=6;i>=0;i--){
+    const d=G.day-i,played=!!G.history["d"+d];
+    const el=document.createElement("div");
+    el.className="sk-d"+(played?" played":"")+(i===0?" today":"");
+    el.textContent=days[new Date(Date.now()-i*86400000).getDay()];
+    grid.appendChild(el);
+  }
+}
+function saveAcct(){
+  const n=document.getElementById("apName").value.trim();
+  const e=document.getElementById("apEmail").value.trim();
+  if(!n||!e){alert("Please enter name and email.");return;}
+  localStorage.setItem("nw_a",JSON.stringify({name:n,email:e}));
+  const b=document.getElementById("apSaveBtn");
+  b.textContent="Saved! ♠";b.style.background="var(--ng)";
+}
+function saveStore(){
+  try{localStorage.setItem("nw",JSON.stringify({streak:G.streak,best:G.best,history:G.history}));}catch(e){}
+}
+function loadStore(){
+  try{
+    const d=JSON.parse(localStorage.getItem("nw")||"{}");
+    G.streak=d.streak||0;G.best=d.best||0;G.history=d.history||{};
+  }catch(e){}
+}
+window.addEventListener("DOMContentLoaded",init);
+</script>
+</body>
+</html>
