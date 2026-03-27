@@ -233,7 +233,7 @@ footer{
     </div>
     <div>
       <div class="nav-logo-name">NestWord</div>
-      <div class="nav-logo-tag">FIND · REARRANGE · SCORE · ALL SPARK</div>
+      <div class="nav-logo-tag">FIND · REARRANGE · SCORE</div>
     </div>
   </div>
   <div class="nav-r">
@@ -253,8 +253,11 @@ footer{
 
   <!-- Animated example word -->
   <div class="hero-word" id="heroWord"></div>
-
-  <div class="hero-btns">
+  <div style="display:flex;gap:16px;justify-content:center;margin-bottom:28px;font-family:var(--mo);font-size:10px;flex-wrap:wrap;color:var(--tx3);">
+    <span style="color:#1a5c30;font-weight:700;">■ word found inside (ATE)</span>
+    <span style="color:#9c5cb8;">■ rearranged to find (COAT)</span>
+    <span>■ other letters</span>
+  </div>
     <a href="game.html" class="hbtn hbtn-primary">▶ Play Word of the Day</a>
     <a href="quest.html" class="hbtn hbtn-secondary">⚔ Continue Word Quest</a>
   </div>
@@ -334,17 +337,38 @@ function setTheme(t) {
 }
 (function(){ setTheme(localStorage.getItem('nw_theme') || 'light'); })();
 
-// ── Animated hero word ──
+// ── Hero word — CHOCOLATE with colour coding ──
 (function(){
-  const examples = ['SCARECROW','BLACKSMITH','WILDERNESS','THUNDERSTORM','CARPENTER','CHOCOLATE'];
-  const word = examples[Math.floor(Math.random() * examples.length)];
   const container = document.getElementById('heroWord');
-  word.split('').forEach((ch, i) => {
+  // C H O C O L A T E
+  // Box colours: purple = COAT letters (C, O, A, T positions used for COAT)
+  // Letter colours: green = ATE letters (A, T, E)
+  // A is purple box + green letter (it's in both COAT and ATE)
+  // T in ATE gets brown box + green letter (the C,O,first-A,T of COAT use C=pos1, O=pos3, A=pos7, T=pos8)
+  const letters = [
+    { ch:'C', box:'purple', letter:'brown'  }, // C in COAT
+    { ch:'H', box:'brown',  letter:'brown'  }, // neutral
+    { ch:'O', box:'purple', letter:'brown'  }, // O in COAT
+    { ch:'C', box:'brown',  letter:'brown'  }, // neutral
+    { ch:'O', box:'brown',  letter:'brown'  }, // neutral
+    { ch:'L', box:'brown',  letter:'brown'  }, // neutral
+    { ch:'A', box:'purple', letter:'green'  }, // A in both COAT and ATE
+    { ch:'T', box:'purple', letter:'green'  }, // T in both COAT and ATE
+    { ch:'E', box:'brown',  letter:'green'  }, // E in ATE
+  ];
+  letters.forEach((l, i) => {
     const el = document.createElement('div');
-    el.className = 'hw-letter' + (i % 3 === 0 ? ' gold' : i % 5 === 0 ? ' blur' : '');
-    el.textContent = ch;
-    el.style.animationDelay = (i * 0.06) + 's';
-    el.style.animation = 'letterPop 0.4s ease ' + (i * 0.06) + 's both';
+    // purple box + green letter = hw-purple-green
+    // purple box + brown letter = hw-purple
+    // brown box + green letter = hw-green
+    // brown box + brown letter = hw-brown
+    let cls = 'hw-brown';
+    if (l.box === 'purple' && l.letter === 'green') cls = 'hw-purple-green';
+    else if (l.box === 'purple') cls = 'hw-purple';
+    else if (l.letter === 'green') cls = 'hw-green';
+    el.className = 'hw-letter ' + cls;
+    el.textContent = l.ch;
+    el.style.animation = 'letterPop 0.4s ease ' + (i * 0.07) + 's both';
     container.appendChild(el);
   });
 })();
@@ -352,17 +376,38 @@ function setTheme(t) {
 // ── Chapter grid ──
 (function(){
   const grid = document.getElementById('chapterGrid');
-  const questProg = JSON.parse(localStorage.getItem('nw_quest') || '{}');
-  QUEST_CHAPTERS.forEach((ch, i) => {
-    const done = questProg[ch.id] || 0;
-    const pct = Math.round((done / ch.words.length) * 100);
-    const locked = i > 0 && (questProg[QUEST_CHAPTERS[i-1].id] || 0) < QUEST_CHAPTERS[i-1].words.length;
+  if (!grid || typeof QUEST_THEMES === 'undefined') return;
+  const questProg = JSON.parse(localStorage.getItem('nw_quest_v2') || '{}').progress || {};
+
+  function countDone(themeId) {
+    const tp = questProg[themeId] || {};
+    let done = 0;
+    ['easy','medium','hard','master'].forEach(tier => {
+      done += Object.keys(tp[tier] || {}).length;
+    });
+    return done;
+  }
+
+  function totalWords(themeId) {
+    let total = 0;
+    ['easy','medium','hard','master'].forEach(tier => {
+      total += (QUEST_WORDS?.[themeId]?.[tier]?.length || 0);
+    });
+    return total;
+  }
+
+  QUEST_THEMES.forEach((ch, i) => {
+    const done = countDone(ch.id);
+    const total = totalWords(ch.id);
+    const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+    // Theme unlocks when first word of previous theme's easy tier is done
+    const locked = i > 0 && !((questProg[QUEST_THEMES[i-1].id]?.easy || {})[0]);
     const card = document.createElement('div');
     card.className = 'chapter-card' + (locked ? ' locked' : '');
     card.innerHTML = `
       <div class="chapter-ico">${ch.emoji}</div>
       <div class="chapter-name">${ch.name}</div>
-      <div class="chapter-prog">${locked ? '🔒 Locked' : done + '/' + ch.words.length + ' words'}</div>
+      <div class="chapter-prog">${locked ? '🔒 Locked' : done + '/' + total + ' words'}</div>
       <div class="chapter-bar"><div class="chapter-bar-fill" style="width:${pct}%"></div></div>
     `;
     if (!locked) card.onclick = () => window.location.href = 'quest.html?chapter=' + ch.id;
@@ -406,6 +451,14 @@ document.getElementById('fyear').textContent = new Date().getFullYear();
 loadLB('today');
 </script>
 <style>
+.hw-letter.hw-brown       { background:var(--panel2); border-color:var(--rim2); color:var(--tx); }
+.hw-letter.hw-green       { background:var(--panel2); border-color:var(--rim2); color:#1a5c30; font-weight:700; }
+.hw-letter.hw-purple      { background:#e8d4f0; border-color:#9c5cb8; color:#5a1a7a; }
+.hw-letter.hw-purple-green{ background:#e8d4f0; border-color:#9c5cb8; color:#1a5c30; font-weight:700; }
+[data-theme="dark"] .hw-letter.hw-brown       { background:var(--panel2); border-color:var(--rim2); color:var(--tx); }
+[data-theme="dark"] .hw-letter.hw-green       { background:var(--panel2); border-color:var(--rim2); color:#3dff78; font-weight:700; }
+[data-theme="dark"] .hw-letter.hw-purple      { background:rgba(212,61,255,.15); border-color:rgba(212,61,255,.5); color:#d43dff; }
+[data-theme="dark"] .hw-letter.hw-purple-green{ background:rgba(212,61,255,.15); border-color:rgba(212,61,255,.5); color:#3dff78; font-weight:700; }
 @keyframes letterPop{from{transform:scale(0) rotate(-10deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
 </style>
 </body>
