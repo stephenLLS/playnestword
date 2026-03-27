@@ -43,15 +43,19 @@
 
 /* ── LIGHT THEME ── */
 [data-theme="light"] {
-  --bg:#ede8dc; --felt:#ddd6c4;
-  --panel:#fdfcf7; --panel2:#f0e9d8; --panel3:#e4dbc8;
-  --rim:#c4b896; --rim2:#a09060;
-  --tx:#0f0c00; --tx2:#4a3f20; --tx3:#7a6f50;
+  --bg:#e8e2d4; --felt:#d8d0bc;
+  --panel:#f8f4ec; --panel2:#ede6d4; --panel3:#e0d8c4;
+  --rim:#b8a878; --rim2:#8a7848;
+  --tx:#0a0800; --tx2:#3a3010; --tx3:#6a6040;
   --scan:rgba(0,0,0,.025);
-  --suits:rgba(0,0,0,.05);
-  --ng-text:#116b2e; --np-text:#7c1fa0; --nb-text:#1a3db5;
-  --ng-bd:rgba(17,107,46,.5); --np-bd:rgba(124,31,160,.5); --nb-bd:rgba(26,61,181,.5);
-  --ng-bg:rgba(17,107,46,.09); --np-bg:rgba(124,31,160,.09); --nb-bg:rgba(26,61,181,.09);
+  --suits:rgba(0,0,0,.06);
+  /* Gold overridden to dark readable amber in light mode */
+  --gold:#7a5800; --gold2:#5a3e00;
+  --gold-d:rgba(122,88,0,.12); --gold-b:rgba(122,88,0,.45);
+  /* Accent text colours — darker for light bg */
+  --ng-text:#0d5c26; --np-text:#6b1590; --nb-text:#1530a0;
+  --ng-bd:rgba(13,92,38,.55); --np-bd:rgba(107,21,144,.55); --nb-bd:rgba(21,48,160,.55);
+  --ng-bg:rgba(13,92,38,.10); --np-bg:rgba(107,21,144,.10); --nb-bg:rgba(21,48,160,.10);
 }
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -233,7 +237,34 @@ header{
 .leg-dot.std{background:var(--ng-bg);border:1px solid var(--ng-bd);}
 .leg-dot.bon{background:var(--np-bg);border:1px solid var(--np-bd);}
 
-/* ── CHIP TYPES (new scoring) ── */
+/* ── LIGHT MODE SPECIFIC OVERRIDES ── */
+[data-theme="light"] .sub-btn { background:var(--gold); color:#fff8ee; }
+[data-theme="light"] .sub-btn:hover { background:var(--gold2); }
+[data-theme="light"] .btn-p { background:var(--gold); color:#fff8ee; }
+[data-theme="light"] .btn-p:hover { background:var(--gold2); }
+[data-theme="light"] .ap-btn { background:var(--gold); color:#fff8ee; }
+[data-theme="light"] .tt-opt.active { background:var(--gold); color:#fff8ee; }
+[data-theme="light"] .big-word { color:var(--gold); text-shadow:none; }
+[data-theme="light"] .logo-name { color:var(--gold); text-shadow:none; }
+[data-theme="light"] .m-ttl { color:var(--gold); text-shadow:none; }
+[data-theme="light"] .m-word { color:var(--gold); }
+[data-theme="light"] .pts-main { color:var(--gold); text-shadow:none; }
+[data-theme="light"] .pts-denom { color:var(--tx2); }
+[data-theme="light"] .sc-val.gold { color:var(--gold); text-shadow:none; }
+[data-theme="light"] .pst-n.gold { color:var(--gold); text-shadow:none; }
+[data-theme="light"] .word-in { color:var(--gold); }
+[data-theme="light"] .ap-ttl { color:var(--gold); }
+[data-theme="light"] .lvl-ttl { color:var(--gold); }
+[data-theme="light"] .how-ttl { color:var(--gold); }
+[data-theme="light"] .found-ttl { color:var(--tx); }
+[data-theme="light"] .chip.reafull { background:var(--gold-d); border-color:var(--gold-b); color:var(--gold); box-shadow:none; }
+[data-theme="light"] .rankup-banner { background:var(--gold-d); }
+[data-theme="light"] .rankup-title { color:var(--gold); text-shadow:none; }
+[data-theme="light"] .xp-rank-name { text-shadow:none; }
+[data-theme="light"] .streak-chip { color:var(--gold); }
+[data-theme="light"] .rc-current-badge { color:var(--gold); }
+[data-theme="light"] .btn-play-again { color:var(--gold); border-color:var(--gold-b); }
+[data-theme="light"] .btn-play-again:hover { background:var(--gold-d); }
 .chip.std{background:var(--ng-bg);border:1.5px solid var(--ng-bd);color:var(--ng-text);}
 .chip.std.rev{background:var(--nb-bg);border:1.5px solid var(--nb-bd);color:var(--nb-text);}
 .chip.rea{background:var(--np-bg);border:1.5px solid var(--np-bd);color:var(--np-text);}
@@ -272,8 +303,12 @@ header{
 @keyframes chip-in{0%{transform:scale(.4) rotate(-8deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
 @keyframes neon-pulse{0%,100%{box-shadow:0 0 6px var(--np-bg);}50%{box-shadow:0 0 14px var(--np-bg);}}
 
+[data-theme="light"] .xp-fill{background:linear-gradient(90deg,var(--nb-text),var(--gold));}
+[data-theme="light"] .prog-fill{background:linear-gradient(90deg,var(--ng-text),var(--nb-text),var(--gold));}
+[data-theme="light"] .t-fill{background:linear-gradient(90deg,var(--ng-text),var(--gold));}
+[data-theme="light"] .ap-xp-fill{background:linear-gradient(90deg,var(--nb-text),var(--gold));}
+
 /* ── PROGRESS ── */
-.prog-sec{width:100%;max-width:640px;margin-top:18px;background:var(--felt);border:2px solid var(--rim);border-radius:var(--r2);padding:16px 18px;position:relative;z-index:10;}
 .prog-lbl{font-size:12px;color:var(--tx2);font-family:var(--mo);margin-bottom:8px;}
 .prog-track{width:100%;height:10px;background:var(--panel2);border-radius:5px;border:1px solid var(--rim);overflow:hidden;margin-bottom:14px;}
 .prog-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--ng-text),var(--nb-text),var(--gold));transition:width .4s ease;width:0%;}
@@ -661,6 +696,7 @@ footer{width:100%;max-width:640px;margin-top:32px;padding-top:16px;border-top:2p
     <div class="m-theme" id="stTheme"></div>
     <div style="font-size:12px;color:var(--tx2);font-family:var(--mo);margin-bottom:16px;" id="stWordLen"></div>
     <button class="btn-p" id="stBtn" onclick="startGame()">🎲 PLAY TODAY'S WORD</button>
+    <button class="btn-s" id="tryBetterBtn" style="display:none;" onclick="">🔄 Try for Better Score</button>
     <button class="btn-s" onclick="showHow()">How to Play</button>
     <div style="font-size:11px;color:var(--tx2);font-family:var(--mo);margin-top:10px;line-height:1.7;">
       Min 3 letters · Real English words · No proper nouns<br>
@@ -697,6 +733,7 @@ footer{width:100%;max-width:640px;margin-top:32px;padding-top:16px;border-top:2p
     </div>
     <div class="share-sheet">
       <div class="share-ttl">♠ Share Your Score</div>
+      <div id="scoreCardPreview" style="margin-bottom:12px;border-radius:var(--r);overflow:hidden;border:2px solid var(--rim2);"></div>
       <div class="share-grid">
         <a class="sh-btn" href="#" onclick="shareFB();return false;"><span class="sh-ico">📘</span>Facebook</a>
         <a class="sh-btn" href="#" onclick="shareWA();return false;"><span class="sh-ico">💬</span>WhatsApp</a>
@@ -964,7 +1001,9 @@ let G = {
   streak:0, best:0, history:{}, day:0,
   totalXp:0, difficulty:'normal',
   // speed chain
-  lastWordTime:0, quickCount:0, chainActive:false
+  lastWordTime:0, quickCount:0, chainActive:false,
+  // replay tracking
+  isReplay:false, replayPrevScore:0
 };
 
 // ══════════════════════════════════════════════════
@@ -1014,6 +1053,17 @@ function init() {
       document.getElementById("wordLbl").textContent = "Today's NestWord";
       showEnd(p.pts, p.bonus||0, p.words||[], p.streak||G.streak, false, null, null);
     };
+    // Show "Try for Better Score" button
+    document.getElementById("tryBetterBtn").style.display = "";
+    document.getElementById("tryBetterBtn").onclick = () => {
+      G.replayPrevScore = p.pts; // track previous so we only add the difference
+      G.isReplay = true;
+      startGame();
+    };
+  } else {
+    document.getElementById("tryBetterBtn").style.display = "none";
+    G.isReplay = false;
+    G.replayPrevScore = 0;
   }
 
   updateXpUI();
@@ -1090,18 +1140,23 @@ function startGame() {
   document.getElementById("startOv").classList.add("off");
   document.getElementById("bigWord").classList.remove("hidden");
   document.getElementById("wordLbl").textContent = "Today's NestWord";
+  const inp = document.getElementById("wordIn");
   inp.disabled = false;
+  inp.value = "";
   document.getElementById("subBtn").disabled = false;
   inp.focus();
   setFB("Type a word and press Enter", "info");
   G.running = true; G.done = false; G.found = []; G.pts = 0; G.bonusPts = 0;
   G.lastWordTime = 0; G.quickCount = 0; G.chainActive = false;
+  if (!G.isReplay) { G.replayPrevScore = 0; }
   G.timer = DIFF_TIMES[G.difficulty] || 90;
   document.getElementById("wGrid").innerHTML = "";
   ["scPts","scBonus","scWords","psPts","psBon","psWds"].forEach(id => document.getElementById(id).textContent = "0");
   document.getElementById("progFill").style.width = "0%";
   document.getElementById("progLbl").textContent = "Find words to track your progress";
+  document.getElementById("chainIndicator").textContent = "";
   tickUI();
+  if (G.iv) clearInterval(G.iv);
   G.iv = setInterval(() => { G.timer--; tickUI(); if (G.timer <= 0) endGame(); }, 1000);
 }
 
@@ -1125,16 +1180,42 @@ function endGame() {
 
   if (G.pts > G.best) G.best = G.pts;
   const prevK = "d" + (G.day - 1);
-  G.streak = G.history[prevK] ? (G.history[prevK].streak || 0) + 1 : 1;
+  // Only increment streak on first play of the day, not replays
+  if (!G.isReplay) {
+    G.streak = G.history[prevK] ? (G.history[prevK].streak || 0) + 1 : 1;
+  }
 
   const maxPts = totalPossiblePoints(G.possible);
-  const xpResult = calcXpEarned(G.pts, maxPts, G.bonusPts, G.difficulty, G.streak);
+
+  // On replay: only award XP for the score improvement over previous attempt
+  let xpResult;
+  if (G.isReplay && G.pts <= G.replayPrevScore) {
+    // Didn't beat previous score — no XP awarded
+    xpResult = { total: 0, breakdown: [{ label: "Didn't beat previous score", val: 0 }] };
+  } else if (G.isReplay) {
+    // Only XP on the improvement delta
+    const improvement = G.pts - G.replayPrevScore;
+    xpResult = calcXpEarned(improvement, maxPts, G.bonusPts, G.difficulty, G.streak);
+    xpResult.breakdown.unshift({ label: "Improvement over last attempt", val: improvement + " pts" });
+  } else {
+    xpResult = calcXpEarned(G.pts, maxPts, G.bonusPts, G.difficulty, G.streak);
+  }
+
   const oldRank = getRankFromXp(G.totalXp);
   G.totalXp += xpResult.total;
   const newRank = getRankFromXp(G.totalXp);
 
   const k = "d" + G.day;
-  G.history[k] = { pts:G.pts, bonus:G.bonusPts, words:[...G.found], streak:G.streak, xpEarned:xpResult.total };
+  // Only save if this is a new high score for today
+  const existingDay = G.history[k];
+  if (!existingDay || G.pts > (existingDay.pts || 0)) {
+    G.history[k] = { pts:G.pts, bonus:G.bonusPts, words:[...G.found], streak:G.streak, xpEarned:xpResult.total };
+  }
+
+  // Reset replay flags
+  G.isReplay = false;
+  G.replayPrevScore = 0;
+
   document.getElementById("streakNum").textContent = G.streak;
   saveStoreAndSync(); updatePanel(); updateXpUI(); updateDiffButtons();
 
@@ -1183,10 +1264,22 @@ function showEnd(pts, bonusPts, words, streak, showXp, xpResult, newRank) {
   }
 
   document.getElementById("endOv").classList.remove("off");
-}
 
-// ══════════════════════════════════════════════════
-//  WORD SUBMISSION
+  // Render score card preview into share sheet
+  setTimeout(() => {
+    const preview = document.getElementById("scoreCardPreview");
+    if (preview) {
+      try {
+        const card = buildScoreCard();
+        card.style.width = "100%";
+        card.style.height = "auto";
+        card.style.display = "block";
+        preview.innerHTML = "";
+        preview.appendChild(card);
+      } catch(e) { preview.style.display = "none"; }
+    }
+  }, 80);
+}
 // ══════════════════════════════════════════════════
 document.getElementById("wordIn").addEventListener("keydown", function(e) {
   if (e.key === "Enter") submit();
@@ -1347,26 +1440,260 @@ function pulseP() { const e = document.getElementById("wordIn"); e.classList.add
 // ══════════════════════════════════════════════════
 //  SHARE
 // ══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
+//  SCORE CARD — canvas image generator
+// ══════════════════════════════════════════════════
+function buildScoreCard() {
+  const canvas = document.createElement('canvas');
+  const W = 640, H = 380;
+  canvas.width = W * 2; canvas.height = H * 2; // 2x for retina
+  const ctx = canvas.getContext('2d');
+  ctx.scale(2, 2);
+
+  const max = totalPossiblePoints(G.possible);
+  const pct = max > 0 ? Math.round((G.pts / max) * 100) : 0;
+  const rank = getRankFromXp(G.totalXp);
+
+  // ── Background — warm cream ──
+  ctx.fillStyle = '#f5f0e4';
+  ctx.fillRect(0, 0, W, H);
+
+  // Subtle grid pattern
+  ctx.strokeStyle = 'rgba(0,0,0,.04)';
+  ctx.lineWidth = 1;
+  for (let x = 0; x < W; x += 24) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+  for (let y = 0; y < H; y += 24) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+
+  // ── Top gold bar ──
+  ctx.fillStyle = '#f5c842';
+  ctx.fillRect(0, 0, W, 6);
+
+  // ── Logo area ──
+  ctx.fillStyle = '#1a1200';
+  ctx.font = 'bold 28px Georgia, serif';
+  ctx.fillText('🎰', 28, 52);
+  ctx.fillStyle = '#b8860b';
+  ctx.font = 'bold 26px Georgia, serif';
+  ctx.fillText('NestWord', 62, 52);
+  ctx.fillStyle = '#5a4f30';
+  ctx.font = '12px monospace';
+  ctx.fillText('DAILY WORD CASINO · ALL SPARK', 62, 68);
+
+  // Date top right
+  ctx.fillStyle = '#7a6f50';
+  ctx.font = '11px monospace';
+  ctx.textAlign = 'right';
+  ctx.fillText(getTodayDateStr(), W - 24, 52);
+  ctx.textAlign = 'left';
+
+  // ── Divider ──
+  ctx.strokeStyle = '#d4c090';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(24, 82); ctx.lineTo(W - 24, 82); ctx.stroke();
+
+  // ── The word ──
+  const wordStr = G.word.toUpperCase();
+  ctx.font = 'bold 38px Georgia, serif';
+  const wMeasure = ctx.measureText(wordStr);
+  // Colour each letter alternating gold/dark for style
+  const letterColors = ['#b8860b','#1a1200'];
+  let lx = (W - wMeasure.width) / 2;
+  ctx.font = 'bold 38px Georgia, serif';
+  for (let i = 0; i < wordStr.length; i++) {
+    ctx.fillStyle = letterColors[i % 2];
+    const ch = wordStr[i];
+    ctx.fillText(ch, lx, 126);
+    lx += ctx.measureText(ch).width;
+  }
+
+  // ── Score box ──
+  const boxX = 24, boxY = 144, boxW = 180, boxH = 80;
+  ctx.fillStyle = '#fff8e8';
+  roundRect(ctx, boxX, boxY, boxW, boxH, 10);
+  ctx.fillStyle = '#d4c090';
+  ctx.lineWidth = 1.5;
+  ctx.strokeStyle = '#d4c090';
+  roundRectStroke(ctx, boxX, boxY, boxW, boxH, 10);
+
+  ctx.fillStyle = '#b8860b';
+  ctx.font = 'bold 42px Georgia, serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(G.pts, boxX + boxW / 2, boxY + 44);
+  ctx.fillStyle = '#7a6f50';
+  ctx.font = '12px monospace';
+  ctx.fillText('/ ' + max + ' pts', boxX + boxW / 2, boxY + 62);
+  ctx.textAlign = 'left';
+
+  // ── Pct badge ──
+  const pctX = 220, pctY = 144;
+  ctx.fillStyle = pct >= 75 ? '#1a6b3a' : pct >= 50 ? '#b8860b' : '#5a4f30';
+  ctx.font = 'bold 46px Georgia, serif';
+  ctx.fillText(pct + '%', pctX, pctY + 46);
+  ctx.fillStyle = '#7a6f50';
+  ctx.font = '12px monospace';
+  ctx.fillText('of max possible', pctX, pctY + 64);
+
+  // ── Stats row ──
+  const stats = [
+    { label: 'WORDS', val: G.found.length },
+    { label: 'STREAK', val: G.streak + '🔥' },
+    { label: 'CHAINS', val: G.quickCount || 0 },
+  ];
+  const statStartX = 24, statY = 250, statW = 120;
+  stats.forEach((s, i) => {
+    const sx = statStartX + i * (statW + 10);
+    ctx.fillStyle = '#fff8e8';
+    roundRect(ctx, sx, statY, statW, 56, 8);
+    ctx.strokeStyle = '#d4c090'; ctx.lineWidth = 1;
+    roundRectStroke(ctx, sx, statY, statW, 56, 8);
+    ctx.fillStyle = '#1a1200';
+    ctx.font = 'bold 26px Georgia, serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(String(s.val), sx + statW / 2, statY + 30);
+    ctx.fillStyle = '#7a6f50';
+    ctx.font = '10px monospace';
+    ctx.fillText(s.label, sx + statW / 2, statY + 46);
+  });
+  ctx.textAlign = 'left';
+
+  // ── Rank badge ──
+  const rankX = 420, rankY = 144;
+  ctx.fillStyle = '#fff8e8';
+  roundRect(ctx, rankX, rankY, 196, 80, 10);
+  ctx.strokeStyle = '#f5c842'; ctx.lineWidth = 2;
+  roundRectStroke(ctx, rankX, rankY, 196, 80, 10);
+  ctx.font = '32px serif';
+  ctx.fillText(rank.ico, rankX + 14, rankY + 46);
+  ctx.fillStyle = '#b8860b';
+  ctx.font = 'bold 18px Georgia, serif';
+  ctx.fillText(rank.name, rankX + 58, rankY + 36);
+  ctx.fillStyle = '#7a6f50';
+  ctx.font = '11px monospace';
+  ctx.fillText('Level ' + rank.level + ' · ' + G.totalXp + ' XP', rankX + 58, rankY + 56);
+
+  // ── Challenge banner ──
+  ctx.fillStyle = '#f5c842';
+  roundRect(ctx, 24, 322, W - 48, 38, 8);
+  ctx.fillStyle = '#1a1200';
+  ctx.font = 'bold 16px Georgia, serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('🎲 Can you beat ' + G.pts + '/' + max + ' pts? Play free at playnestword.com', W / 2, 346);
+  ctx.textAlign = 'left';
+
+  // ── Bottom gold bar ──
+  ctx.fillStyle = '#f5c842';
+  ctx.fillRect(0, H - 6, W, 6);
+
+  return canvas;
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+  ctx.fill();
+}
+
+function roundRectStroke(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+  ctx.stroke();
+}
+
+// Convert canvas to blob
+function canvasToBlob(canvas) {
+  return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+}
+
 function buildShareText() {
   const max = totalPossiblePoints(G.possible);
   const pct = max > 0 ? Math.round((G.pts / max) * 100) : 0;
   const rank = getRankFromXp(G.totalXp);
   return "🎰 NestWord Daily — " + getTodayDateStr() + "\n" +
-    "Today's word: " + G.word + "\n" +
     "Score: " + G.pts + "/" + max + " pts (" + pct + "%)\n" +
-    "Words: " + G.found.length + " found | Bonus ★: " + G.bonusPts + " pts | " + G.streak + "🔥 streak\n" +
-    rank.ico + " Rank: " + rank.name + "\n" +
+    "Words: " + G.found.length + " · Streak: " + G.streak + "🔥 · " + rank.ico + " " + rank.name + "\n" +
     "Can you beat me? 👉 https://playnestword.com";
 }
-function shareFB() { window.open("https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent("https://playnestword.com") + "&quote=" + encodeURIComponent(buildShareText()), "_blank", "width=600,height=400"); showSM("Opening Facebook..."); }
-function shareWA() { window.open("https://wa.me/?text=" + encodeURIComponent(buildShareText()), "_blank"); showSM("Opening WhatsApp..."); }
-function shareSMS() { window.location.href = "sms:?body=" + encodeURIComponent(buildShareText()); showSM("Opening Messages..."); }
-function shareTT() { shareCopy(); showSM("Copied! Paste as your TikTok caption."); }
-function shareCopy() {
+
+// Try Web Share API with image first, fall back to URL share
+async function shareWithCard(platform) {
+  const canvas = buildScoreCard();
+  const blob = await canvasToBlob(canvas);
+  const file = new File([blob], 'nestword-score.png', { type: 'image/png' });
   const txt = buildShareText();
-  if (navigator.clipboard) { navigator.clipboard.writeText(txt).then(() => showSM("✓ Copied! Paste anywhere.")); }
-  else { const ta = document.createElement("textarea"); ta.value = txt; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); document.body.removeChild(ta); showSM("✓ Copied!"); }
+
+  // Web Share API — works on mobile, shares image natively
+  if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({ files: [file], title: 'NestWord Score', text: txt });
+      showSM('Shared!'); return;
+    } catch(e) { /* fall through */ }
+  }
+
+  // Desktop fallback per platform
+  if (platform === 'fb') {
+    // Download image + open FB
+    downloadCard(canvas);
+    setTimeout(() => window.open("https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent("https://playnestword.com"), "_blank", "width=600,height=400"), 600);
+    showSM('Image downloaded — attach it to your post!');
+  } else if (platform === 'wa') {
+    window.open("https://wa.me/?text=" + encodeURIComponent(txt), "_blank");
+    downloadCard(canvas);
+    showSM('Image downloaded — attach in WhatsApp!');
+  } else if (platform === 'sms') {
+    window.location.href = "sms:?body=" + encodeURIComponent(txt);
+  } else if (platform === 'tt') {
+    await copyCardToClipboard(canvas, txt);
+    showSM('Image + text copied — paste into TikTok!');
+  } else {
+    await copyCardToClipboard(canvas, txt);
+  }
 }
+
+async function copyCardToClipboard(canvas, txt) {
+  try {
+    const blob = await canvasToBlob(canvas);
+    await navigator.clipboard.write([
+      new ClipboardItem({ 'image/png': blob })
+    ]);
+    showSM('✓ Score card image copied to clipboard!');
+  } catch(e) {
+    // Clipboard image not supported — copy text + download image
+    downloadCard(canvas);
+    if (navigator.clipboard) navigator.clipboard.writeText(txt);
+    showSM('✓ Image downloaded + text copied!');
+  }
+}
+
+function downloadCard(canvas) {
+  const link = document.createElement('a');
+  link.download = 'nestword-' + G.word.toLowerCase() + '-' + G.pts + 'pts.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+function shareFB()   { shareWithCard('fb'); }
+function shareWA()   { shareWithCard('wa'); }
+function shareSMS()  { shareWithCard('sms'); }
+function shareTT()   { shareWithCard('tt'); }
+function shareCopy() { shareWithCard('copy'); }
 function showSM(msg) { const el = document.getElementById("shareMsg"); el.textContent = msg; setTimeout(() => { el.textContent = ""; }, 3500); }
 
 // ══════════════════════════════════════════════════
