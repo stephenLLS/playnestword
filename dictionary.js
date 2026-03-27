@@ -215,5 +215,22 @@ const DICTIONARY = new Set([
 "prowled","drafted","crawled","sprawls","screwed","strewed","scarred","sprawled",
 // ── Added v3: additional missing words ──
 "rear","sear","pear","seal","veal","bead","lead","mead","seam","ream","team","moan",
-"gnaw","thaw","skew","spew","ears","cock","hock","jock","cloak","croak","frock","smock"
+"gnaw","thaw","skew","spew","ears","cock","hock","jock","cloak","croak","frock","smock",
+// ── Added v4: common gameplay words ──
+"thin","hers","thing","shine","thins","siren","reins","grins","hires","nicer","singe",
+"rinse","inset","might","right","tight","write","sting","sling","swing","prong","wrong",
+"among","spine","twine","whine","think","things","shines","shined","shiner","shrine",
+"sirens","singed","singer","ginger","rinser","hinges","hinged","insets","tigers","nights",
+"mights","sights","rights","lights","fights","knight","flight","blight","slight","plight",
+"bright","fright","writes","writer","sprite","stripe","strive","thrive","string","spring",
+"stings","brings","clings","flings","slings","swings","wrings","prongs","wrongs","stoner",
+"throne","prunes","spines","whines","divine","bovine","feline","canine","define","refine",
+"thinks","wander","wonder","ponder","tender","gender","render","sender","fender","bender",
+"member","timber","number","lumber","humble","tumble","rumble","shrines","tighter",
+"knights","flights","thrones","incline","recline","decline","outline","hotline","airline",
+"thinker","thinner","thunder","blender","plumber","stumble","grumble","crumble","slender",
+"blunder","plunder","founder","founder","flounder","shoulder","beholder","reminder",
+"splinter","sprinter","printing","printing","stringer","swinger","clinger","flinger",
+"wringer","stronger","stranger","stringent","tighten","lighten","frighten","brighten",
+"enlighten","tightened","brightened","frightened"
 ]);
