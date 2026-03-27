@@ -310,7 +310,6 @@ function buildThemePills() {
   QUEST_THEMES.forEach((th,i) => {
     const unlocked = themeUnlocked(i);
     const pill = document.createElement('div');
-    pill.className = 'th-pill'+(th.id===QS.themeId?' active':'')+(unlocked?'',' locked');
     pill.className = 'th-pill'+(th.id===QS.themeId?' active':'')+(!unlocked?' locked':'');
     const doneCount = countThemeDone(th.id);
     pill.innerHTML = th.emoji+' '+th.name+' <span style="opacity:.6;font-size:9px;">'+doneCount+'</span>';

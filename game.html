@@ -700,7 +700,7 @@ footer{width:100%;max-width:640px;margin-top:32px;padding-top:16px;border-top:2p
     <div class="modal-corner"></div><div class="modal-corner"></div>
     <div class="modal-corner"></div><div class="modal-corner"></div>
     <a href="index.html" style="position:absolute;top:18px;left:18px;width:28px;height:28px;border-radius:50%;background:var(--panel2);border:2px solid var(--rim);display:flex;align-items:center;justify-content:center;text-decoration:none;color:var(--tx2);font-size:14px;transition:all var(--tr);" title="Home">←</a>
-    <div class="m-ico" id="stIco">🎰</div>
+    <div class="m-ico" id="stIco">📝</div>
     <div class="m-ttl">NestWord</div>
     <div class="m-sub" id="stSub">Find as many words hidden inside today's word as you can. Bonus points for consecutive letters — forward or reverse!</div>
     <div class="m-word" id="stWord" style="letter-spacing:8px;color:var(--tx2);font-size:22px;">— — —</div>
@@ -786,7 +786,7 @@ footer{width:100%;max-width:640px;margin-top:32px;padding-top:16px;border-top:2p
       <tr><td>6+ letters</td><td class="g">5 pts</td><td class="p">12 pts</td><td class="p">18 pts</td></tr>
     </table>
     <div class="how-row" style="margin-top:12px;"><div class="how-n">5</div><div class="how-t">You have <strong>90 seconds</strong> (60s Hard · 45s Blitz). Earn XP to rank up and unlock new modes!</div></div>
-    <button class="btn-p" onclick="closeHow()" style="margin-top:14px;">🎲 LET'S PLAY!</button>
+    <button class="btn-p" onclick="closeHow()" style="margin-top:14px;">▶ LET'S PLAY!</button>
   </div>
 </div>
 
@@ -1372,8 +1372,8 @@ function showEnd(pts, bonusPts, words, streak, showXp, xpResult, newRank) {
   const pct = max > 0 ? Math.round((pts / max) * 100) : 0;
   let ico = "🌱", ttl = "KEEP PLAYING!";
   if (pct >= 80) { ico = "🏆"; ttl = "JACKPOT!"; }
-  else if (pct >= 60) { ico = "🎰"; ttl = "BIG WINNER!"; }
-  else if (pct >= 40) { ico = "🎲"; ttl = "NICE ROLL!"; }
+  else if (pct >= 60) { ico = "🌟"; ttl = "GREAT WORK!"; }
+  else if (pct >= 40) { ico = "💡"; ttl = "NICE FIND!"; }
   else if (pct >= 20) { ico = "🃏"; ttl = "GETTING WARM!"; }
   document.getElementById("endIco").textContent = ico;
   document.getElementById("endTtl").textContent = ttl;
@@ -1615,7 +1615,7 @@ function buildScoreCard() {
   // ── Logo area ──
   ctx.fillStyle = '#1a1200';
   ctx.font = 'bold 28px Georgia, serif';
-  ctx.fillText('🎰', 28, 52);
+  ctx.fillText('📝', 28, 52);
   ctx.fillStyle = '#b8860b';
   ctx.font = 'bold 26px Georgia, serif';
   ctx.fillText('NestWord', 62, 52);
@@ -1721,7 +1721,7 @@ function buildScoreCard() {
   ctx.fillStyle = '#1a1200';
   ctx.font = 'bold 16px Georgia, serif';
   ctx.textAlign = 'center';
-  ctx.fillText('🎲 Can you beat ' + G.pts + '/' + max + ' pts? Play free at playnestword.com', W / 2, 346);
+  ctx.fillText('Can you beat ' + G.pts + '/' + max + ' pts? Play free at playnestword.com', W / 2, 346);
   ctx.textAlign = 'left';
 
   // ── Bottom gold bar ──
@@ -1770,7 +1770,7 @@ function buildShareText() {
   const max = totalPossiblePoints(G.possible);
   const pct = max > 0 ? Math.round((G.pts / max) * 100) : 0;
   const rank = getRankFromXp(G.totalXp);
-  return "🎰 NestWord Daily — " + getTodayDateStr() + "\n" +
+  return "NestWord Daily — " + getTodayDateStr() + "\n" +
     "Score: " + G.pts + "/" + max + " pts (" + pct + "%)\n" +
     "Words: " + G.found.length + " · Streak: " + G.streak + "🔥 · " + rank.ico + " " + rank.name + "\n" +
     "Can you beat me? 👉 https://playnestword.com";
@@ -1907,6 +1907,11 @@ function showUnlockToast(ico, title, sub) {
 //  ACCOUNT PANEL
 // ══════════════════════════════════════════════════
 function openPanel() { document.getElementById("aPanel").classList.add("open"); updatePanel(); }
+
+// Auto-open profile panel if arriving via #profile link
+if (window.location.hash === '#profile') {
+  window.addEventListener('load', () => { setTimeout(openPanel, 400); });
+}
 function closePanel() { document.getElementById("aPanel").classList.remove("open"); }
 
 function updatePanel() {
@@ -2002,7 +2007,7 @@ function showTryAgainAd() {
     if (secs <= 0) {
       clearInterval(tryAgainIv);
       btn.disabled = false; btn.style.opacity = "1";
-      btn.innerHTML = "🎲 Play Again!";
+      btn.innerHTML = "▶ Play Again!";
     }
   }, 1000);
 }
