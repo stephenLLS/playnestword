@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NestWord — Daily Word Casino</title>
-<meta name="description" content="The daily word game where hidden words pay out big. Free to play. New word every day.">
-<meta property="og:title" content="NestWord — Daily Word Casino">
-<meta property="og:description" content="Find words hidden inside today's NestWord. Bonus points for consecutive letters!">
+<title>NestWord — Daily Word Game</title>
+<meta name="description" content="Find words hidden inside today's word. Rearrange letters for bonus points. Free daily word game.">
+<meta property="og:title" content="NestWord — Daily Word Game">
+<meta property="og:description" content="Find words hidden inside today's NestWord. Rearrange letters for bonus points. Free to play daily.">
 <meta property="og:url" content="https://playnestword.com">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Share+Tech+Mono&family=Fredoka+One&display=swap" rel="stylesheet">
@@ -38,7 +38,14 @@
   --ng:#0d5c26; --nb:#1530a0; --np:#6b1590;
   --suits:rgba(0,0,0,.05);
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+/* ── LETTER BACKGROUND ── */
+.letters-bg{position:fixed;inset:0;z-index:0;pointer-events:none;display:flex;flex-direction:column;gap:50px;justify-content:center;overflow:hidden;}
+.letters-row{font-size:18px;color:var(--suits);white-space:nowrap;letter-spacing:18px;font-family:var(--mo);font-weight:700;animation:drift 80s linear infinite;}
+.letters-row:nth-child(even){animation-direction:reverse;letter-spacing:22px;}
+@keyframes drift{from{transform:translateX(0)}to{transform:translateX(-40%)}}
+
+/* ── NAV LOGO ICON ── */
+.nav-logo-icon{width:44px;height:44px;flex-shrink:0;}
 body{
   background:var(--bg);color:var(--tx);font-family:var(--fn2);
   min-height:100vh;display:flex;flex-direction:column;align-items:center;
@@ -49,9 +56,6 @@ body::before{
   background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.025) 3px,rgba(0,0,0,.025) 4px);
   pointer-events:none;z-index:0;
 }
-.suits-bg{position:fixed;inset:0;z-index:0;pointer-events:none;display:flex;flex-direction:column;gap:70px;justify-content:center;overflow:hidden;}
-.suits-row{font-size:90px;color:var(--suits);white-space:nowrap;letter-spacing:34px;animation:drift 70s linear infinite;}
-.suits-row:nth-child(even){animation-direction:reverse;}
 @keyframes drift{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
 /* ── NAV ── */
@@ -205,18 +209,31 @@ footer{
 </style>
 </head>
 <body>
-<div class="suits-bg" aria-hidden="true">
-  <div class="suits-row">♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣</div>
-  <div class="suits-row">♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠</div>
-  <div class="suits-row">♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣</div>
+<!-- Letter pattern background -->
+<div class="letters-bg" aria-hidden="true">
+  <div class="letters-row">N E S T W O R D N E S T W O R D N E S T W O R D N E S T W O R D N E S T W O R D N E S T W O R D</div>
+  <div class="letters-row">W O R D S H I D D E N I N S I D E W O R D S H I D D E N I N S I D E W O R D S H I D D E N</div>
+  <div class="letters-row">F I N D R E A R R A N G E S C O R E F I N D R E A R R A N G E S C O R E F I N D R E A R</div>
+  <div class="letters-row">N E S T W O R D N E S T W O R D N E S T W O R D N E S T W O R D N E S T W O R D N E S T</div>
 </div>
 
 <nav>
   <div class="nav-logo">
-    <div class="nav-logo-icon">🎰</div>
+    <div class="nav-logo-icon">
+      <!-- NestWord logo: letters nesting inside each other -->
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="36" height="36" rx="8" fill="var(--gold-d)" stroke="var(--gold-b)" stroke-width="1.5"/>
+        <!-- Outer W shape -->
+        <text x="4" y="26" font-family="Georgia,serif" font-size="22" font-weight="700" fill="var(--gold)" opacity="0.3">W</text>
+        <!-- Inner N nestled inside -->
+        <text x="9" y="23" font-family="Georgia,serif" font-size="15" font-weight="700" fill="var(--gold)">N</text>
+        <!-- Small dot accent -->
+        <circle cx="28" cy="10" r="3" fill="var(--gold)" opacity="0.6"/>
+      </svg>
+    </div>
     <div>
       <div class="nav-logo-name">NestWord</div>
-      <div class="nav-logo-tag">DAILY WORD CASINO · ALL SPARK</div>
+      <div class="nav-logo-tag">FIND · REARRANGE · SCORE · ALL SPARK</div>
     </div>
   </div>
   <div class="nav-r">
@@ -224,7 +241,7 @@ footer{
       <button class="tt-opt" id="ttDark" onclick="setTheme('dark')">🌙</button>
       <button class="tt-opt active" id="ttLight" onclick="setTheme('light')">☀️</button>
     </div>
-    <a href="game.html" class="nav-btn primary">🎲 Play Now</a>
+    <a href="game.html" class="nav-btn primary" id="profileBtn">👤 Profile</a>
   </div>
 </nav>
 
@@ -238,14 +255,14 @@ footer{
   <div class="hero-word" id="heroWord"></div>
 
   <div class="hero-btns">
-    <a href="game.html" class="hbtn hbtn-primary">🎰 Play Word of the Day</a>
-    <a href="quest.html" class="hbtn hbtn-secondary">⚔️ Continue Word Quest</a>
+    <a href="game.html" class="hbtn hbtn-primary">▶ Play Word of the Day</a>
+    <a href="quest.html" class="hbtn hbtn-secondary">⚔ Continue Word Quest</a>
   </div>
 </section>
 
 <!-- HOW IT WORKS -->
 <section class="how-section">
-  <div class="section-title">♣ How It Works</div>
+  <div class="section-title">How It Works</div>
   <div class="how-grid">
     <div class="how-card">
       <div class="how-card-ico">🔤</div>
@@ -267,7 +284,7 @@ footer{
 
 <!-- WORD QUEST PREVIEW -->
 <section class="quest-section">
-  <div class="section-title">⚔️ Word Quest</div>
+  <div class="section-title">Word Quest</div>
   <p style="text-align:center;font-family:var(--mo);font-size:12px;color:var(--tx2);margin-bottom:20px;">
     Progress through chapters — 25 words each, getting harder as you go.
   </p>
@@ -275,13 +292,13 @@ footer{
     <!-- populated by JS -->
   </div>
   <div style="text-align:center;margin-top:20px;">
-    <a href="quest.html" class="hbtn hbtn-secondary" style="display:inline-flex;">⚔️ Open Word Quest</a>
+    <a href="quest.html" class="hbtn hbtn-secondary" style="display:inline-flex;">⚔ Open Word Quest</a>
   </div>
 </section>
 
 <!-- LEADERBOARD -->
 <section class="lb-section">
-  <div class="section-title">🏆 Top Scores Today</div>
+  <div class="section-title">Top Scores Today</div>
   <div class="lb-tabs">
     <button class="lb-tab active" onclick="loadLB('today',this)">Today</button>
     <button class="lb-tab" onclick="loadLB('week',this)">This Week</button>

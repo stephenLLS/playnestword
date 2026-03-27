@@ -77,10 +77,10 @@ body::before{
   pointer-events:none;z-index:900;
 }
 
-.suits-bg{position:fixed;inset:0;z-index:0;pointer-events:none;display:flex;flex-direction:column;gap:60px;justify-content:center;overflow:hidden;}
-.suits-row{font-size:80px;color:var(--suits);white-space:nowrap;letter-spacing:30px;animation:drift 60s linear infinite;}
-.suits-row:nth-child(even){animation-direction:reverse;}
-@keyframes drift{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.letters-bg{position:fixed;inset:0;z-index:0;pointer-events:none;display:flex;flex-direction:column;gap:50px;justify-content:center;overflow:hidden;}
+.letters-row{font-size:16px;color:var(--suits);white-space:nowrap;letter-spacing:16px;font-family:var(--mo);font-weight:700;animation:drift 80s linear infinite;}
+.letters-row:nth-child(even){animation-direction:reverse;letter-spacing:20px;}
+.logo-icon{width:40px;height:40px;flex-shrink:0;}@keyframes drift{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
 /* ── HEADER ── */
 header{
@@ -338,9 +338,8 @@ footer{width:100%;max-width:640px;margin-top:32px;padding-top:16px;border-top:2p
 ══════════════════════════════════════════════════ */
 .ov{position:fixed;inset:0;background:rgba(7,7,15,.92);display:flex;align-items:center;justify-content:center;z-index:950;padding:14px;backdrop-filter:blur(6px);}
 [data-theme="light"] .ov{background:rgba(220,210,190,.92);}
-.modal{background:var(--panel);border:2px solid var(--rim2);border-radius:var(--r2);padding:28px 24px;max-width:440px;width:100%;text-align:center;max-height:92vh;overflow-y:auto;position:relative;z-index:951;}
 .ov.off{display:none;}
-.modal{background:var(--panel);border:2px solid var(--rim2);border-radius:var(--r2);padding:28px 24px;max-width:440px;width:100%;text-align:center;max-height:92vh;overflow-y:auto;position:relative;}
+.modal{background:var(--panel);border:2px solid var(--rim2);border-radius:var(--r2);padding:28px 24px;max-width:440px;width:100%;text-align:center;max-height:92vh;overflow-y:auto;position:relative;z-index:951;}
 .modal-corner{position:absolute;width:10px;height:10px;border-radius:50%;background:var(--gold);animation:bulb-blink 2s infinite;}
 .modal-corner:nth-child(1){top:10px;left:10px;} .modal-corner:nth-child(2){top:10px;right:10px;animation-delay:.5s;}
 .modal-corner:nth-child(3){bottom:10px;left:10px;animation-delay:1s;} .modal-corner:nth-child(4){bottom:10px;right:10px;animation-delay:1.5s;}
@@ -523,20 +522,27 @@ footer{width:100%;max-width:640px;margin-top:32px;padding-top:16px;border-top:2p
 </head>
 <body>
 
-<div class="suits-bg" aria-hidden="true">
-  <div class="suits-row">♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣</div>
-  <div class="suits-row">♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠</div>
-  <div class="suits-row">♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣</div>
-  <div class="suits-row">♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠</div>
+<div class="letters-bg" aria-hidden="true">
+  <div class="letters-row">N E S T W O R D N E S T W O R D N E S T W O R D N E S T W O R D N E S T W O R D N E S T W O R D</div>
+  <div class="letters-row">F I N D R E A R R A N G E S C O R E F I N D R E A R R A N G E S C O R E F I N D R E A R R A N G E</div>
+  <div class="letters-row">W O R D S H I D D E N I N S I D E W O R D S H I D D E N I N S I D E W O R D S H I D D E N</div>
+  <div class="letters-row">N E S T W O R D N E S T W O R D N E S T W O R D N E S T W O R D N E S T W O R D N E S T W O R D</div>
 </div>
 
 <header>
   <div class="logo">
     <a href="index.html" style="text-decoration:none;display:flex;align-items:center;gap:10px;">
-    <div class="logo-icon">🎰</div>
+    <div class="logo-icon">
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="40" height="40" rx="8" fill="var(--gold-d)" stroke="var(--gold-b)" stroke-width="1.5"/>
+        <text x="4" y="29" font-family="Georgia,serif" font-size="24" font-weight="700" fill="var(--gold)" opacity="0.25">W</text>
+        <text x="10" y="26" font-family="Georgia,serif" font-size="16" font-weight="700" fill="var(--gold)">N</text>
+        <circle cx="31" cy="11" r="3" fill="var(--gold)" opacity="0.5"/>
+      </svg>
+    </div>
     <div class="logo-text">
       <span class="logo-name">NestWord</span>
-      <span class="logo-tag">DAILY WORD CASINO · ALL SPARK</span>
+      <span class="logo-tag">DAILY WORD GAME · ALL SPARK</span>
     </div>
     </a>
   </div>
@@ -557,12 +563,12 @@ footer{width:100%;max-width:640px;margin-top:32px;padding-top:16px;border-top:2p
 
 <div class="marquee-wrap">
   <div class="marquee-inner">
-    <span>♠ PLAY TODAY'S NESTWORD</span><span class="hi">★ BONUS POINTS FOR CONSECUTIVE LETTERS ★</span>
-    <span>♥ FIND WORDS FORWARD AND REVERSE</span><span class="hi">♦ DAILY NEW WORD AT MIDNIGHT ♦</span>
-    <span>♣ SHARE YOUR SCORE AND CHALLENGE FRIENDS</span><span class="hi">★ PLAY FREE AT PLAYNESTWORD.COM ★</span>
-    <span>♠ PLAY TODAY'S NESTWORD</span><span class="hi">★ BONUS POINTS FOR CONSECUTIVE LETTERS ★</span>
-    <span>♥ FIND WORDS FORWARD AND REVERSE</span><span class="hi">♦ DAILY NEW WORD AT MIDNIGHT ♦</span>
-    <span>♣ SHARE YOUR SCORE AND CHALLENGE FRIENDS</span><span class="hi">★ PLAY FREE AT PLAYNESTWORD.COM ★</span>
+    <span>PLAY TODAY'S NESTWORD</span><span class="hi">REARRANGE LETTERS FOR BONUS POINTS</span>
+    <span>FIND WORDS HIDDEN INSIDE</span><span class="hi">NEW WORD EVERY DAY AT MIDNIGHT</span>
+    <span>CHALLENGE YOUR FRIENDS</span><span class="hi">FREE TO PLAY AT PLAYNESTWORD.COM</span>
+    <span>PLAY TODAY'S NESTWORD</span><span class="hi">REARRANGE LETTERS FOR BONUS POINTS</span>
+    <span>FIND WORDS HIDDEN INSIDE</span><span class="hi">NEW WORD EVERY DAY AT MIDNIGHT</span>
+    <span>CHALLENGE YOUR FRIENDS</span><span class="hi">FREE TO PLAY AT PLAYNESTWORD.COM</span>
   </div>
 </div>
 
@@ -693,19 +699,19 @@ footer{width:100%;max-width:640px;margin-top:32px;padding-top:16px;border-top:2p
   <div class="modal">
     <div class="modal-corner"></div><div class="modal-corner"></div>
     <div class="modal-corner"></div><div class="modal-corner"></div>
-    <a href="index.html" style="position:absolute;top:12px;left:12px;width:28px;height:28px;border-radius:50%;background:var(--panel2);border:2px solid var(--rim);display:flex;align-items:center;justify-content:center;text-decoration:none;color:var(--tx2);font-size:14px;transition:all var(--tr);" title="Home">←</a>
+    <a href="index.html" style="position:absolute;top:18px;left:18px;width:28px;height:28px;border-radius:50%;background:var(--panel2);border:2px solid var(--rim);display:flex;align-items:center;justify-content:center;text-decoration:none;color:var(--tx2);font-size:14px;transition:all var(--tr);" title="Home">←</a>
     <div class="m-ico" id="stIco">🎰</div>
     <div class="m-ttl">NestWord</div>
     <div class="m-sub" id="stSub">Find as many words hidden inside today's word as you can. Bonus points for consecutive letters — forward or reverse!</div>
     <div class="m-word" id="stWord" style="letter-spacing:8px;color:var(--tx2);font-size:22px;">— — —</div>
     <div class="m-theme" id="stTheme"></div>
     <div style="font-size:12px;color:var(--tx2);font-family:var(--mo);margin-bottom:16px;" id="stWordLen"></div>
-    <button class="btn-p" id="stBtn" onclick="startGame()">🎲 PLAY TODAY'S WORD</button>
+    <button class="btn-p" id="stBtn" onclick="startGame()">▶ PLAY TODAY'S WORD</button>
     <button class="btn-s" id="tryBetterBtn" style="display:none;" onclick="">🔄 Try for Better Score</button>
     <button class="btn-s" onclick="showHow()">How to Play</button>
     <div style="font-size:11px;color:var(--tx2);font-family:var(--mo);margin-top:10px;line-height:1.7;">
       Min 3 letters · Real English words · No proper nouns<br>
-      ★ Consecutive letters forward or reverse = 2× points
+      🔀 Rearranged letters score more · 50/75/100% bonus stacks
     </div>
   </div>
 </div>
@@ -1615,7 +1621,7 @@ function buildScoreCard() {
   ctx.fillText('NestWord', 62, 52);
   ctx.fillStyle = '#5a4f30';
   ctx.font = '12px monospace';
-  ctx.fillText('DAILY WORD CASINO · ALL SPARK', 62, 68);
+  ctx.fillText('DAILY WORD GAME · ALL SPARK', 62, 68);
 
   // Date top right
   ctx.fillStyle = '#7a6f50';
