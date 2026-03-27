@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,37 +12,48 @@
 <script src="words.js"></script>
 <script src="dictionary.js"></script>
 <style>
+/* ══════════════════════════════════════════════════
+   THEME TOKENS
+══════════════════════════════════════════════════ */
 :root {
-  --bg:#07070f;
-  --felt:#0c150e;
-  --panel:#10101e;
-  --panel2:#181830;
-  --panel3:#20203c;
-  --rim:#2c2c52;
-  --rim2:#3e3e70;
-  --gold:#f5c842;
-  --gold2:#ffe066;
-  --gold-d:rgba(245,200,66,.13);
-  --gold-b:rgba(245,200,66,.38);
-  --ng:#3dff78;
-  --ng-d:rgba(61,255,120,.11);
-  --ng-b:rgba(61,255,120,.32);
-  --np:#d43dff;
-  --np-d:rgba(212,61,255,.13);
-  --np-b:rgba(212,61,255,.38);
-  --nr:#ff3d5a;
-  --nr-d:rgba(255,61,90,.12);
-  --nr-b:rgba(255,61,90,.36);
-  --nb:#3dc8ff;
-  --nb-d:rgba(61,200,255,.10);
-  --tx:#f0e8d0;
-  --tx2:#90886a;
-  --tx3:#50483a;
-  --fn:'Fredoka One',cursive;
-  --fn2:'Boogaloo',cursive;
+  /* shared accents */
+  --gold:#f5c842; --gold2:#ffe066;
+  --gold-d:rgba(245,200,66,.13); --gold-b:rgba(245,200,66,.38);
+  --ng:#1db954; --ng-d:rgba(29,185,84,.12); --ng-b:rgba(29,185,84,.35);
+  --np:#c026d3; --np-d:rgba(192,38,211,.12); --np-b:rgba(192,38,211,.35);
+  --nr:#e53e3e; --nr-d:rgba(229,62,62,.12); --nr-b:rgba(229,62,62,.35);
+  --nb:#2563eb; --nb-d:rgba(37,99,235,.12); --nb-b:rgba(37,99,235,.35);
+  --fn:'Fredoka One',cursive; --fn2:'Boogaloo',cursive;
   --mo:'Share Tech Mono',monospace;
-  --r:8px;--r2:14px;--tr:.16s ease;
+  --r:8px; --r2:14px; --tr:.16s ease;
 }
+
+/* ── DARK THEME (default) ── */
+[data-theme="dark"] {
+  --bg:#07070f; --felt:#0c150e;
+  --panel:#10101e; --panel2:#181830; --panel3:#20203c;
+  --rim:#2c2c52; --rim2:#3e3e70;
+  --tx:#f0e8d0; --tx2:#90886a; --tx3:#50483a;
+  --scan:rgba(0,0,0,.07);
+  --suits:rgba(255,255,255,.022);
+  --ng-text:#3dff78; --np-text:#d43dff; --nb-text:#3dc8ff;
+  --ng-bd:rgba(61,255,120,.32); --np-bd:rgba(212,61,255,.38); --nb-bd:rgba(61,200,255,.30);
+  --ng-bg:rgba(61,255,120,.11); --np-bg:rgba(212,61,255,.13); --nb-bg:rgba(61,200,255,.10);
+}
+
+/* ── LIGHT THEME ── */
+[data-theme="light"] {
+  --bg:#f4f0e8; --felt:#e8e0cc;
+  --panel:#fffef8; --panel2:#f0ebe0; --panel3:#e8e0cc;
+  --rim:#d4c9a8; --rim2:#b8a880;
+  --tx:#1a1400; --tx2:#5a4f30; --tx3:#9a8f6a;
+  --scan:rgba(0,0,0,.02);
+  --suits:rgba(0,0,0,.04);
+  --ng-text:#15803d; --np-text:#9333ea; --nb-text:#1d4ed8;
+  --ng-bd:rgba(21,128,61,.45); --np-bd:rgba(147,51,234,.45); --nb-bd:rgba(29,78,216,.45);
+  --ng-bg:rgba(21,128,61,.08); --np-bg:rgba(147,51,234,.08); --nb-bg:rgba(29,78,216,.08);
+}
+
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 
 body{
@@ -53,26 +64,17 @@ body{
   display:flex;flex-direction:column;align-items:center;
   padding:0 14px 80px;
   position:relative;overflow-x:hidden;
+  transition:background .25s, color .25s;
 }
 
-/* scanlines */
 body::before{
   content:'';position:fixed;inset:0;
-  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.07) 3px,rgba(0,0,0,.07) 4px);
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,var(--scan) 3px,var(--scan) 4px);
   pointer-events:none;z-index:900;
 }
 
-/* suit watermark */
-.suits-bg{
-  position:fixed;inset:0;z-index:0;pointer-events:none;
-  display:flex;flex-direction:column;gap:60px;justify-content:center;
-  overflow:hidden;
-}
-.suits-row{
-  font-size:80px;color:rgba(255,255,255,.022);
-  white-space:nowrap;letter-spacing:30px;
-  animation:drift 60s linear infinite;
-}
+.suits-bg{position:fixed;inset:0;z-index:0;pointer-events:none;display:flex;flex-direction:column;gap:60px;justify-content:center;overflow:hidden;}
+.suits-row{font-size:80px;color:var(--suits);white-space:nowrap;letter-spacing:30px;animation:drift 60s linear infinite;}
 .suits-row:nth-child(even){animation-direction:reverse;}
 @keyframes drift{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
@@ -85,385 +87,201 @@ header{
   border-bottom:2px solid var(--rim);
 }
 .logo{display:flex;align-items:center;gap:10px;}
-.logo-icon{
-  width:40px;height:40px;
-  background:var(--gold-d);
-  border:2px solid var(--gold-b);
-  border-radius:var(--r);
-  display:flex;align-items:center;justify-content:center;
-  font-size:22px;
-}
-.logo-text{
-  display:flex;flex-direction:column;line-height:1;
-}
-.logo-name{
-  font-family:var(--fn);font-size:26px;font-weight:400;
-  color:var(--gold);
-  text-shadow:0 0 20px rgba(245,200,66,.4);
-  letter-spacing:1px;
-}
+.logo-icon{width:40px;height:40px;background:var(--gold-d);border:2px solid var(--gold-b);border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:22px;}
+.logo-text{display:flex;flex-direction:column;line-height:1;}
+.logo-name{font-family:var(--fn);font-size:26px;font-weight:400;color:var(--gold);text-shadow:0 0 20px rgba(245,200,66,.3);letter-spacing:1px;}
 .logo-tag{font-size:11px;color:var(--tx2);font-family:var(--mo);letter-spacing:1px;}
 .hdr-r{display:flex;align-items:center;gap:8px;}
 
-.streak-chip{
-  display:flex;align-items:center;gap:5px;
-  background:var(--panel2);
-  border:2px solid var(--gold-b);
-  border-radius:20px;
-  padding:5px 12px;
-  font-family:var(--fn);font-size:16px;color:var(--gold);
-  cursor:pointer;
-  transition:all var(--tr);
-  text-shadow:0 0 10px rgba(245,200,66,.3);
-}
-.streak-chip:hover{background:var(--panel3);border-color:var(--gold);}
+.streak-chip{display:flex;align-items:center;gap:5px;background:var(--panel2);border:2px solid var(--gold-b);border-radius:20px;padding:5px 12px;font-family:var(--fn);font-size:16px;color:var(--gold);cursor:pointer;transition:all var(--tr);}
+.streak-chip:hover{background:var(--panel3);}
 
-.ico-btn{
-  width:34px;height:34px;border-radius:50%;
-  background:var(--panel2);border:2px solid var(--rim2);
-  color:var(--tx2);font-size:14px;font-weight:700;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;
-  font-family:var(--fn);transition:all var(--tr);
-}
+.ico-btn{width:34px;height:34px;border-radius:50%;background:var(--panel2);border:2px solid var(--rim2);color:var(--tx2);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:var(--fn);transition:all var(--tr);}
 .ico-btn:hover{background:var(--panel3);color:var(--tx);border-color:var(--gold-b);}
 
-/* ── MARQUEE BANNER ── */
-.marquee-wrap{
-  width:100%;max-width:640px;
-  margin-top:14px;
+/* ── THEME TOGGLE ── */
+.theme-toggle{
+  display:flex;align-items:center;gap:0;
+  background:var(--panel2);
+  border:2px solid var(--rim2);
+  border-radius:20px;
   overflow:hidden;
-  background:var(--panel);
-  border:2px solid var(--rim);
-  border-radius:var(--r);
-  position:relative;z-index:10;
+  padding:2px;
 }
-.marquee-inner{
-  display:flex;align-items:center;
-  white-space:nowrap;
-  animation:marquee 20s linear infinite;
-  padding:8px 0;
-  font-family:var(--mo);font-size:12px;color:var(--tx2);
-  letter-spacing:1px;
+.tt-opt{
+  padding:4px 10px;border-radius:16px;
+  font-size:13px;cursor:pointer;
+  transition:all var(--tr);
+  border:none;background:transparent;color:var(--tx2);
+  font-family:var(--mo);
+  line-height:1;
 }
+.tt-opt.active{background:var(--gold);color:#0a0a14;}
+.tt-opt:hover:not(.active){color:var(--tx);}
+
+/* level badge */
+.level-badge{display:flex;align-items:center;gap:5px;background:var(--panel2);border:2px solid var(--rim2);border-radius:20px;padding:5px 10px;font-family:var(--fn);font-size:13px;cursor:pointer;transition:all var(--tr);}
+.level-badge:hover{border-color:var(--gold-b);}
+.lb-name{color:var(--tx2);}
+
+/* ── MARQUEE ── */
+.marquee-wrap{width:100%;max-width:640px;margin-top:14px;overflow:hidden;background:var(--panel);border:2px solid var(--rim);border-radius:var(--r);position:relative;z-index:10;}
+.marquee-inner{display:flex;align-items:center;white-space:nowrap;animation:marquee 20s linear infinite;padding:8px 0;font-family:var(--mo);font-size:12px;color:var(--tx2);letter-spacing:1px;}
 .marquee-inner span{margin:0 32px;}
 .marquee-inner .hi{color:var(--gold);}
 @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
 /* ── THEME BAR ── */
-.theme-bar{
-  width:100%;max-width:640px;
-  margin-top:12px;
-  padding:10px 14px;
-  background:var(--felt);
-  border:2px solid var(--rim);
-  border-radius:var(--r);
-  display:flex;align-items:center;justify-content:space-between;
-  position:relative;z-index:10;
-}
+.theme-bar{width:100%;max-width:640px;margin-top:12px;padding:10px 14px;background:var(--felt);border:2px solid var(--rim);border-radius:var(--r);display:flex;align-items:center;justify-content:space-between;position:relative;z-index:10;}
 .th-l{display:flex;align-items:center;gap:8px;}
 .th-em{font-size:20px;}
 .th-name{font-family:var(--fn);font-size:16px;color:var(--tx);}
 .th-desc{font-size:11px;color:var(--tx2);font-family:var(--mo);}
 .th-date{font-size:11px;color:var(--tx2);font-family:var(--mo);text-align:right;}
 
-/* ── BIG WORD DISPLAY ── */
-.word-section{
-  width:100%;max-width:640px;
-  margin-top:22px;
-  text-align:center;
-  position:relative;z-index:10;
-}
-.word-lbl{
-  font-size:11px;letter-spacing:3px;color:var(--tx2);
-  text-transform:uppercase;font-family:var(--mo);margin-bottom:10px;
-}
+/* ── XP BAR ── */
+.xp-bar-wrap{width:100%;max-width:640px;margin-top:8px;background:var(--panel);border:2px solid var(--rim);border-radius:var(--r);padding:10px 14px;position:relative;z-index:10;}
+.xp-bar-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.xp-level-info{display:flex;align-items:center;gap:8px;}
+.xp-rank-ico{font-size:18px;}
+.xp-rank-name{font-family:var(--fn);font-size:15px;}
+.xp-rank-sub{font-size:10px;color:var(--tx2);font-family:var(--mo);}
+.xp-to-next{font-size:10px;color:var(--tx2);font-family:var(--mo);text-align:right;}
+.xp-track{width:100%;height:7px;background:var(--panel2);border-radius:4px;border:1px solid var(--rim);overflow:hidden;}
+.xp-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--nb-text),var(--gold));transition:width .6s cubic-bezier(.34,1.56,.64,1);}
 
-/* Casino sign frame around the word */
-.word-frame{
-  background:var(--panel);
-  border:3px solid var(--rim2);
-  border-radius:var(--r2);
-  padding:18px 20px 16px;
-  position:relative;
-  box-shadow:0 0 0 1px var(--rim), inset 0 0 40px rgba(0,0,0,.5);
-}
-.word-frame::before,
-.word-frame::after{
-  content:'★ ★ ★';
-  position:absolute;
-  left:50%;transform:translateX(-50%);
-  font-size:10px;color:var(--gold-b);
-  letter-spacing:8px;
-}
+/* ── BIG WORD ── */
+.word-section{width:100%;max-width:640px;margin-top:22px;text-align:center;position:relative;z-index:10;}
+.word-lbl{font-size:11px;letter-spacing:3px;color:var(--tx2);text-transform:uppercase;font-family:var(--mo);margin-bottom:10px;}
+.word-frame{background:var(--panel);border:3px solid var(--rim2);border-radius:var(--r2);padding:18px 20px 16px;position:relative;box-shadow:0 0 0 1px var(--rim), inset 0 0 40px rgba(0,0,0,.05);}
+.word-frame::before,.word-frame::after{content:'★ ★ ★';position:absolute;left:50%;font-size:10px;color:var(--gold-b);letter-spacing:8px;}
 .word-frame::before{top:-1px;transform:translateX(-50%) translateY(-50%);background:var(--panel);padding:0 8px;}
 .word-frame::after{bottom:-1px;transform:translateX(-50%) translateY(50%);background:var(--panel);padding:0 8px;}
-
-.big-word{
-  font-family:var(--fn);
-  font-size:clamp(30px,8vw,58px);
-  color:var(--gold);
-  letter-spacing:6px;
-  text-transform:uppercase;
-  text-shadow:0 0 30px rgba(245,200,66,.35), 0 2px 0 rgba(0,0,0,.8);
-  word-break:break-all;
-  line-height:1;
-}
-.big-word span{
-  display:inline-block;
-  transition:color .15s,transform .15s,text-shadow .15s;
-}
-.big-word span.hl{
-  color:var(--nb);
-  transform:translateY(-3px) scale(1.1);
-  text-shadow:0 0 16px rgba(61,200,255,.6);
-}
-
-/* corner bulbs */
-.bulb{
-  position:absolute;width:8px;height:8px;border-radius:50%;
-  background:var(--gold);
-  box-shadow:0 0 6px var(--gold),0 0 12px var(--gold-b);
-  animation:bulb-blink 2.4s ease-in-out infinite;
-}
-.bulb:nth-child(1){top:8px;left:8px;}
-.bulb:nth-child(2){top:8px;right:8px;animation-delay:.4s;}
-.bulb:nth-child(3){bottom:8px;left:8px;animation-delay:.8s;}
-.bulb:nth-child(4){bottom:8px;right:8px;animation-delay:1.2s;}
+.big-word{font-family:var(--fn);font-size:clamp(30px,8vw,58px);color:var(--gold);letter-spacing:6px;text-transform:uppercase;text-shadow:0 0 20px rgba(245,200,66,.25);word-break:break-all;line-height:1;}
+.big-word span{display:inline-block;transition:color .15s,transform .15s,text-shadow .15s;}
+.big-word span.hl{color:var(--nb-text);transform:translateY(-3px) scale(1.1);}
+.bulb{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px var(--gold);animation:bulb-blink 2.4s ease-in-out infinite;}
+.bulb:nth-child(1){top:8px;left:8px;} .bulb:nth-child(2){top:8px;right:8px;animation-delay:.4s;}
+.bulb:nth-child(3){bottom:8px;left:8px;animation-delay:.8s;} .bulb:nth-child(4){bottom:8px;right:8px;animation-delay:1.2s;}
 @keyframes bulb-blink{0%,100%{opacity:1}50%{opacity:.3}}
 
+/* ── DIFFICULTY ROW ── */
+.diff-row{width:100%;max-width:640px;margin-top:10px;display:flex;align-items:center;gap:8px;position:relative;z-index:10;flex-wrap:wrap;}
+.diff-lbl{font-size:11px;color:var(--tx2);font-family:var(--mo);margin-right:4px;}
+.diff-btn{padding:5px 13px;border-radius:20px;border:1.5px solid var(--rim2);background:var(--panel2);color:var(--tx2);font-family:var(--mo);font-size:11px;cursor:pointer;transition:all var(--tr);}
+.diff-btn:hover{border-color:var(--gold-b);color:var(--tx);}
+.diff-btn.active{background:var(--gold-d);border-color:var(--gold-b);color:var(--gold);}
+.diff-btn.locked{opacity:.4;cursor:not-allowed;}
+.diff-unlock-tip{font-size:10px;color:var(--tx3);font-family:var(--mo);}
+
 /* ── SCORE STRIP ── */
-.score-strip{
-  width:100%;max-width:640px;
-  margin-top:14px;
-  display:grid;grid-template-columns:repeat(4,1fr);
-  gap:8px;position:relative;z-index:10;
-}
-.sc-card{
-  background:var(--panel);
-  border:2px solid var(--rim);
-  border-radius:var(--r);
-  padding:10px 8px;
-  text-align:center;
-  transition:border-color var(--tr);
-}
-.sc-card.active{border-color:var(--gold-b);}
-.sc-val{
-  font-family:var(--fn);font-size:24px;line-height:1;
-  text-shadow:0 0 12px currentColor;
-}
+.score-strip{width:100%;max-width:640px;margin-top:14px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;position:relative;z-index:10;}
+.sc-card{background:var(--panel);border:2px solid var(--rim);border-radius:var(--r);padding:10px 8px;text-align:center;transition:border-color var(--tr);}
+.sc-val{font-family:var(--fn);font-size:24px;line-height:1;}
 .sc-val.gold{color:var(--gold);}
-.sc-val.grn{color:var(--ng);}
-.sc-val.pur{color:var(--np);}
+.sc-val.grn{color:var(--ng-text);}
+.sc-val.pur{color:var(--np-text);}
 .sc-val.wht{color:var(--tx);}
 .sc-lbl{font-size:9px;color:var(--tx2);font-family:var(--mo);margin-top:3px;letter-spacing:.5px;text-transform:uppercase;}
 
 /* ── TIMER ── */
-.timer-section{
-  width:100%;max-width:640px;
-  margin-top:14px;position:relative;z-index:10;
-}
-.timer-row{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:7px;
-}
-.timer-disp{
-  font-family:var(--fn);font-size:32px;color:var(--tx);
-  text-shadow:0 0 10px rgba(240,232,208,.2);
-  transition:color .3s,text-shadow .3s;
-  line-height:1;
-}
-.timer-disp.urg{
-  color:var(--nr);
-  text-shadow:0 0 16px rgba(255,61,90,.5);
-  animation:timer-pulse .5s ease-in-out infinite alternate;
-}
+.timer-section{width:100%;max-width:640px;margin-top:14px;position:relative;z-index:10;}
+.timer-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;}
+.timer-disp{font-family:var(--fn);font-size:32px;color:var(--tx);transition:color .3s;line-height:1;}
+.timer-disp.urg{color:var(--nr);animation:timer-pulse .5s ease-in-out infinite alternate;}
 @keyframes timer-pulse{from{opacity:1}to{opacity:.6}}
 .timer-hint{font-size:12px;color:var(--tx2);font-family:var(--mo);}
-
-.t-track{
-  width:100%;height:8px;
-  background:var(--panel2);
-  border-radius:4px;
-  border:1px solid var(--rim);
-  overflow:hidden;
-}
-.t-fill{
-  height:100%;border-radius:4px;
-  background:linear-gradient(90deg,var(--ng),var(--gold));
-  transition:width 1s linear,background .5s;
-  width:100%;
-  box-shadow:0 0 8px rgba(61,255,120,.4);
-}
-.t-fill.urg{
-  background:linear-gradient(90deg,var(--nr),#ff8040);
-  box-shadow:0 0 8px rgba(255,61,90,.5);
-}
+.t-track{width:100%;height:8px;background:var(--panel2);border-radius:4px;border:1px solid var(--rim);overflow:hidden;}
+.t-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--ng-text),var(--gold));transition:width 1s linear,background .5s;width:100%;}
+.t-fill.urg{background:linear-gradient(90deg,var(--nr),#ff8040);}
 
 /* ── INPUT ── */
 .input-sec{width:100%;max-width:640px;margin-top:14px;position:relative;z-index:10;}
 .input-row{display:flex;gap:10px;}
-
-.word-in{
-  flex:1;
-  background:var(--panel);
-  border:2px solid var(--rim2);
-  border-radius:var(--r);
-  color:var(--gold);
-  font-family:var(--mo);font-size:22px;font-weight:400;
-  text-transform:uppercase;letter-spacing:4px;
-  padding:13px 16px;outline:none;
-  transition:border-color var(--tr),background var(--tr),box-shadow var(--tr);
-  caret-color:var(--gold);
-}
+.word-in{flex:1;background:var(--panel);border:2px solid var(--rim2);border-radius:var(--r);color:var(--gold);font-family:var(--mo);font-size:22px;text-transform:uppercase;letter-spacing:4px;padding:13px 16px;outline:none;transition:border-color var(--tr),background var(--tr),box-shadow var(--tr);caret-color:var(--gold);}
 .word-in::placeholder{color:var(--tx3);letter-spacing:2px;font-size:14px;}
-.word-in:focus{
-  border-color:var(--gold-b);
-  background:var(--panel2);
-  box-shadow:0 0 0 3px var(--gold-d), inset 0 0 20px rgba(245,200,66,.05);
-}
+.word-in:focus{border-color:var(--gold-b);background:var(--panel2);box-shadow:0 0 0 3px var(--gold-d);}
 .word-in.shake{animation:shake .3s ease;border-color:var(--nr);}
-.word-in.pulse-g{animation:pulseg .35s ease;border-color:var(--ng);}
-.word-in.pulse-p{animation:pulsep .35s ease;border-color:var(--np);}
+.word-in.pulse-g{animation:pulseg .35s ease;border-color:var(--ng-text);}
+.word-in.pulse-p{animation:pulsep .35s ease;border-color:var(--np-text);}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-@keyframes pulseg{0%,100%{box-shadow:none}50%{box-shadow:0 0 0 4px var(--ng-d),0 0 20px var(--ng-d)}}
-@keyframes pulsep{0%,100%{box-shadow:none}50%{box-shadow:0 0 0 4px var(--np-d),0 0 20px var(--np-d)}}
-
-.sub-btn{
-  background:var(--gold);color:#0a0a14;
-  border:none;border-radius:var(--r);
-  font-family:var(--fn);font-size:17px;
-  padding:13px 22px;cursor:pointer;
-  transition:all var(--tr);white-space:nowrap;
-  box-shadow:0 0 16px var(--gold-d);
-}
-.sub-btn:hover{background:var(--gold2);box-shadow:0 0 24px var(--gold-b);transform:translateY(-1px);}
+@keyframes pulseg{0%,100%{box-shadow:none}50%{box-shadow:0 0 0 4px var(--ng-bg),0 0 20px var(--ng-bg)}}
+@keyframes pulsep{0%,100%{box-shadow:none}50%{box-shadow:0 0 0 4px var(--np-bg),0 0 20px var(--np-bg)}}
+.sub-btn{background:var(--gold);color:#0a0a14;border:none;border-radius:var(--r);font-family:var(--fn);font-size:17px;padding:13px 22px;cursor:pointer;transition:all var(--tr);white-space:nowrap;}
+.sub-btn:hover{background:var(--gold2);transform:translateY(-1px);}
 .sub-btn:active{transform:scale(.97);}
-.sub-btn:disabled{opacity:.3;cursor:not-allowed;transform:none;box-shadow:none;}
-
-.fb{
-  min-height:22px;font-size:13px;font-family:var(--mo);
-  margin-top:8px;padding-left:2px;
-  transition:color var(--tr);
-}
-.fb.good{color:var(--ng);}
-.fb.bonus{
-  color:var(--np);
-  text-shadow:0 0 8px rgba(212,61,255,.5);
-  font-size:14px;font-family:var(--fn);
-}
+.sub-btn:disabled{opacity:.3;cursor:not-allowed;transform:none;}
+.fb{min-height:22px;font-size:13px;font-family:var(--mo);margin-top:8px;padding-left:2px;transition:color var(--tr);}
+.fb.good{color:var(--ng-text);}
+.fb.bonus{color:var(--np-text);font-size:14px;font-family:var(--fn);}
 .fb.bad{color:var(--nr);}
 .fb.info{color:var(--tx2);}
 
 /* ── LEGEND ── */
-.legend{
-  width:100%;max-width:640px;
-  margin-top:10px;
-  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
-  position:relative;z-index:10;
-}
+.legend{width:100%;max-width:640px;margin-top:10px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;position:relative;z-index:10;}
 .leg{display:flex;align-items:center;gap:6px;font-size:12px;font-family:var(--mo);color:var(--tx2);}
 .leg-dot{width:12px;height:12px;border-radius:3px;}
-.leg-dot.std{background:var(--ng-d);border:1px solid var(--ng-b);}
-.leg-dot.bon{background:var(--np-d);border:1px solid var(--np-b);}
+.leg-dot.std{background:var(--ng-bg);border:1px solid var(--ng-bd);}
+.leg-dot.bon{background:var(--np-bg);border:1px solid var(--np-bd);}
 
-/* ── FOUND WORDS ── */
-.found-sec{
-  width:100%;max-width:640px;
-  margin-top:18px;position:relative;z-index:10;
+/* ── CHIP TYPES (new scoring) ── */
+.chip.std{background:var(--ng-bg);border:1.5px solid var(--ng-bd);color:var(--ng-text);}
+.chip.std.rev{background:var(--nb-bg);border:1.5px solid var(--nb-bd);color:var(--nb-text);}
+.chip.rea{background:var(--np-bg);border:1.5px solid var(--np-bd);color:var(--np-text);}
+.chip.rea50{border-style:dashed;border-width:2px;}
+.chip.rea75{border-width:2px;box-shadow:0 0 8px var(--np-bg);}
+.chip.reafull{
+  background:var(--gold-d);border:2px solid var(--gold-b);color:var(--gold);
+  box-shadow:0 0 12px var(--gold-d);
+  animation:chip-in .25s cubic-bezier(.34,1.56,.64,1), jackpot-pulse 1.5s ease-in-out infinite;
 }
-.found-hdr{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:10px;
-  padding-bottom:8px;
-  border-bottom:1px solid var(--rim);
+@keyframes jackpot-pulse{0%,100%{box-shadow:0 0 8px var(--gold-d)}50%{box-shadow:0 0 20px var(--gold-b)}}
+.chip.missed{opacity:.35;text-decoration:line-through;animation:none;box-shadow:none;}
+
+/* ── CHAIN INDICATOR ── */
+.chain-ind{
+  min-height:20px;font-size:12px;font-family:var(--mo);
+  padding-left:2px;margin-top:4px;
+  transition:all .2s;
 }
+.chain-ind.chain-active{color:var(--nb-text);}
+.chain-ind.chain-fire{
+  color:var(--gold);font-family:var(--fn);font-size:14px;
+  animation:chain-flash .4s ease-in-out infinite alternate;
+}
+@keyframes chain-flash{from{opacity:1}to{opacity:.5}}
+.found-sec{width:100%;max-width:640px;margin-top:18px;position:relative;z-index:10;}
+.found-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--rim);}
 .found-ttl{font-family:var(--fn);font-size:16px;color:var(--tx);}
 .found-ct{font-size:12px;color:var(--tx2);font-family:var(--mo);}
-
 .words-grid{display:flex;flex-wrap:wrap;gap:7px;min-height:40px;}
-
-/* Casino chip style word tags */
-.chip{
-  border-radius:20px;
-  padding:5px 14px;
-  font-family:var(--mo);font-size:13px;letter-spacing:1px;
-  position:relative;
-  animation:chip-in .25s cubic-bezier(.34,1.56,.64,1);
-  cursor:default;
-}
-.chip.std{
-  background:var(--ng-d);
-  border:1.5px solid var(--ng-b);
-  color:var(--ng);
-}
-.chip.bon{
-  background:var(--np-d);
-  border:1.5px solid var(--np-b);
-  color:var(--np);
-  box-shadow:0 0 10px var(--np-d);
-  animation:chip-in .25s cubic-bezier(.34,1.56,.64,1), neon-pulse 2.5s ease-in-out infinite;
-}
+.chip{border-radius:20px;padding:5px 14px;font-family:var(--mo);font-size:13px;letter-spacing:1px;animation:chip-in .25s cubic-bezier(.34,1.56,.64,1);cursor:default;}
+.chip.std{background:var(--ng-bg);border:1.5px solid var(--ng-bd);color:var(--ng-text);}
+.chip.bon{background:var(--np-bg);border:1.5px solid var(--np-bd);color:var(--np-text);animation:chip-in .25s cubic-bezier(.34,1.56,.64,1), neon-pulse 2.5s ease-in-out infinite;}
 .chip.bon::after{content:'★';font-size:9px;margin-left:4px;vertical-align:top;margin-top:2px;display:inline-block;}
-.chip.missed{opacity:.3;text-decoration:line-through;animation:none;}
+.chip.missed{opacity:.35;text-decoration:line-through;animation:none;}
 @keyframes chip-in{0%{transform:scale(.4) rotate(-8deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
-@keyframes neon-pulse{
-  0%,100%{box-shadow:0 0 8px var(--np-d);}
-  50%{box-shadow:0 0 16px rgba(212,61,255,.25);}
-}
+@keyframes neon-pulse{0%,100%{box-shadow:0 0 6px var(--np-bg);}50%{box-shadow:0 0 14px var(--np-bg);}}
 
 /* ── PROGRESS ── */
-.prog-sec{
-  width:100%;max-width:640px;
-  margin-top:18px;
-  background:var(--felt);
-  border:2px solid var(--rim);
-  border-radius:var(--r2);
-  padding:16px 18px;
-  position:relative;z-index:10;
-}
+.prog-sec{width:100%;max-width:640px;margin-top:18px;background:var(--felt);border:2px solid var(--rim);border-radius:var(--r2);padding:16px 18px;position:relative;z-index:10;}
 .prog-lbl{font-size:12px;color:var(--tx2);font-family:var(--mo);margin-bottom:8px;}
-.prog-track{
-  width:100%;height:10px;
-  background:var(--panel2);
-  border-radius:5px;
-  border:1px solid var(--rim);
-  overflow:hidden;margin-bottom:14px;
-}
-.prog-fill{
-  height:100%;border-radius:5px;
-  background:linear-gradient(90deg,var(--ng),var(--nb),var(--gold));
-  transition:width .4s ease;width:0%;
-  box-shadow:0 0 8px rgba(61,255,120,.3);
-}
+.prog-track{width:100%;height:10px;background:var(--panel2);border-radius:5px;border:1px solid var(--rim);overflow:hidden;margin-bottom:14px;}
+.prog-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--ng-text),var(--nb-text),var(--gold));transition:width .4s ease;width:0%;}
 .prog-stats{display:flex;gap:16px;flex-wrap:wrap;}
 .pst{text-align:center;}
-.pst-n{font-family:var(--fn);font-size:20px;line-height:1;text-shadow:0 0 8px currentColor;}
+.pst-n{font-family:var(--fn);font-size:20px;line-height:1;}
 .pst-n.gold{color:var(--gold);}
-.pst-n.grn{color:var(--ng);}
-.pst-n.pur{color:var(--np);}
+.pst-n.grn{color:var(--ng-text);}
+.pst-n.pur{color:var(--np-text);}
 .pst-n.wht{color:var(--tx);}
 .pst-l{font-size:9px;color:var(--tx2);font-family:var(--mo);margin-top:3px;text-transform:uppercase;letter-spacing:.5px;}
 
 /* ── AD SLOT ── */
-.ad-slot{
-  width:100%;max-width:640px;margin-top:22px;
-  min-height:90px;
-  background:var(--panel);
-  border:2px dashed var(--rim2);
-  border-radius:var(--r);
-  display:flex;align-items:center;justify-content:center;
-  color:var(--tx3);font-size:11px;font-family:var(--mo);letter-spacing:1px;
-  position:relative;z-index:10;
-}
+.ad-slot{width:100%;max-width:640px;margin-top:22px;min-height:90px;background:var(--panel);border:2px dashed var(--rim2);border-radius:var(--r);display:flex;align-items:center;justify-content:center;color:var(--tx3);font-size:11px;font-family:var(--mo);letter-spacing:1px;position:relative;z-index:10;}
 
 /* ── FOOTER ── */
-footer{
-  width:100%;max-width:640px;margin-top:32px;
-  padding-top:16px;
-  border-top:2px solid var(--rim);
-  display:flex;align-items:center;justify-content:space-between;
-  flex-wrap:wrap;gap:8px;position:relative;z-index:10;
-}
+footer{width:100%;max-width:640px;margin-top:32px;padding-top:16px;border-top:2px solid var(--rim);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;position:relative;z-index:10;}
 .foot-l{font-size:11px;color:var(--tx3);font-family:var(--mo);}
 .foot-l a{color:var(--tx2);text-decoration:none;}
 .foot-l a:hover{color:var(--gold);}
@@ -474,226 +292,156 @@ footer{
 /* ══════════════════════════════════════════════════
    OVERLAYS
 ══════════════════════════════════════════════════ */
-.ov{
-  position:fixed;inset:0;
-  background:rgba(7,7,15,.94);
-  display:flex;align-items:center;justify-content:center;
-  z-index:500;padding:14px;
-  backdrop-filter:blur(6px);
-}
+.ov{position:fixed;inset:0;background:rgba(7,7,15,.92);display:flex;align-items:center;justify-content:center;z-index:500;padding:14px;backdrop-filter:blur(6px);}
+[data-theme="light"] .ov{background:rgba(220,210,190,.92);}
 .ov.off{display:none;}
-
-.modal{
-  background:var(--panel);
-  border:2px solid var(--rim2);
-  border-radius:var(--r2);
-  padding:28px 24px;
-  max-width:440px;width:100%;
-  text-align:center;
-  max-height:92vh;overflow-y:auto;
-  position:relative;
-  box-shadow:0 0 60px rgba(245,200,66,.08);
-}
-.modal-corner{
-  position:absolute;width:10px;height:10px;border-radius:50%;
-  background:var(--gold);
-  box-shadow:0 0 8px var(--gold),0 0 16px var(--gold-b);
-  animation:bulb-blink 2s infinite;
-}
-.modal-corner:nth-child(1){top:10px;left:10px;}
-.modal-corner:nth-child(2){top:10px;right:10px;animation-delay:.5s;}
-.modal-corner:nth-child(3){bottom:10px;left:10px;animation-delay:1s;}
-.modal-corner:nth-child(4){bottom:10px;right:10px;animation-delay:1.5s;}
-
+.modal{background:var(--panel);border:2px solid var(--rim2);border-radius:var(--r2);padding:28px 24px;max-width:440px;width:100%;text-align:center;max-height:92vh;overflow-y:auto;position:relative;}
+.modal-corner{position:absolute;width:10px;height:10px;border-radius:50%;background:var(--gold);animation:bulb-blink 2s infinite;}
+.modal-corner:nth-child(1){top:10px;left:10px;} .modal-corner:nth-child(2){top:10px;right:10px;animation-delay:.5s;}
+.modal-corner:nth-child(3){bottom:10px;left:10px;animation-delay:1s;} .modal-corner:nth-child(4){bottom:10px;right:10px;animation-delay:1.5s;}
 .m-ico{font-size:48px;margin-bottom:8px;}
-.m-ttl{
-  font-family:var(--fn);font-size:30px;
-  color:var(--gold);
-  text-shadow:0 0 20px rgba(245,200,66,.4);
-  margin-bottom:6px;
-}
+.m-ttl{font-family:var(--fn);font-size:30px;color:var(--gold);margin-bottom:6px;}
 .m-sub{font-size:13px;color:var(--tx2);line-height:1.6;margin-bottom:20px;font-family:var(--mo);}
-.m-word{
-  font-family:var(--fn);font-size:32px;letter-spacing:5px;
-  color:var(--gold);
-  text-shadow:0 0 24px rgba(245,200,66,.5);
-  margin-bottom:5px;
-}
+.m-word{font-family:var(--fn);font-size:32px;letter-spacing:5px;color:var(--gold);margin-bottom:5px;}
 .m-theme{font-size:11px;color:var(--tx2);font-family:var(--mo);margin-bottom:22px;}
-
-/* End screen points display */
-.pts-display{
-  background:var(--felt);
-  border:2px solid var(--gold-b);
-  border-radius:var(--r);
-  padding:18px;
-  margin-bottom:16px;
-  box-shadow:0 0 24px var(--gold-d);
-}
-.pts-main{
-  font-family:var(--fn);font-size:46px;
-  color:var(--gold);
-  text-shadow:0 0 24px rgba(245,200,66,.5);
-  line-height:1;
-}
+.pts-display{background:var(--felt);border:2px solid var(--gold-b);border-radius:var(--r);padding:18px;margin-bottom:16px;}
+.pts-main{font-family:var(--fn);font-size:46px;color:var(--gold);line-height:1;}
 .pts-denom{font-family:var(--fn);font-size:20px;color:var(--tx2);}
 .pts-sub{font-size:12px;color:var(--tx2);font-family:var(--mo);margin-top:5px;}
-
-.end-grid{
-  display:grid;grid-template-columns:1fr 1fr 1fr;
-  gap:8px;margin-bottom:16px;
-}
-.eg{
-  background:var(--panel2);
-  border:1px solid var(--rim2);
-  border-radius:var(--r);padding:10px 6px;
-}
-.eg-n{font-family:var(--fn);font-size:22px;line-height:1;text-shadow:0 0 8px currentColor;}
+.end-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;}
+.eg{background:var(--panel2);border:1px solid var(--rim2);border-radius:var(--r);padding:10px 6px;}
+.eg-n{font-family:var(--fn);font-size:22px;line-height:1;}
 .eg-l{font-size:9px;color:var(--tx2);font-family:var(--mo);margin-top:3px;text-transform:uppercase;}
-
-/* Share sheet */
-.share-sheet{
-  background:var(--felt);
-  border:2px solid var(--rim);
-  border-radius:var(--r);
-  padding:14px;margin-bottom:12px;text-align:left;
-}
-.share-ttl{
-  font-family:var(--fn);font-size:14px;color:var(--tx2);
-  margin-bottom:10px;letter-spacing:1px;
-}
+.share-sheet{background:var(--felt);border:2px solid var(--rim);border-radius:var(--r);padding:14px;margin-bottom:12px;text-align:left;}
+.share-ttl{font-family:var(--fn);font-size:14px;color:var(--tx2);margin-bottom:10px;letter-spacing:1px;}
 .share-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.sh-btn{
-  display:flex;align-items:center;gap:8px;
-  background:var(--panel2);
-  border:1.5px solid var(--rim2);
-  border-radius:var(--r);
-  padding:9px 12px;
-  cursor:pointer;transition:all var(--tr);
-  font-family:var(--mo);font-size:12px;color:var(--tx);
-  text-decoration:none;
-}
+.sh-btn{display:flex;align-items:center;gap:8px;background:var(--panel2);border:1.5px solid var(--rim2);border-radius:var(--r);padding:9px 12px;cursor:pointer;transition:all var(--tr);font-family:var(--mo);font-size:12px;color:var(--tx);text-decoration:none;}
 .sh-btn:hover{background:var(--panel3);border-color:var(--gold-b);color:var(--gold);}
 .sh-ico{font-size:16px;flex-shrink:0;}
-.sh-copy{
-  grid-column:1/-1;justify-content:center;
-  background:var(--gold-d);
-  border-color:var(--gold-b);color:var(--gold);
-  font-family:var(--fn);font-size:14px;
-}
+.sh-copy{grid-column:1/-1;justify-content:center;background:var(--gold-d);border-color:var(--gold-b);color:var(--gold);font-family:var(--fn);font-size:14px;}
 .sh-copy:hover{background:rgba(245,200,66,.22);color:var(--gold2);}
-.share-msg{font-size:12px;color:var(--ng);font-family:var(--mo);text-align:center;min-height:16px;margin-bottom:6px;}
-
-/* Buttons */
-.btn-p{
-  width:100%;padding:14px;
-  background:var(--gold);color:#07070f;
-  border:none;border-radius:var(--r);
-  font-family:var(--fn);font-size:18px;
-  cursor:pointer;transition:all var(--tr);
-  margin-bottom:8px;
-  box-shadow:0 0 20px var(--gold-d);
-}
-.btn-p:hover{background:var(--gold2);box-shadow:0 0 28px var(--gold-b);}
-.btn-s{
-  width:100%;padding:11px;
-  background:transparent;color:var(--tx2);
-  border:2px solid var(--rim2);border-radius:var(--r);
-  font-family:var(--fn2);font-size:15px;
-  cursor:pointer;transition:all var(--tr);margin-bottom:6px;
-}
+.share-msg{font-size:12px;color:var(--ng-text);font-family:var(--mo);text-align:center;min-height:16px;margin-bottom:6px;}
+.btn-p{width:100%;padding:14px;background:var(--gold);color:#07070f;border:none;border-radius:var(--r);font-family:var(--fn);font-size:18px;cursor:pointer;transition:all var(--tr);margin-bottom:8px;}
+.btn-p:hover{background:var(--gold2);}
+.btn-s{width:100%;padding:11px;background:transparent;color:var(--tx2);border:2px solid var(--rim2);border-radius:var(--r);font-family:var(--fn2);font-size:15px;cursor:pointer;transition:all var(--tr);margin-bottom:6px;}
 .btn-s:hover{background:var(--panel2);color:var(--tx);border-color:var(--gold-b);}
 
+/* ── XP GAINED BOX ── */
+.xp-gained-box{background:var(--panel2);border:2px solid var(--nb-bd);border-radius:var(--r);padding:14px 18px;margin-bottom:14px;text-align:left;}
+.xp-gained-title{font-family:var(--fn);font-size:16px;color:var(--nb-text);margin-bottom:10px;}
+.xp-gained-rows{display:flex;flex-direction:column;gap:5px;}
+.xp-row{display:flex;justify-content:space-between;align-items:center;font-family:var(--mo);font-size:12px;}
+.xp-row-label{color:var(--tx2);}
+.xp-row-val{color:var(--gold);}
+.xp-total-row{border-top:1px solid var(--rim);padding-top:7px;margin-top:2px;}
+.xp-total-row .xp-row-label{color:var(--tx);font-size:13px;}
+.xp-total-row .xp-row-val{font-size:15px;color:var(--nb-text);}
+
+/* rank-up banner */
+.rankup-banner{background:var(--gold-d);border:2px solid var(--gold);border-radius:var(--r2);padding:16px;margin-bottom:14px;text-align:center;animation:rankup-glow 2s ease-in-out infinite alternate;}
+@keyframes rankup-glow{0%{box-shadow:0 0 10px var(--gold-d)}100%{box-shadow:0 0 28px var(--gold-b)}}
+.rankup-ico{font-size:36px;margin-bottom:4px;}
+.rankup-title{font-family:var(--fn);font-size:22px;color:var(--gold);}
+.rankup-sub{font-size:11px;color:var(--tx2);font-family:var(--mo);margin-top:4px;}
+
+/* unlock toast */
+.unlock-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--panel);border:2px solid var(--gold);border-radius:var(--r2);padding:14px 20px;z-index:950;text-align:center;transition:transform .4s cubic-bezier(.34,1.56,.64,1),opacity .4s;opacity:0;min-width:260px;}
+.unlock-toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+.ut-ico{font-size:28px;margin-bottom:4px;}
+.ut-title{font-family:var(--fn);font-size:16px;color:var(--gold);}
+.ut-sub{font-size:11px;color:var(--tx2);font-family:var(--mo);margin-top:3px;}
+
 /* ── HOW TO PLAY ── */
-.how-ov{
-  position:fixed;inset:0;
-  background:rgba(7,7,15,.94);
-  display:flex;align-items:center;justify-content:center;
-  z-index:600;padding:14px;backdrop-filter:blur(6px);
-}
+.how-ov{position:fixed;inset:0;background:rgba(7,7,15,.92);display:flex;align-items:center;justify-content:center;z-index:600;padding:14px;backdrop-filter:blur(6px);}
+[data-theme="light"] .how-ov{background:rgba(220,210,190,.92);}
 .how-ov.off{display:none;}
-.how-box{
-  background:var(--panel);
-  border:2px solid var(--rim2);
-  border-radius:var(--r2);
-  padding:26px 22px;
-  max-width:400px;width:100%;
-  max-height:92vh;overflow-y:auto;
-  box-shadow:0 0 40px rgba(245,200,66,.07);
-}
+.how-box{background:var(--panel);border:2px solid var(--rim2);border-radius:var(--r2);padding:26px 22px;max-width:400px;width:100%;max-height:92vh;overflow-y:auto;}
 .how-ttl{font-family:var(--fn);font-size:24px;color:var(--gold);margin-bottom:18px;text-align:center;}
 .how-row{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;}
-.how-n{
-  width:26px;height:26px;min-width:26px;
-  background:var(--gold-d);border:2px solid var(--gold-b);
-  border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-family:var(--fn);font-size:13px;color:var(--gold);
-}
+.how-n{width:26px;height:26px;min-width:26px;background:var(--gold-d);border:2px solid var(--gold-b);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fn);font-size:13px;color:var(--gold);}
 .how-t{font-size:13px;color:var(--tx2);line-height:1.65;font-family:var(--mo);}
 .how-t strong{color:var(--tx);}
-.how-t .bon{color:var(--np);}
-.ex-box{
-  background:var(--felt);border:2px solid var(--rim);
-  border-radius:var(--r);padding:12px 14px;margin:12px 0;
-}
+.how-t .bon{color:var(--np-text);}
+.ex-box{background:var(--felt);border:2px solid var(--rim);border-radius:var(--r);padding:12px 14px;margin:12px 0;}
 .ex-big{font-family:var(--fn);font-size:22px;letter-spacing:3px;color:var(--gold);margin-bottom:10px;}
 .ex-lbl{font-size:10px;color:var(--tx2);font-family:var(--mo);margin-bottom:5px;letter-spacing:.5px;}
 .ex-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
 .ex-c{border-radius:20px;padding:3px 10px;font-size:11px;font-family:var(--mo);}
-.ex-c.std{background:var(--ng-d);border:1px solid var(--ng-b);color:var(--ng);}
-.ex-c.bon{background:var(--np-d);border:1px solid var(--np-b);color:var(--np);}
-
+.ex-c.std{background:var(--ng-bg);border:1px solid var(--ng-bd);color:var(--ng-text);}
+.ex-c.bon{background:var(--np-bg);border:1px solid var(--np-bd);color:var(--np-text);}
 .pts-tbl{width:100%;border-collapse:collapse;font-family:var(--mo);font-size:12px;margin:10px 0;}
 .pts-tbl th{text-align:left;color:var(--tx2);font-weight:400;padding:5px 8px;border-bottom:1px solid var(--rim);}
 .pts-tbl td{padding:5px 8px;color:var(--tx);}
-.pts-tbl .g{color:var(--ng);}
-.pts-tbl .p{color:var(--np);}
+.pts-tbl .g{color:var(--ng-text);}
+.pts-tbl .p{color:var(--np-text);}
+
+/* ── RANKS OVERLAY ── */
+.lvl-ov{position:fixed;inset:0;background:rgba(7,7,15,.92);display:flex;align-items:flex-start;justify-content:center;z-index:600;padding:14px;backdrop-filter:blur(6px);overflow-y:auto;}
+[data-theme="light"] .lvl-ov{background:rgba(220,210,190,.92);}
+.lvl-ov.off{display:none;}
+.lvl-box{background:var(--panel);border:2px solid var(--rim2);border-radius:var(--r2);padding:26px 22px;max-width:480px;width:100%;margin:auto;position:relative;}
+.lvl-ttl{font-family:var(--fn);font-size:26px;color:var(--gold);margin-bottom:4px;text-align:center;}
+.lvl-sub{font-size:11px;color:var(--tx2);font-family:var(--mo);text-align:center;margin-bottom:20px;}
+.lvl-close-btn{position:absolute;top:14px;right:14px;background:var(--panel2);border:2px solid var(--rim);border-radius:50%;width:28px;height:28px;font-size:16px;color:var(--tx2);cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.lvl-close-btn:hover{border-color:var(--gold-b);color:var(--gold);}
+.rank-cards{display:flex;flex-direction:column;gap:10px;}
+.rank-card{background:var(--panel2);border:2px solid var(--rim);border-radius:var(--r);padding:14px 16px;display:flex;align-items:flex-start;gap:14px;transition:border-color var(--tr);}
+.rank-card.current{border-color:var(--gold-b);background:var(--gold-d);}
+.rank-card.locked{opacity:.45;}
+.rc-ico{font-size:26px;flex-shrink:0;margin-top:2px;}
+.rc-body{flex:1;}
+.rc-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+.rc-name{font-family:var(--fn);font-size:17px;}
+.rc-xp{font-size:10px;color:var(--tx2);font-family:var(--mo);}
+.rc-desc{font-size:11px;color:var(--tx2);font-family:var(--mo);margin-bottom:7px;line-height:1.5;}
+.rc-unlocks{display:flex;flex-wrap:wrap;gap:5px;}
+.rc-unlock-tag{font-size:10px;font-family:var(--mo);padding:2px 9px;border-radius:10px;background:var(--ng-bg);border:1px solid var(--ng-bd);color:var(--ng-text);}
+.rc-unlock-tag.locked-tag{background:var(--panel3);border-color:var(--rim2);color:var(--tx3);}
+.rc-current-badge{font-size:9px;font-family:var(--mo);color:var(--gold);background:var(--gold-d);border:1px solid var(--gold-b);padding:2px 8px;border-radius:10px;}
 
 /* ── ACCOUNT PANEL ── */
-.a-panel{
-  position:fixed;top:0;right:0;
-  width:280px;height:100vh;
-  background:var(--panel);
-  border-left:2px solid var(--rim2);
-  padding:20px 16px;
-  transform:translateX(100%);
-  transition:transform .28s cubic-bezier(.4,0,.2,1);
-  z-index:700;overflow-y:auto;
-}
+.a-panel{position:fixed;top:0;right:0;width:280px;height:100vh;background:var(--panel);border-left:2px solid var(--rim2);padding:20px 16px;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);z-index:700;overflow-y:auto;}
 .a-panel.open{transform:translateX(0);}
-.ap-close{
-  position:absolute;top:12px;right:12px;
-  background:var(--panel2);border:2px solid var(--rim);
-  border-radius:50%;width:28px;height:28px;
-  font-size:16px;color:var(--tx2);cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-}
+.ap-close{position:absolute;top:12px;right:12px;background:var(--panel2);border:2px solid var(--rim);border-radius:50%;width:28px;height:28px;font-size:16px;color:var(--tx2);cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .ap-close:hover{border-color:var(--gold-b);color:var(--gold);}
 .ap-ttl{font-family:var(--fn);font-size:20px;color:var(--gold);margin-bottom:18px;}
 .ap-sec{margin-bottom:18px;}
 .ap-lbl{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx2);font-family:var(--mo);margin-bottom:8px;}
-.ap-in{
-  width:100%;background:var(--panel2);border:1.5px solid var(--rim2);
-  border-radius:var(--r);color:var(--tx);font-family:var(--mo);
-  font-size:13px;padding:9px 12px;outline:none;margin-bottom:7px;
-}
+.ap-in{width:100%;background:var(--panel2);border:1.5px solid var(--rim2);border-radius:var(--r);color:var(--tx);font-family:var(--mo);font-size:13px;padding:9px 12px;outline:none;margin-bottom:7px;}
 .ap-in:focus{border-color:var(--gold-b);}
-.ap-btn{
-  width:100%;padding:10px;background:var(--gold);color:#07070f;
-  border:none;border-radius:var(--r);
+.ap-btn{width:100%;padding:10px;background:var(--gold);color:#07070f;border:none;border-radius:var(--r);font-family:var(--fn);font-size:15px;cursor:pointer;}
+.ap-btn-out{
+  width:100%;padding:10px;
+  background:transparent;color:var(--nr);
+  border:2px solid var(--nr-b);border-radius:var(--r);
   font-family:var(--fn);font-size:15px;cursor:pointer;
+  transition:all var(--tr);margin-top:4px;
 }
-.ap-btn:hover{background:var(--gold2);}
-
+.ap-btn-out:hover{background:var(--nr-d);}
+.auth-msg{
+  font-size:11px;font-family:var(--mo);
+  margin-top:8px;min-height:16px;line-height:1.5;
+}
+.auth-msg.ok{color:var(--ng-text);}
+.auth-msg.err{color:var(--nr);}
+.auth-msg.info{color:var(--tx2);}
+.auth-user-row{
+  display:flex;align-items:center;gap:10px;
+  background:var(--ng-bg);border:1.5px solid var(--ng-bd);
+  border-radius:var(--r);padding:10px 12px;margin-bottom:8px;
+}
+.auth-user-ico{
+  font-size:18px;color:var(--ng-text);font-weight:bold;
+}
 .sk-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:7px;}
-.sk-d{
-  aspect-ratio:1;border-radius:3px;
-  background:var(--panel2);
-  display:flex;align-items:center;justify-content:center;
-  font-size:9px;color:var(--tx2);font-family:var(--mo);
-}
-.sk-d.played{background:var(--ng-d);color:var(--ng);border:1px solid var(--ng-b);}
+.sk-d{aspect-ratio:1;border-radius:3px;background:var(--panel2);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--tx2);font-family:var(--mo);}
+.sk-d.played{background:var(--ng-bg);color:var(--ng-text);border:1px solid var(--ng-bd);}
 .sk-d.today{border:1px solid var(--gold-b);}
+.ap-rank-block{background:var(--panel2);border:2px solid var(--rim2);border-radius:var(--r);padding:14px;margin-top:8px;}
+.ap-rank-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.ap-rank-ico{font-size:28px;}
+.ap-xp-track{width:100%;height:6px;background:var(--panel3);border-radius:3px;overflow:hidden;}
+.ap-xp-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--nb-text),var(--gold));transition:width .5s ease;}
 
 @media(max-width:480px){
   .score-strip{grid-template-columns:repeat(2,1fr);}
@@ -707,7 +455,6 @@ footer{
 </head>
 <body>
 
-<!-- Suit watermark -->
 <div class="suits-bg" aria-hidden="true">
   <div class="suits-row">♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣ ♠ ♥ ♦ ♣</div>
   <div class="suits-row">♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠</div>
@@ -715,7 +462,6 @@ footer{
   <div class="suits-row">♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠ ♣ ♦ ♥ ♠</div>
 </div>
 
-<!-- HEADER -->
 <header>
   <div class="logo">
     <div class="logo-icon">🎰</div>
@@ -725,30 +471,30 @@ footer{
     </div>
   </div>
   <div class="hdr-r">
+    <div class="level-badge" onclick="showLevels()" title="View all ranks & unlocks">
+      <span id="hdrRankIco">🃏</span>
+      <span class="lb-name" id="hdrRankName">Dealer</span>
+    </div>
     <div class="streak-chip" onclick="openPanel()">🔥 <span id="streakNum">0</span></div>
+    <div class="theme-toggle" title="Toggle light/dark">
+      <button class="tt-opt active" id="ttDark" onclick="setTheme('dark')">🌙</button>
+      <button class="tt-opt" id="ttLight" onclick="setTheme('light')">☀️</button>
+    </div>
     <button class="ico-btn" onclick="showHow()">?</button>
   </div>
 </header>
 
-<!-- MARQUEE -->
 <div class="marquee-wrap">
   <div class="marquee-inner">
-    <span>♠ PLAY TODAY'S NESTWORD</span>
-    <span class="hi">★ BONUS POINTS FOR CONSECUTIVE LETTERS ★</span>
-    <span>♥ FIND WORDS FORWARD AND REVERSE</span>
-    <span class="hi">♦ DAILY NEW WORD AT MIDNIGHT ♦</span>
-    <span>♣ SHARE YOUR SCORE AND CHALLENGE FRIENDS</span>
-    <span class="hi">★ PLAY FREE AT PLAYNESTWORD.COM ★</span>
-    <span>♠ PLAY TODAY'S NESTWORD</span>
-    <span class="hi">★ BONUS POINTS FOR CONSECUTIVE LETTERS ★</span>
-    <span>♥ FIND WORDS FORWARD AND REVERSE</span>
-    <span class="hi">♦ DAILY NEW WORD AT MIDNIGHT ♦</span>
-    <span>♣ SHARE YOUR SCORE AND CHALLENGE FRIENDS</span>
-    <span class="hi">★ PLAY FREE AT PLAYNESTWORD.COM ★</span>
+    <span>♠ PLAY TODAY'S NESTWORD</span><span class="hi">★ BONUS POINTS FOR CONSECUTIVE LETTERS ★</span>
+    <span>♥ FIND WORDS FORWARD AND REVERSE</span><span class="hi">♦ DAILY NEW WORD AT MIDNIGHT ♦</span>
+    <span>♣ SHARE YOUR SCORE AND CHALLENGE FRIENDS</span><span class="hi">★ PLAY FREE AT PLAYNESTWORD.COM ★</span>
+    <span>♠ PLAY TODAY'S NESTWORD</span><span class="hi">★ BONUS POINTS FOR CONSECUTIVE LETTERS ★</span>
+    <span>♥ FIND WORDS FORWARD AND REVERSE</span><span class="hi">♦ DAILY NEW WORD AT MIDNIGHT ♦</span>
+    <span>♣ SHARE YOUR SCORE AND CHALLENGE FRIENDS</span><span class="hi">★ PLAY FREE AT PLAYNESTWORD.COM ★</span>
   </div>
 </div>
 
-<!-- THEME BAR -->
 <div class="theme-bar" id="themeBar">
   <div class="th-l">
     <span class="th-em" id="thEm">🌿</span>
@@ -760,7 +506,20 @@ footer{
   <div class="th-date" id="thDate"></div>
 </div>
 
-<!-- BIG WORD -->
+<div class="xp-bar-wrap">
+  <div class="xp-bar-row">
+    <div class="xp-level-info">
+      <span class="xp-rank-ico" id="xpRankIco">🃏</span>
+      <div>
+        <div class="xp-rank-name" id="xpRankName" style="color:var(--gold)">Dealer</div>
+        <div class="xp-rank-sub" id="xpRankSub">Level 1</div>
+      </div>
+    </div>
+    <div class="xp-to-next" id="xpToNext">0 / 100 XP</div>
+  </div>
+  <div class="xp-track"><div class="xp-fill" id="xpFill" style="width:0%"></div></div>
+</div>
+
 <div class="word-section">
   <div class="word-lbl">Today's NestWord</div>
   <div class="word-frame">
@@ -770,9 +529,16 @@ footer{
   </div>
 </div>
 
-<!-- SCORE STRIP -->
+<div class="diff-row" id="diffRow">
+  <span class="diff-lbl">MODE:</span>
+  <button class="diff-btn active" id="diffNormal" onclick="setDifficulty('normal')">⚡ Normal</button>
+  <button class="diff-btn locked" id="diffHard" onclick="setDifficulty('hard')">🔥 Hard</button>
+  <button class="diff-btn locked" id="diffBlitz" onclick="setDifficulty('blitz')">💥 Blitz</button>
+  <span class="diff-unlock-tip" id="diffTip"></span>
+</div>
+
 <div class="score-strip">
-  <div class="sc-card" id="scCardPts">
+  <div class="sc-card">
     <div class="sc-val gold" id="scPts">0</div>
     <div class="sc-lbl">Your Points</div>
   </div>
@@ -782,7 +548,7 @@ footer{
   </div>
   <div class="sc-card">
     <div class="sc-val pur" id="scBonus">0</div>
-    <div class="sc-lbl">Bonus ★ Pts</div>
+    <div class="sc-lbl">Rearranged Pts</div>
   </div>
   <div class="sc-card">
     <div class="sc-val grn" id="scWords">0</div>
@@ -790,7 +556,6 @@ footer{
   </div>
 </div>
 
-<!-- TIMER -->
 <div class="timer-section">
   <div class="timer-row">
     <div class="timer-disp" id="timerDisp">1:30</div>
@@ -799,7 +564,6 @@ footer{
   <div class="t-track"><div class="t-fill" id="tFill"></div></div>
 </div>
 
-<!-- INPUT -->
 <div class="input-sec">
   <div class="input-row">
     <input type="text" class="word-in" id="wordIn" placeholder="TYPE A WORD..."
@@ -808,15 +572,15 @@ footer{
     <button class="sub-btn" id="subBtn" onclick="submit()" disabled>ENTER</button>
   </div>
   <div class="fb info" id="fb">Start the game to begin finding words</div>
-</div>
+  <div class="chain-ind" id="chainIndicator"></div>
 
-<!-- LEGEND -->
 <div class="legend">
-  <div class="leg"><div class="leg-dot std"></div>Standard word</div>
-  <div class="leg"><div class="leg-dot bon"></div>★ Bonus — consecutive letters (2× points)</div>
+  <div class="leg"><div class="leg-dot std"></div>In-order (consecutive)</div>
+  <div class="leg"><div class="leg-dot" style="background:var(--nb-bg);border:1px solid var(--nb-bd);"></div>In-order (reverse)</div>
+  <div class="leg"><div class="leg-dot bon"></div>Rearranged (+bonuses)</div>
+  <div class="leg" style="color:var(--gold)">🏆 Full rearrange = jackpot</div>
 </div>
 
-<!-- FOUND WORDS -->
 <div class="found-sec">
   <div class="found-hdr">
     <span class="found-ttl">♠ Words Found</span>
@@ -825,7 +589,6 @@ footer{
   <div class="words-grid" id="wGrid"></div>
 </div>
 
-<!-- PROGRESS -->
 <div class="prog-sec">
   <div class="prog-lbl" id="progLbl">Find words to track your progress</div>
   <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
@@ -838,24 +601,22 @@ footer{
   </div>
 </div>
 
-<!-- AD SLOT -->
 <div class="ad-slot">
   <!-- Google AdSense — replace with your ad unit after approval -->
-  <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins> -->
   AD SPACE — GOOGLE ADSENSE
 </div>
 
-<!-- FOOTER -->
 <footer>
   <div class="foot-l">&copy; <span id="fyear"></span> <a href="https://allsparkenterprisesltd.ca" target="_blank">All Spark Enterprises Ltd.</a></div>
   <div class="foot-r">
     <a href="#" onclick="showHow();return false;">How to Play</a>
+    <a href="#" onclick="showLevels();return false;">Ranks</a>
     <a href="#" onclick="openPanel();return false;">My Stats</a>
     <a href="mailto:hello@allsparkenterprisesltd.ca">Contact</a>
   </div>
 </footer>
 
-<!-- ════════════════ START OVERLAY ════════════════ -->
+<!-- START OVERLAY -->
 <div class="ov" id="startOv">
   <div class="modal">
     <div class="modal-corner"></div><div class="modal-corner"></div>
@@ -874,7 +635,7 @@ footer{
   </div>
 </div>
 
-<!-- ════════════════ END OVERLAY ════════════════ -->
+<!-- END OVERLAY -->
 <div class="ov off" id="endOv">
   <div class="modal">
     <div class="modal-corner"></div><div class="modal-corner"></div>
@@ -882,18 +643,24 @@ footer{
     <div class="m-ico" id="endIco">🏆</div>
     <div class="m-ttl" id="endTtl">PAYOUT!</div>
     <div class="m-sub" id="endSub">Here's your final score</div>
-
     <div class="pts-display">
       <div class="pts-main"><span id="endPts">0</span> <span class="pts-denom">/ <span id="endMax">?</span></span></div>
       <div class="pts-sub">points earned · <span id="endPct">0</span>% of maximum · <span id="endStrk">0</span>🔥 streak</div>
     </div>
-
     <div class="end-grid">
-      <div class="eg"><div class="eg-n" style="color:var(--ng)" id="endWds">0</div><div class="eg-l">words found</div></div>
-      <div class="eg"><div class="eg-n" style="color:var(--np)" id="endBon">0</div><div class="eg-l">bonus ★ pts</div></div>
+      <div class="eg"><div class="eg-n" style="color:var(--ng-text)" id="endWds">0</div><div class="eg-l">words found</div></div>
+      <div class="eg"><div class="eg-n" style="color:var(--np-text)" id="endBon">0</div><div class="eg-l">bonus ★ pts</div></div>
       <div class="eg"><div class="eg-n" style="color:var(--gold)" id="endBest">0</div><div class="eg-l">personal best</div></div>
     </div>
-
+    <div class="xp-gained-box" id="xpGainedBox" style="display:none">
+      <div class="xp-gained-title">⚡ XP Earned This Round</div>
+      <div class="xp-gained-rows" id="xpGainedRows"></div>
+    </div>
+    <div class="rankup-banner" id="rankupBanner" style="display:none">
+      <div class="rankup-ico" id="rankupIco">🏆</div>
+      <div class="rankup-title" id="rankupTitle">RANK UP!</div>
+      <div class="rankup-sub" id="rankupSub"></div>
+    </div>
     <div class="share-sheet">
       <div class="share-ttl">♠ Share Your Score</div>
       <div class="share-grid">
@@ -907,69 +674,71 @@ footer{
     <div class="share-msg" id="shareMsg"></div>
     <button class="btn-s" onclick="showMissed()">Reveal All Words</button>
     <button class="btn-s" onclick="bonusRound()">♦ Bonus Round (new word)</button>
+    <button class="btn-s" onclick="showLevels()">⚡ View Ranks & Unlocks</button>
     <div style="font-size:11px;color:var(--tx2);font-family:var(--mo);margin-top:10px;">New daily word every midnight!</div>
   </div>
 </div>
 
-<!-- ════════════════ HOW TO PLAY ════════════════ -->
+<!-- HOW TO PLAY -->
 <div class="how-ov off" id="howOv">
   <div class="how-box">
     <div class="how-ttl">♣ How to Play</div>
-    <div class="how-row">
-      <div class="how-n">1</div>
-      <div class="how-t">You are given a <strong>big word</strong>. Find as many real English words hidden inside it as possible. Words must be <strong>3+ letters</strong>.</div>
-    </div>
-    <div class="how-row">
-      <div class="how-n">2</div>
-      <div class="how-t"><strong>Standard words</strong> can use any of the available letters in any order — like an anagram.</div>
-    </div>
-    <div class="how-row">
-      <div class="how-n">3</div>
-      <div class="how-t"><span class="bon">★ BONUS words</span> are letters that appear <strong>consecutively</strong> inside the big word — reading left→right <em>or</em> right→left — without rearranging. These score <strong>2× points!</strong></div>
-    </div>
+    <div class="how-row"><div class="how-n">1</div><div class="how-t">You are given a <strong>big word</strong>. Find as many real English words hidden inside it as possible. Words must be <strong>3+ letters</strong>.</div></div>
+    <div class="how-row"><div class="how-n">2</div><div class="how-t"><strong>Standard words</strong> can use any of the available letters in any order — like an anagram.</div></div>
+    <div class="how-row"><div class="how-n">3</div><div class="how-t"><span class="bon">★ BONUS words</span> are letters that appear <strong>consecutively</strong> inside the big word — reading left→right <em>or</em> right→left — without rearranging. These score <strong>2× points!</strong></div></div>
     <div class="ex-box">
       <div class="ex-big">BLACKSMITH</div>
       <div class="ex-lbl">★ BONUS — consecutive (forward or reverse)</div>
-      <div class="ex-row">
-        <span class="ex-c bon">BLACK</span>
-        <span class="ex-c bon">LACK</span>
-        <span class="ex-c bon">SMITH</span>
-        <span class="ex-c bon">ACK</span>
-      </div>
+      <div class="ex-row"><span class="ex-c bon">BLACK</span><span class="ex-c bon">LACK</span><span class="ex-c bon">SMITH</span><span class="ex-c bon">ACK</span></div>
       <div class="ex-lbl">Standard — letters in any order</div>
-      <div class="ex-row">
-        <span class="ex-c std">SILK</span>
-        <span class="ex-c std">MAIL</span>
-        <span class="ex-c std">SLIM</span>
-        <span class="ex-c std">HIM</span>
-      </div>
+      <div class="ex-row"><span class="ex-c std">SILK</span><span class="ex-c std">MAIL</span><span class="ex-c std">SLIM</span><span class="ex-c std">HIM</span></div>
     </div>
-    <div class="how-row">
-      <div class="how-n">4</div>
-      <div class="how-t"><strong>Points by word length:</strong></div>
-    </div>
+    <div class="how-row"><div class="how-n">4</div><div class="how-t"><strong>Points by word length:</strong></div></div>
     <table class="pts-tbl">
-      <tr><th>Length</th><th class="g">Standard</th><th class="p">★ Bonus</th></tr>
-      <tr><td>3 letters</td><td class="g">1 pt</td><td class="p">2 pts</td></tr>
-      <tr><td>4 letters</td><td class="g">2 pts</td><td class="p">4 pts</td></tr>
-      <tr><td>5 letters</td><td class="g">3 pts</td><td class="p">6 pts</td></tr>
-      <tr><td>6+ letters</td><td class="g">5 pts</td><td class="p">10 pts</td></tr>
+      <tr><th>Length</th><th class="g">Standard</th><th class="p">★ Bonus (fwd)</th><th class="p">★ Bonus (rev)</th></tr>
+      <tr><td>3 letters</td><td class="g">1 pt</td><td class="p">3 pts</td><td class="p">5 pts</td></tr>
+      <tr><td>4 letters</td><td class="g">2 pts</td><td class="p">5 pts</td><td class="p">8 pts</td></tr>
+      <tr><td>5 letters</td><td class="g">3 pts</td><td class="p">8 pts</td><td class="p">12 pts</td></tr>
+      <tr><td>6+ letters</td><td class="g">5 pts</td><td class="p">12 pts</td><td class="p">18 pts</td></tr>
     </table>
-    <div class="how-row" style="margin-top:12px;">
-      <div class="how-n">5</div>
-      <div class="how-t">You have <strong>90 seconds</strong>. Your score shows <strong>your points / max possible</strong>. Share it to challenge friends on any platform!</div>
-    </div>
+    <div class="how-row" style="margin-top:12px;"><div class="how-n">5</div><div class="how-t">You have <strong>90 seconds</strong> (60s Hard · 45s Blitz). Earn XP to rank up and unlock new modes!</div></div>
     <button class="btn-p" onclick="closeHow()" style="margin-top:14px;">🎲 LET'S PLAY!</button>
   </div>
 </div>
 
-<!-- ════════════════ ACCOUNT PANEL ════════════════ -->
+<!-- RANKS OVERLAY -->
+<div class="lvl-ov off" id="lvlOv">
+  <div class="lvl-box">
+    <button class="lvl-close-btn" onclick="closeLevels()">×</button>
+    <div class="lvl-ttl">⚡ Ranks & Unlocks</div>
+    <div class="lvl-sub">Earn XP every game. Rank up to unlock new modes and features.</div>
+    <div class="rank-cards" id="rankCardsList"></div>
+    <button class="btn-s" onclick="closeLevels()" style="margin-top:18px;">Close</button>
+  </div>
+</div>
+
+<!-- ACCOUNT PANEL -->
 <div class="a-panel" id="aPanel">
   <button class="ap-close" onclick="closePanel()">×</button>
   <div class="ap-ttl">♥ My Stats</div>
+
+  <!-- Stats (always visible) -->
   <div class="ap-sec">
     <div class="ap-lbl">Current Streak</div>
-    <div style="font-family:var(--fn);font-size:40px;color:var(--gold);text-shadow:0 0 16px rgba(245,200,66,.4);" id="apStreak">0 🔥</div>
+    <div style="font-family:var(--fn);font-size:40px;color:var(--gold);" id="apStreak">0 🔥</div>
+  </div>
+  <div class="ap-sec">
+    <div class="ap-lbl">Rank</div>
+    <div class="ap-rank-block">
+      <div class="ap-rank-row">
+        <span class="ap-rank-ico" id="apRankIco">🃏</span>
+        <div>
+          <div id="apRankName" style="font-family:var(--fn);font-size:18px;color:var(--gold)">Dealer</div>
+          <div id="apRankXp" style="font-size:11px;color:var(--tx2);font-family:var(--mo);">0 / 100 XP</div>
+        </div>
+      </div>
+      <div class="ap-xp-track"><div class="ap-xp-fill" id="apXpFill" style="width:0%"></div></div>
+    </div>
   </div>
   <div class="ap-sec">
     <div class="ap-lbl">Last 7 Days</div>
@@ -977,328 +746,819 @@ footer{
   </div>
   <div class="ap-sec">
     <div class="ap-lbl">Personal Best</div>
-    <div style="font-family:var(--fn);font-size:28px;color:var(--gold);text-shadow:0 0 12px rgba(245,200,66,.3);" id="apBest">0 pts</div>
+    <div style="font-family:var(--fn);font-size:28px;color:var(--gold);" id="apBest">0 pts</div>
   </div>
   <div class="ap-sec">
-    <div class="ap-lbl">Save Streak (optional)</div>
-    <input class="ap-in" type="text" placeholder="Display name" id="apName">
-    <input class="ap-in" type="email" placeholder="Email address" id="apEmail">
-    <button class="ap-btn" id="apSaveBtn" onclick="saveAcct()">Save My Streak</button>
-    <div style="font-size:11px;color:var(--tx2);font-family:var(--mo);margin-top:8px;line-height:1.5;">
-      Streak saves automatically on this device. Optional account protects it across devices.
+    <div class="ap-lbl">Total XP</div>
+    <div style="font-family:var(--fn);font-size:28px;color:var(--nb-text);" id="apTotalXp">0 XP</div>
+  </div>
+
+  <!-- ── LOGGED OUT: login form ── -->
+  <div class="ap-sec" id="authSection">
+    <div class="ap-lbl">Save Progress Across Devices</div>
+
+    <!-- Login form -->
+    <div id="loginForm">
+      <div style="font-size:12px;color:var(--tx2);font-family:var(--mo);margin-bottom:10px;line-height:1.6;">
+        Enter your email — we'll send a magic link. No password needed. Your streak, XP, and history sync across all your devices.
+      </div>
+      <input class="ap-in" type="email" placeholder="your@email.com" id="authEmail" autocomplete="email">
+      <button class="ap-btn" id="authBtn" onclick="sendMagicLink()">✉ Send Magic Link</button>
+      <div class="auth-msg" id="authMsg"></div>
+    </div>
+
+    <!-- Logged in state -->
+    <div id="loggedInForm" style="display:none">
+      <div class="auth-user-row">
+        <span class="auth-user-ico">✓</span>
+        <div>
+          <div style="font-family:var(--fn);font-size:15px;color:var(--ng-text)">Signed in</div>
+          <div style="font-size:11px;color:var(--tx2);font-family:var(--mo);" id="authUserEmail"></div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--tx2);font-family:var(--mo);margin:8px 0 10px;line-height:1.5;" id="syncStatus">
+        Progress synced to your account.
+      </div>
+      <button class="ap-btn ap-btn-out" onclick="signOut()">Sign Out</button>
     </div>
   </div>
 </div>
 
-<!-- ════════════════════════════════════════════
-     GAME LOGIC
-════════════════════════════════════════════ -->
+<!-- UNLOCK TOAST -->
+<div class="unlock-toast" id="unlockToast">
+  <div class="ut-ico" id="utIco">🔓</div>
+  <div class="ut-title" id="utTitle">Unlocked!</div>
+  <div class="ut-sub" id="utSub"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const DUR = 90;
+// ══════════════════════════════════════════════════
+//  SUPABASE CONFIG
+// ══════════════════════════════════════════════════
+const SUPA_URL = 'https://tklmmctaocvewxkgdaew.supabase.co';
+const SUPA_KEY = 'sb_publishable_VJ1FX2RYr6fcWyVupuRR7w_Xzx97b5w';
+const supa = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+let currentUser = null; // set after auth check
+function setTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  localStorage.setItem('nw_theme', t);
+  document.getElementById('ttDark').classList.toggle('active', t === 'dark');
+  document.getElementById('ttLight').classList.toggle('active', t === 'light');
+}
+(function() {
+  const saved = localStorage.getItem('nw_theme') || 'dark';
+  setTheme(saved);
+})();
+
+// ══════════════════════════════════════════════════
+//  SCORING WRAPPERS (delegates to dictionary.js)
+// ══════════════════════════════════════════════════
+// dictionary.js exposes: checkWord(word, bigWord), analyzeWord(bigWord),
+// isContained(small, big), isFwdConsec(small, big), isRevConsec(small, big)
+
+function findAllValidWords(bigWord) {
+  const result = analyzeWord(bigWord.toLowerCase());
+  return result.words; // each item: { word (uppercase), pts, wordType, isConsecutive, ... }
+}
+
+function totalPossiblePoints(wordList) {
+  return wordList.reduce((s, w) => s + w.pts, 0);
+}
+
+
+// ══════════════════════════════════════════════════
+//  RANK / LEVEL SYSTEM
+// ══════════════════════════════════════════════════
+const RANKS = [
+  { level:1, name:"Dealer",       ico:"🃏", color:"var(--tx2)",    xpRequired:0,    xpToNext:100,  desc:"Just getting dealt in. Find your footing.", unlocks:["Normal Mode (90s)","Daily Puzzle","Streak Tracker"] },
+  { level:2, name:"Card Shark",   ico:"🦈", color:"var(--ng-text)",xpRequired:100,  xpToNext:250,  desc:"You know the deck. Sharks don't wait.",      unlocks:["Bonus Round","Personal Best Tracking","Reveal All Words"] },
+  { level:3, name:"Sharp",        ico:"🎯", color:"#0ea5e9",       xpRequired:250,  xpToNext:500,  desc:"You see angles others miss.",                unlocks:["🔥 Hard Mode (60s)","XP Multiplier 1.2×"] },
+  { level:4, name:"Hustler",      ico:"🕶️",color:"var(--gold)",   xpRequired:500,  xpToNext:900,  desc:"Slick, fast, efficient. Never leave points.", unlocks:["Streak Bonus XP","30-day History"] },
+  { level:5, name:"Pit Boss",     ico:"💼", color:"var(--np-text)",xpRequired:900,  xpToNext:1500, desc:"You run the floor now.",                     unlocks:["XP Multiplier 1.5×","Pit Boss Badge"] },
+  { level:6, name:"High Roller",  ico:"💎", color:"var(--gold)",   xpRequired:1500, xpToNext:2500, desc:"Minimum buy-in: excellence.",                unlocks:["⚡ Blitz Mode (45s)","XP Multiplier 1.75×"] },
+  { level:7, name:"House",        ico:"🏛️",color:"var(--gold2)",  xpRequired:2500, xpToNext:4000, desc:"The house always wins. You are the house.",  unlocks:["XP Multiplier 2×","Gold Theme"] },
+  { level:8, name:"Casino Royale",ico:"👑", color:"var(--gold)",   xpRequired:4000, xpToNext:null, desc:"Legendary. No higher table.",                unlocks:["Crown Badge","Max XP 2.5×"] }
+];
+
+function getXpMultiplier(level) {
+  if (level >= 8) return 2.5;
+  if (level >= 7) return 2.0;
+  if (level >= 6) return 1.75;
+  if (level >= 5) return 1.5;
+  if (level >= 3) return 1.2;
+  return 1.0;
+}
+
+function getRankFromXp(totalXp) {
+  let rank = RANKS[0];
+  for (let i = RANKS.length - 1; i >= 0; i--) {
+    if (totalXp >= RANKS[i].xpRequired) { rank = RANKS[i]; break; }
+  }
+  return rank;
+}
+
+function getXpProgress(totalXp) {
+  const rank = getRankFromXp(totalXp);
+  if (!rank.xpToNext) return { current:0, needed:0, pct:100 };
+  const into = totalXp - rank.xpRequired;
+  return { current:into, needed:rank.xpToNext, pct:Math.min(Math.round((into/rank.xpToNext)*100),100) };
+}
+
+function calcXpEarned(pts, maxPts, bonusPts, difficulty, streak) {
+  const rank = getRankFromXp(G.totalXp);
+  const mult = getXpMultiplier(rank.level);
+  let base = 0;
+  const breakdown = [];
+
+  base += pts;
+  breakdown.push({ label:"Points scored", val:pts });
+
+  const bonusXp = Math.floor(bonusPts * 0.5);
+  if (bonusXp > 0) { base += bonusXp; breakdown.push({ label:"Bonus word XP", val:bonusXp }); }
+
+  if (maxPts > 0) {
+    const pct = pts / maxPts;
+    if (pct >= 1.0)      { base += 30; breakdown.push({ label:"Perfect game! (+30)", val:30 }); }
+    else if (pct >= 0.75){ base += 15; breakdown.push({ label:"75%+ score (+15)", val:15 }); }
+    else if (pct >= 0.5) { base += 8;  breakdown.push({ label:"50%+ score (+8)", val:8 }); }
+  }
+
+  if (rank.level >= 4 && streak >= 3) {
+    const sb = Math.min(streak * 2, 20);
+    base += sb;
+    breakdown.push({ label:`Streak ×${streak} bonus`, val:sb });
+  }
+
+  if (difficulty === 'hard')  { const d=Math.floor(base*.3); base+=d; breakdown.push({ label:"Hard Mode +30%", val:d }); }
+  if (difficulty === 'blitz') { const d=Math.floor(base*.6); base+=d; breakdown.push({ label:"Blitz Mode +60%", val:d }); }
+
+  const total = Math.max(Math.round(base * mult), 1);
+  if (mult > 1.0) breakdown.push({ label:`Rank ×${mult} multiplier`, val:total - Math.round(base) });
+
+  return { total, breakdown };
+}
+
+// ══════════════════════════════════════════════════
+//  GAME STATE
+// ══════════════════════════════════════════════════
+const DIFF_TIMES = { normal:90, hard:60, blitz:45 };
+
 let G = {
-  word:"",theme:null,possible:[],found:[],pts:0,bonusPts:0,
-  timer:DUR,iv:null,running:false,done:false,
-  streak:0,best:0,history:{},day:0
+  word:"", theme:null, possible:[], found:[], pts:0, bonusPts:0,
+  timer:90, iv:null, running:false, done:false,
+  streak:0, best:0, history:{}, day:0,
+  totalXp:0, difficulty:'normal',
+  // speed chain
+  lastWordTime:0, quickCount:0, chainActive:false
 };
 
+// ══════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════
 function init() {
   loadStore();
   const thKey = getTodayTheme();
   const td = THEMES[thKey];
   const word = getTodayWord();
-  G.word=word; G.theme=td; G.day=getDayNumber();
+  G.word = word; G.theme = td; G.day = getDayNumber();
   const ds = getTodayDateStr();
 
   document.getElementById("thEm").textContent = td.emoji;
   document.getElementById("thName").textContent = td.name;
   document.getElementById("thDesc").textContent = td.desc;
   document.getElementById("thDate").textContent = ds;
-  document.getElementById("themeBar").style.borderColor = td.color+"55";
+  document.getElementById("themeBar").style.borderColor = td.color + "55";
   document.getElementById("stIco").textContent = td.emoji;
   document.getElementById("stWord").textContent = word;
   document.getElementById("stWord").style.color = td.color;
-  document.getElementById("stTheme").textContent = td.name+" · "+ds;
+  document.getElementById("stTheme").textContent = td.name + " · " + ds;
   document.getElementById("fyear").textContent = new Date().getFullYear();
   document.getElementById("streakNum").textContent = G.streak;
 
   renderWord(word);
+
   G.possible = findAllValidWords(word);
   const maxPts = totalPossiblePoints(G.possible);
   document.getElementById("scMax").textContent = maxPts;
   document.getElementById("psMax").textContent = maxPts;
   document.getElementById("psBest").textContent = G.best;
 
-  const k = "d"+G.day;
+  // Set timer display for current difficulty
+  G.timer = DIFF_TIMES[G.difficulty] || 90;
+  tickUI();
+
+  const k = "d" + G.day;
   if (G.history[k]) {
     const p = G.history[k];
-    document.getElementById("stSub").textContent =
-      "Already played today! You scored "+p.pts+"/"+maxPts+" pts. New word at midnight!";
+    document.getElementById("stSub").textContent = "Already played today! You scored " + p.pts + "/" + maxPts + " pts. New word at midnight!";
     document.getElementById("stBtn").textContent = "See My Results";
     document.getElementById("stBtn").onclick = () => {
       document.getElementById("startOv").classList.add("off");
-      showEnd(p.pts, p.bonus||0, p.words||[], p.streak||G.streak);
+      showEnd(p.pts, p.bonus||0, p.words||[], p.streak||G.streak, false, null, null);
     };
   }
+
+  updateXpUI();
+  updateDiffButtons();
   updatePanel();
 }
 
+// ── XP UI ──
+function updateXpUI() {
+  const rank = getRankFromXp(G.totalXp);
+  const prog = getXpProgress(G.totalXp);
+  const nextRank = RANKS[rank.level] || null;
+
+  document.getElementById("xpRankIco").textContent = rank.ico;
+  document.getElementById("xpRankName").textContent = rank.name;
+  document.getElementById("xpRankName").style.color = rank.color;
+  document.getElementById("xpRankSub").textContent = "Level " + rank.level;
+  document.getElementById("xpFill").style.width = prog.pct + "%";
+  document.getElementById("xpToNext").textContent = nextRank ? prog.current + " / " + prog.needed + " XP" : "MAX RANK";
+  document.getElementById("hdrRankIco").textContent = rank.ico;
+  document.getElementById("hdrRankName").textContent = rank.name;
+}
+
+// ── Difficulty buttons ──
+function updateDiffButtons() {
+  const rank = getRankFromXp(G.totalXp);
+  const hardOk = rank.level >= 3;
+  const blitzOk = rank.level >= 6;
+
+  ["normal","hard","blitz"].forEach(m => {
+    const btn = document.getElementById("diff" + m.charAt(0).toUpperCase() + m.slice(1));
+    btn.classList.toggle("active", G.difficulty === m);
+  });
+  document.getElementById("diffHard").classList.toggle("locked", !hardOk);
+  document.getElementById("diffBlitz").classList.toggle("locked", !blitzOk);
+
+  const tip = document.getElementById("diffTip");
+  if (!hardOk) tip.textContent = "Hard unlocks at Sharp (Lv 3) · Blitz at High Roller (Lv 6)";
+  else if (!blitzOk) tip.textContent = "Blitz unlocks at High Roller (Lv 6)";
+  else tip.textContent = "";
+}
+
+function setDifficulty(mode) {
+  if (G.running) return;
+  const rank = getRankFromXp(G.totalXp);
+  if (mode === 'hard' && rank.level < 3) { showUnlockToast("🔒","Locked","Reach Sharp (Lv 3) for Hard Mode"); return; }
+  if (mode === 'blitz' && rank.level < 6) { showUnlockToast("🔒","Locked","Reach High Roller (Lv 6) for Blitz"); return; }
+  G.difficulty = mode;
+  G.timer = DIFF_TIMES[mode];
+  updateDiffButtons();
+  tickUI();
+}
+
+// ── Word rendering ──
 function renderWord(w) {
-  document.getElementById("bigWord").innerHTML =
-    w.split("").map(c=>`<span>${c}</span>`).join("");
+  document.getElementById("bigWord").innerHTML = w.split("").map(c => `<span>${c}</span>`).join("");
 }
 
 function hlWord(typed) {
-  const spans=[...document.getElementById("bigWord").querySelectorAll("span")];
-  const avail={};
-  for(const c of G.word.toLowerCase()) avail[c]=(avail[c]||0)+1;
-  spans.forEach(s=>s.classList.remove("hl"));
-  for(const c of typed.toLowerCase()){
-    const i=spans.findIndex(s=>
-      s.textContent.toLowerCase()===c&&!s.classList.contains("hl")&&(avail[c]||0)>0
-    );
-    if(i!==-1){spans[i].classList.add("hl");avail[c]--;}
+  const spans = [...document.getElementById("bigWord").querySelectorAll("span")];
+  const avail = {};
+  for (const c of G.word.toLowerCase()) avail[c] = (avail[c] || 0) + 1;
+  spans.forEach(s => s.classList.remove("hl"));
+  for (const c of typed.toLowerCase()) {
+    const i = spans.findIndex(s => s.textContent.toLowerCase() === c && !s.classList.contains("hl") && (avail[c] || 0) > 0);
+    if (i !== -1) { spans[i].classList.add("hl"); avail[c]--; }
   }
 }
 
+// ══════════════════════════════════════════════════
+//  GAME FLOW
+// ══════════════════════════════════════════════════
 function startGame() {
   document.getElementById("startOv").classList.add("off");
-  const inp=document.getElementById("wordIn");
-  inp.disabled=false;
-  document.getElementById("subBtn").disabled=false;
+  const inp = document.getElementById("wordIn");
+  inp.disabled = false;
+  document.getElementById("subBtn").disabled = false;
   inp.focus();
-  setFB("Type a word and press Enter","info");
-  G.running=true;G.done=false;G.found=[];G.pts=0;G.bonusPts=0;
-  G.timer=DUR;
-  document.getElementById("wGrid").innerHTML="";
-  ["scPts","scBonus","scWords","psPts","psBon","psWds"].forEach(id=>{
-    document.getElementById(id).textContent="0";
-  });
-  document.getElementById("progFill").style.width="0%";
-  document.getElementById("progLbl").textContent="Find words to track your progress";
+  setFB("Type a word and press Enter", "info");
+  G.running = true; G.done = false; G.found = []; G.pts = 0; G.bonusPts = 0;
+  G.lastWordTime = 0; G.quickCount = 0; G.chainActive = false;
+  G.timer = DIFF_TIMES[G.difficulty] || 90;
+  document.getElementById("wGrid").innerHTML = "";
+  ["scPts","scBonus","scWords","psPts","psBon","psWds"].forEach(id => document.getElementById(id).textContent = "0");
+  document.getElementById("progFill").style.width = "0%";
+  document.getElementById("progLbl").textContent = "Find words to track your progress";
   tickUI();
-  G.iv=setInterval(()=>{G.timer--;tickUI();if(G.timer<=0)endGame();},1000);
+  G.iv = setInterval(() => { G.timer--; tickUI(); if (G.timer <= 0) endGame(); }, 1000);
 }
 
-function tickUI(){
-  const m=Math.floor(G.timer/60),s=G.timer%60;
-  document.getElementById("timerDisp").textContent=m+":"+String(s).padStart(2,"0");
-  document.getElementById("tFill").style.width=((G.timer/DUR)*100)+"%";
-  const urg=G.timer<=15;
-  document.getElementById("timerDisp").classList.toggle("urg",urg);
-  document.getElementById("tFill").classList.toggle("urg",urg);
-  if(G.running) document.getElementById("timerHint").textContent=urg?"Almost out of time!":"Keep finding words!";
+function tickUI() {
+  const dur = DIFF_TIMES[G.difficulty] || 90;
+  const m = Math.floor(G.timer / 60), s = G.timer % 60;
+  document.getElementById("timerDisp").textContent = m + ":" + String(s).padStart(2, "0");
+  document.getElementById("tFill").style.width = ((G.timer / dur) * 100) + "%";
+  const urg = G.timer <= 15;
+  document.getElementById("timerDisp").classList.toggle("urg", urg);
+  document.getElementById("tFill").classList.toggle("urg", urg);
+  if (G.running) document.getElementById("timerHint").textContent = urg ? "Almost out of time!" : "Keep finding words!";
 }
 
-function endGame(){
-  clearInterval(G.iv);G.running=false;G.done=true;
-  document.getElementById("wordIn").disabled=true;
-  document.getElementById("subBtn").disabled=true;
-  document.getElementById("timerDisp").textContent="0:00";
-  document.getElementById("timerHint").textContent="Time's up!";
-  if(G.pts>G.best) G.best=G.pts;
-  const prevK="d"+(G.day-1);
-  G.streak=G.history[prevK]?(G.history[prevK].streak||0)+1:1;
-  const k="d"+G.day;
-  G.history[k]={pts:G.pts,bonus:G.bonusPts,words:[...G.found],streak:G.streak};
-  document.getElementById("streakNum").textContent=G.streak;
-  saveStore();updatePanel();
-  showEnd(G.pts,G.bonusPts,G.found,G.streak);
+function endGame() {
+  clearInterval(G.iv); G.running = false; G.done = true;
+  document.getElementById("wordIn").disabled = true;
+  document.getElementById("subBtn").disabled = true;
+  document.getElementById("timerDisp").textContent = "0:00";
+  document.getElementById("timerHint").textContent = "Time's up!";
+
+  if (G.pts > G.best) G.best = G.pts;
+  const prevK = "d" + (G.day - 1);
+  G.streak = G.history[prevK] ? (G.history[prevK].streak || 0) + 1 : 1;
+
+  const maxPts = totalPossiblePoints(G.possible);
+  const xpResult = calcXpEarned(G.pts, maxPts, G.bonusPts, G.difficulty, G.streak);
+  const oldRank = getRankFromXp(G.totalXp);
+  G.totalXp += xpResult.total;
+  const newRank = getRankFromXp(G.totalXp);
+
+  const k = "d" + G.day;
+  G.history[k] = { pts:G.pts, bonus:G.bonusPts, words:[...G.found], streak:G.streak, xpEarned:xpResult.total };
+  document.getElementById("streakNum").textContent = G.streak;
+  saveStoreAndSync(); updatePanel(); updateXpUI(); updateDiffButtons();
+
+  const didRankUp = newRank.level > oldRank.level;
+  showEnd(G.pts, G.bonusPts, G.found, G.streak, true, xpResult, didRankUp ? newRank : null);
 }
 
-function showEnd(pts,bonusPts,words,streak){
-  const max=totalPossiblePoints(G.possible);
-  const pct=max>0?Math.round((pts/max)*100):0;
-  let ico="🌱",ttl="KEEP PLAYING!";
-  if(pct>=80){ico="🏆";ttl="JACKPOT!";}
-  else if(pct>=60){ico="🎰";ttl="BIG WINNER!";}
-  else if(pct>=40){ico="🎲";ttl="NICE ROLL!";}
-  else if(pct>=20){ico="🃏";ttl="GETTING WARM!";}
-  document.getElementById("endIco").textContent=ico;
-  document.getElementById("endTtl").textContent=ttl;
-  document.getElementById("endSub").textContent="You scored "+pct+"% of the maximum points!";
-  document.getElementById("endPts").textContent=pts;
-  document.getElementById("endMax").textContent=max;
-  document.getElementById("endPct").textContent=pct;
-  document.getElementById("endStrk").textContent=streak;
-  document.getElementById("endWds").textContent=words.length;
-  document.getElementById("endBon").textContent=bonusPts+" pts";
-  document.getElementById("endBest").textContent=G.best+" pts";
+function showEnd(pts, bonusPts, words, streak, showXp, xpResult, newRank) {
+  const max = totalPossiblePoints(G.possible);
+  const pct = max > 0 ? Math.round((pts / max) * 100) : 0;
+  let ico = "🌱", ttl = "KEEP PLAYING!";
+  if (pct >= 80) { ico = "🏆"; ttl = "JACKPOT!"; }
+  else if (pct >= 60) { ico = "🎰"; ttl = "BIG WINNER!"; }
+  else if (pct >= 40) { ico = "🎲"; ttl = "NICE ROLL!"; }
+  else if (pct >= 20) { ico = "🃏"; ttl = "GETTING WARM!"; }
+  document.getElementById("endIco").textContent = ico;
+  document.getElementById("endTtl").textContent = ttl;
+  document.getElementById("endSub").textContent = "You scored " + pct + "% of the maximum points!";
+  document.getElementById("endPts").textContent = pts;
+  document.getElementById("endMax").textContent = max;
+  document.getElementById("endPct").textContent = pct;
+  document.getElementById("endStrk").textContent = streak;
+  document.getElementById("endWds").textContent = words.length;
+  document.getElementById("endBon").textContent = bonusPts + " pts";
+  document.getElementById("endBest").textContent = G.best + " pts";
+
+  const xpBox = document.getElementById("xpGainedBox");
+  if (showXp && xpResult) {
+    xpBox.style.display = "";
+    document.getElementById("xpGainedRows").innerHTML =
+      xpResult.breakdown.map(r => `<div class="xp-row"><span class="xp-row-label">${r.label}</span><span class="xp-row-val">+${r.val} XP</span></div>`).join("") +
+      `<div class="xp-row xp-total-row"><span class="xp-row-label">Total XP earned</span><span class="xp-row-val">+${xpResult.total} XP</span></div>`;
+  } else {
+    xpBox.style.display = "none";
+  }
+
+  const rb = document.getElementById("rankupBanner");
+  if (newRank) {
+    rb.style.display = "";
+    document.getElementById("rankupIco").textContent = newRank.ico;
+    document.getElementById("rankupTitle").textContent = "RANK UP: " + newRank.name.toUpperCase();
+    document.getElementById("rankupSub").textContent = newRank.desc;
+    if (newRank.unlocks.length) setTimeout(() => showUnlockToast(newRank.ico, "Rank Up: " + newRank.name, newRank.unlocks[0] + (newRank.unlocks.length > 1 ? " + more!" : "")), 800);
+  } else {
+    rb.style.display = "none";
+  }
+
   document.getElementById("endOv").classList.remove("off");
 }
 
-document.getElementById("wordIn").addEventListener("keydown",function(e){
-  if(e.key==="Enter")submit();
-  if(G.running)setTimeout(()=>hlWord(this.value),0);
+// ══════════════════════════════════════════════════
+//  WORD SUBMISSION
+// ══════════════════════════════════════════════════
+document.getElementById("wordIn").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") submit();
+  if (G.running) setTimeout(() => hlWord(this.value), 0);
 });
-document.getElementById("wordIn").addEventListener("input",function(){
-  if(G.running)hlWord(this.value);
+document.getElementById("wordIn").addEventListener("input", function() {
+  if (G.running) hlWord(this.value);
 });
 
-function submit(){
-  if(!G.running)return;
-  const inp=document.getElementById("wordIn");
-  const raw=inp.value.trim().toUpperCase();
-  inp.value="";hlWord("");
-  if(!raw)return;
-  if(raw.length<3){setFB("Minimum 3 letters","bad");shake();return;}
-  if(G.found.includes(raw)){setFB("Already found "+raw+"!","bad");shake();return;}
-  if(!isContained(raw.toLowerCase(),G.word.toLowerCase())){
-    setFB(raw+" uses letters not in "+G.word,"bad");shake();return;
+function submit() {
+  if (!G.running) return;
+  const inp = document.getElementById("wordIn");
+  const raw = inp.value.trim().toUpperCase();
+  inp.value = ""; hlWord("");
+  if (!raw) return;
+
+  if (raw.length < 3) { setFB("Minimum 3 letters", "bad"); shake(); return; }
+  if (G.found.includes(raw)) { setFB("Already found " + raw + "!", "bad"); shake(); return; }
+
+  if (!isContained(raw.toLowerCase(), G.word.toLowerCase())) {
+    setFB(raw + " uses letters not in " + G.word, "bad"); shake(); return;
   }
-  if(!isValidWord(raw)){setFB(raw+" is not a valid word","bad");shake();return;}
 
-  const isBonus=isConsecutive(raw.toLowerCase(),G.word.toLowerCase());
-  const pts=getPoints(raw,isBonus);
-  G.found.push(raw);G.pts+=pts;
-  if(isBonus)G.bonusPts+=pts;
-  addChip(raw,isBonus);
+  // ── Speed chain: check if this word was found within 8s of last ──
+  const now = Date.now();
+  const timeSinceLast = G.lastWordTime ? (now - G.lastWordTime) / 1000 : 999;
+  const isQuick = G.lastWordTime > 0 && timeSinceLast <= 8;
 
-  if(isBonus){
-    setFB("★ BONUS! "+raw+" = +"+pts+" pts","bonus");
-    pulseP();
+  if (isQuick) {
+    G.quickCount++;
   } else {
-    setFB("+"+pts+" pts — "+raw,"good");
+    G.quickCount = 0;
+    G.chainActive = false;
+  }
+
+  // Every 3rd consecutive quick find, next word gets ×2
+  // chainActive means THIS word gets ×2 (set on the 3rd quick find)
+  if (G.quickCount > 0 && G.quickCount % 3 === 0) {
+    G.chainActive = true;
+  }
+
+  const speedMult = G.chainActive ? 2 : 1;
+  const result = checkWord(raw.toLowerCase(), G.word.toLowerCase(), speedMult);
+
+  if (!result.valid) {
+    setFB(raw + " is not a valid word", "bad"); shake();
+    // failed word resets chain
+    G.quickCount = 0; G.chainActive = false;
+    return;
+  }
+
+  // ── Award points ──
+  G.found.push(raw);
+  G.pts += result.pts;
+  G.lastWordTime = now;
+
+  // Track rearranged bonus pts separately (replaces old bonusPts which was consecutive)
+  if (!result.isConsecutive) G.bonusPts += result.pts;
+
+  // Speed bonus +1 pt (on top of result)
+  let speedBonusPt = 0;
+  if (isQuick) {
+    speedBonusPt = 1;
+    G.pts += 1;
+    G.bonusPts += 1;
+  }
+
+  // Reset chainActive after it fires
+  if (G.chainActive) G.chainActive = false;
+
+  addChip(raw, result.wordType);
+
+  // ── Feedback ──
+  const typeLabels = {
+    'consecutive-fwd': '→ In-order',
+    'consecutive-rev': '← Reverse',
+    'rearranged':      '🔀 Rearranged',
+    'rearranged-50':   '🔀 Rearranged (50%+)',
+    'rearranged-75':   '🔀 Rearranged (75%+)',
+    'rearranged-full': '🏆 FULL REARRANGE!'
+  };
+  const label = typeLabels[result.wordType] || '';
+  const chainNote = speedMult > 1 ? ' ⚡×2 chain!' : (isQuick ? ' ⚡+1 quick!' : '');
+  const totalShown = result.pts + speedBonusPt;
+
+  if (result.wordType === 'rearranged-full') {
+    setFB('🏆 JACKPOT! ' + raw + ' = +' + totalShown + ' pts' + chainNote, 'bonus');
+    pulseP();
+  } else if (!result.isConsecutive) {
+    setFB(label + ' — ' + raw + ' = +' + totalShown + ' pts' + chainNote, result.wordType.includes('50') || result.wordType.includes('75') || result.wordType === 'rearranged-full' ? 'bonus' : 'good');
+    result.wordType === 'rearranged' ? pulseG() : pulseP();
+  } else {
+    setFB(label + ' — ' + raw + ' = +' + totalShown + ' pts' + chainNote, 'good');
     pulseG();
   }
 
-  const wc=G.found.length;
-  const max=totalPossiblePoints(G.possible);
-  document.getElementById("scPts").textContent=G.pts;
-  document.getElementById("scBonus").textContent=G.bonusPts;
-  document.getElementById("scWords").textContent=wc;
-  document.getElementById("psPts").textContent=G.pts;
-  document.getElementById("psBon").textContent=G.bonusPts;
-  document.getElementById("psWds").textContent=wc;
-  document.getElementById("psBest").textContent=Math.max(G.best,G.pts);
-  document.getElementById("foundCt").textContent=wc+" word"+(wc!==1?"s":"");
-  const pct=Math.min(Math.round((G.pts/max)*100),100);
-  document.getElementById("progFill").style.width=pct+"%";
-  document.getElementById("progLbl").textContent=pct+"% of maximum points scored";
+  // Update chain indicator
+  updateChainUI(isQuick, G.quickCount, speedMult);
+
+  const wc = G.found.length;
+  const max = totalPossiblePoints(G.possible);
+  document.getElementById("scPts").textContent = G.pts;
+  document.getElementById("scBonus").textContent = G.bonusPts;
+  document.getElementById("scWords").textContent = wc;
+  document.getElementById("psPts").textContent = G.pts;
+  document.getElementById("psBon").textContent = G.bonusPts;
+  document.getElementById("psWds").textContent = wc;
+  document.getElementById("psBest").textContent = Math.max(G.best, G.pts);
+  document.getElementById("foundCt").textContent = wc + " word" + (wc !== 1 ? "s" : "");
+  const pct = Math.min(Math.round((G.pts / max) * 100), 100);
+  document.getElementById("progFill").style.width = pct + "%";
+  document.getElementById("progLbl").textContent = pct + "% of maximum points scored";
 }
 
-function addChip(word,isBonus,missed){
-  const el=document.createElement("div");
-  el.className="chip "+(isBonus?"bon":"std")+(missed?" missed":"");
-  el.textContent=word;
+function updateChainUI(isQuick, count, mult) {
+  const el = document.getElementById("chainIndicator");
+  if (!el) return;
+  if (!isQuick || count === 0) {
+    el.textContent = ""; el.className = "chain-ind";
+    return;
+  }
+  const pips = Math.min(count % 3 || 3, 3);
+  const dots = "⚡".repeat(pips);
+  if (mult > 1) {
+    el.textContent = "⚡ SPEED CHAIN ×2! ⚡";
+    el.className = "chain-ind chain-fire";
+  } else {
+    el.textContent = dots + " " + count + " quick" + (count !== 1 ? "" : "") + (pips === 3 ? " → ×2 next!" : "");
+    el.className = "chain-ind chain-active";
+  }
+}
+
+function addChip(word, wordType, missed) {
+  const el = document.createElement("div");
+  // CSS class maps to wordType
+  const typeClass = {
+    'consecutive-fwd':  'std',
+    'consecutive-rev':  'std rev',
+    'rearranged':       'rea',
+    'rearranged-50':    'rea rea50',
+    'rearranged-75':    'rea rea75',
+    'rearranged-full':  'rea reafull'
+  }[wordType] || 'std';
+  el.className = "chip " + typeClass + (missed ? " missed" : "");
+  el.textContent = word;
   document.getElementById("wGrid").appendChild(el);
 }
 
-function setFB(msg,type){
-  const el=document.getElementById("fb");
-  el.textContent=msg;el.className="fb "+type;
-  if(type!=="info")setTimeout(()=>{
-    if(G.running){el.textContent="Keep finding words...";el.className="fb info";}
-  },2500);
+function setFB(msg, type) {
+  const el = document.getElementById("fb");
+  el.textContent = msg; el.className = "fb " + type;
+  if (type !== "info") setTimeout(() => { if (G.running) { el.textContent = "Keep finding words..."; el.className = "fb info"; } }, 2500);
 }
-function shake(){const e=document.getElementById("wordIn");e.classList.add("shake");setTimeout(()=>e.classList.remove("shake"),350);}
-function pulseG(){const e=document.getElementById("wordIn");e.classList.add("pulse-g");setTimeout(()=>e.classList.remove("pulse-g"),400);}
-function pulseP(){const e=document.getElementById("wordIn");e.classList.add("pulse-p");setTimeout(()=>e.classList.remove("pulse-p"),400);}
+function shake() { const e = document.getElementById("wordIn"); e.classList.add("shake"); setTimeout(() => e.classList.remove("shake"), 350); }
+function pulseG() { const e = document.getElementById("wordIn"); e.classList.add("pulse-g"); setTimeout(() => e.classList.remove("pulse-g"), 400); }
+function pulseP() { const e = document.getElementById("wordIn"); e.classList.add("pulse-p"); setTimeout(() => e.classList.remove("pulse-p"), 400); }
 
-function buildShareText(){
-  const max=totalPossiblePoints(G.possible);
-  const pct=max>0?Math.round((G.pts/max)*100):0;
-  return (
-    "🎰 NestWord Daily — "+getTodayDateStr()+"\n"+
-    "Today's word: "+G.word+"\n"+
-    "Score: "+G.pts+"/"+max+" pts ("+pct+"%)\n"+
-    "Words: "+G.found.length+" found | Bonus ★: "+G.bonusPts+" pts | "+G.streak+"🔥 streak\n"+
-    "Can you beat me? 👉 https://playnestword.com"
-  );
+// ══════════════════════════════════════════════════
+//  SHARE
+// ══════════════════════════════════════════════════
+function buildShareText() {
+  const max = totalPossiblePoints(G.possible);
+  const pct = max > 0 ? Math.round((G.pts / max) * 100) : 0;
+  const rank = getRankFromXp(G.totalXp);
+  return "🎰 NestWord Daily — " + getTodayDateStr() + "\n" +
+    "Today's word: " + G.word + "\n" +
+    "Score: " + G.pts + "/" + max + " pts (" + pct + "%)\n" +
+    "Words: " + G.found.length + " found | Bonus ★: " + G.bonusPts + " pts | " + G.streak + "🔥 streak\n" +
+    rank.ico + " Rank: " + rank.name + "\n" +
+    "Can you beat me? 👉 https://playnestword.com";
 }
-function shareFB(){
-  window.open("https://www.facebook.com/sharer/sharer.php?u="+encodeURIComponent("https://playnestword.com")+"&quote="+encodeURIComponent(buildShareText()),"_blank","width=600,height=400");
-  showSM("Opening Facebook...");
+function shareFB() { window.open("https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent("https://playnestword.com") + "&quote=" + encodeURIComponent(buildShareText()), "_blank", "width=600,height=400"); showSM("Opening Facebook..."); }
+function shareWA() { window.open("https://wa.me/?text=" + encodeURIComponent(buildShareText()), "_blank"); showSM("Opening WhatsApp..."); }
+function shareSMS() { window.location.href = "sms:?body=" + encodeURIComponent(buildShareText()); showSM("Opening Messages..."); }
+function shareTT() { shareCopy(); showSM("Copied! Paste as your TikTok caption."); }
+function shareCopy() {
+  const txt = buildShareText();
+  if (navigator.clipboard) { navigator.clipboard.writeText(txt).then(() => showSM("✓ Copied! Paste anywhere.")); }
+  else { const ta = document.createElement("textarea"); ta.value = txt; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); document.body.removeChild(ta); showSM("✓ Copied!"); }
 }
-function shareWA(){
-  window.open("https://wa.me/?text="+encodeURIComponent(buildShareText()),"_blank");
-  showSM("Opening WhatsApp...");
-}
-function shareSMS(){
-  window.location.href="sms:?body="+encodeURIComponent(buildShareText());
-  showSM("Opening Messages...");
-}
-function shareTT(){shareCopy();showSM("Copied! Paste as your TikTok caption.");}
-function shareCopy(){
-  const txt=buildShareText();
-  if(navigator.clipboard){
-    navigator.clipboard.writeText(txt).then(()=>showSM("✓ Copied! Paste anywhere."));
-  } else {
-    const ta=document.createElement("textarea");
-    ta.value=txt;document.body.appendChild(ta);ta.select();
-    document.execCommand("copy");document.body.removeChild(ta);
-    showSM("✓ Copied!");
-  }
-}
-function showSM(msg){
-  const el=document.getElementById("shareMsg");
-  el.textContent=msg;
-  setTimeout(()=>{el.textContent="";},3500);
-}
+function showSM(msg) { const el = document.getElementById("shareMsg"); el.textContent = msg; setTimeout(() => { el.textContent = ""; }, 3500); }
 
-function showMissed(){
+// ══════════════════════════════════════════════════
+//  OVERLAYS
+// ══════════════════════════════════════════════════
+function showMissed() {
   document.getElementById("endOv").classList.add("off");
-  const found=new Set(G.found);
-  G.possible.forEach(w=>{if(!found.has(w.word))addChip(w.word,w.bonus,true);});
-  document.getElementById("foundCt").textContent="All "+G.possible.length+" possible words";
+  const found = new Set(G.found);
+  G.possible.forEach(w => { if (!found.has(w.word)) addChip(w.word, w.wordType, true); });
+  document.getElementById("foundCt").textContent = "All " + G.possible.length + " possible words";
 }
 
-function bonusRound(){
-  const keys=Object.keys(WORD_BANK);
-  const tk=keys[Math.floor(Math.random()*keys.length)];
-  const words=WORD_BANK[tk];
-  const word=words[Math.floor(Math.random()*words.length)].replace(/\s/g,"");
-  G.word=word;G.theme=THEMES[tk];
-  G.possible=findAllValidWords(word);
-  const max=totalPossiblePoints(G.possible);
-  document.getElementById("scMax").textContent=max;
-  document.getElementById("psMax").textContent=max;
+function bonusRound() {
+  const keys = Object.keys(WORD_BANK);
+  const tk = keys[Math.floor(Math.random() * keys.length)];
+  const words = WORD_BANK[tk];
+  const word = words[Math.floor(Math.random() * words.length)].replace(/\s/g, "");
+  G.word = word; G.theme = THEMES[tk];
+  G.possible = findAllValidWords(word);
+  const max = totalPossiblePoints(G.possible);
+  document.getElementById("scMax").textContent = max;
+  document.getElementById("psMax").textContent = max;
   renderWord(word);
   document.getElementById("endOv").classList.add("off");
   startGame();
 }
 
-function showHow(){
-  document.getElementById("startOv").classList.add("off");
-  document.getElementById("howOv").classList.remove("off");
-}
-function closeHow(){
-  document.getElementById("howOv").classList.add("off");
-  if(!G.running&&!G.done)document.getElementById("startOv").classList.remove("off");
+function showHow() { document.getElementById("startOv").classList.add("off"); document.getElementById("howOv").classList.remove("off"); }
+function closeHow() { document.getElementById("howOv").classList.add("off"); if (!G.running && !G.done) document.getElementById("startOv").classList.remove("off"); }
+function showLevels() { buildRankCards(); document.getElementById("lvlOv").classList.remove("off"); }
+function closeLevels() { document.getElementById("lvlOv").classList.add("off"); }
+
+function buildRankCards() {
+  const list = document.getElementById("rankCardsList");
+  const cur = getRankFromXp(G.totalXp);
+  list.innerHTML = "";
+  RANKS.forEach(rank => {
+    const isCur = rank.level === cur.level;
+    const isLocked = G.totalXp < rank.xpRequired;
+    const prog = isCur ? getXpProgress(G.totalXp) : null;
+    const card = document.createElement("div");
+    card.className = "rank-card" + (isCur ? " current" : "") + (isLocked ? " locked" : "");
+    card.innerHTML = `
+      <div class="rc-ico">${rank.ico}</div>
+      <div class="rc-body">
+        <div class="rc-title-row">
+          <span class="rc-name" style="color:${rank.color}">${rank.name}</span>
+          <span class="rc-xp">${isLocked ? rank.xpRequired + " XP to unlock" : (isCur && rank.xpToNext ? prog.current + "/" + prog.needed + " XP" : (rank.xpToNext ? rank.xpRequired + " XP" : "MAX"))}</span>
+        </div>
+        <div class="rc-desc">${rank.desc}</div>
+        <div class="rc-unlocks">
+          ${rank.unlocks.map(u => `<span class="rc-unlock-tag${isLocked ? ' locked-tag' : ''}">${isLocked ? '🔒 ' : '✓ '}${u}</span>`).join("")}
+          ${isCur ? '<span class="rc-current-badge">◀ YOU ARE HERE</span>' : ''}
+        </div>
+      </div>`;
+    list.appendChild(card);
+  });
 }
 
-function openPanel(){document.getElementById("aPanel").classList.add("open");updatePanel();}
-function closePanel(){document.getElementById("aPanel").classList.remove("open");}
-function updatePanel(){
-  document.getElementById("apStreak").textContent=G.streak+" 🔥";
-  document.getElementById("apBest").textContent=G.best+" pts";
-  const grid=document.getElementById("skGrid");grid.innerHTML="";
-  const days=["Su","Mo","Tu","We","Th","Fr","Sa"];
-  for(let i=6;i>=0;i--){
-    const d=G.day-i,played=!!G.history["d"+d];
-    const el=document.createElement("div");
-    el.className="sk-d"+(played?" played":"")+(i===0?" today":"");
-    el.textContent=days[new Date(Date.now()-i*86400000).getDay()];
+let toastTimeout = null;
+function showUnlockToast(ico, title, sub) {
+  document.getElementById("utIco").textContent = ico;
+  document.getElementById("utTitle").textContent = title;
+  document.getElementById("utSub").textContent = sub;
+  const t = document.getElementById("unlockToast");
+  t.classList.add("show");
+  if (toastTimeout) clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => t.classList.remove("show"), 4000);
+}
+
+// ══════════════════════════════════════════════════
+//  ACCOUNT PANEL
+// ══════════════════════════════════════════════════
+function openPanel() { document.getElementById("aPanel").classList.add("open"); updatePanel(); }
+function closePanel() { document.getElementById("aPanel").classList.remove("open"); }
+
+function updatePanel() {
+  document.getElementById("apStreak").textContent = G.streak + " 🔥";
+  document.getElementById("apBest").textContent = G.best + " pts";
+  document.getElementById("apTotalXp").textContent = G.totalXp + " XP";
+  const rank = getRankFromXp(G.totalXp);
+  const prog = getXpProgress(G.totalXp);
+  document.getElementById("apRankIco").textContent = rank.ico;
+  document.getElementById("apRankName").textContent = rank.name;
+  document.getElementById("apRankName").style.color = rank.color;
+  document.getElementById("apRankXp").textContent = rank.xpToNext ? prog.current + " / " + prog.needed + " XP to next rank" : "MAX RANK";
+  document.getElementById("apXpFill").style.width = prog.pct + "%";
+  const grid = document.getElementById("skGrid"); grid.innerHTML = "";
+  const days = ["Su","Mo","Tu","We","Th","Fr","Sa"];
+  for (let i = 6; i >= 0; i--) {
+    const d = G.day - i, played = !!G.history["d" + d];
+    const el = document.createElement("div");
+    el.className = "sk-d" + (played ? " played" : "") + (i === 0 ? " today" : "");
+    el.textContent = days[new Date(Date.now() - i * 86400000).getDay()];
     grid.appendChild(el);
   }
+  updateAuthUI();
 }
-function saveAcct(){
-  const n=document.getElementById("apName").value.trim();
-  const e=document.getElementById("apEmail").value.trim();
-  if(!n||!e){alert("Please enter name and email.");return;}
-  localStorage.setItem("nw_a",JSON.stringify({name:n,email:e}));
-  const b=document.getElementById("apSaveBtn");
-  b.textContent="Saved! ♠";b.style.background="var(--ng)";
+
+function updateAuthUI() {
+  const loggedIn = !!currentUser;
+  document.getElementById("loginForm").style.display = loggedIn ? "none" : "";
+  document.getElementById("loggedInForm").style.display = loggedIn ? "" : "none";
+  if (loggedIn) {
+    document.getElementById("authUserEmail").textContent = currentUser.email;
+  }
 }
-function saveStore(){
-  try{localStorage.setItem("nw",JSON.stringify({streak:G.streak,best:G.best,history:G.history}));}catch(e){}
+
+// ── Magic link send ──
+async function sendMagicLink() {
+  const email = document.getElementById("authEmail").value.trim();
+  const btn = document.getElementById("authBtn");
+  const msg = document.getElementById("authMsg");
+  if (!email || !email.includes("@")) {
+    msg.textContent = "Please enter a valid email.";
+    msg.className = "auth-msg err"; return;
+  }
+  btn.disabled = true;
+  btn.textContent = "Sending...";
+  msg.textContent = ""; msg.className = "auth-msg";
+  const { error } = await supa.auth.signInWithOtp({
+    email,
+    options: { emailRedirectTo: window.location.href }
+  });
+  if (error) {
+    msg.textContent = "Error: " + error.message;
+    msg.className = "auth-msg err";
+    btn.disabled = false; btn.textContent = "✉ Send Magic Link";
+  } else {
+    msg.textContent = "✓ Check your email! Click the link to sign in. You can close this panel.";
+    msg.className = "auth-msg ok";
+    btn.textContent = "Link Sent ✓";
+  }
 }
-function loadStore(){
-  try{
-    const d=JSON.parse(localStorage.getItem("nw")||"{}");
-    G.streak=d.streak||0;G.best=d.best||0;G.history=d.history||{};
-  }catch(e){}
+
+// ── Sign out ──
+async function signOut() {
+  await supa.auth.signOut();
+  currentUser = null;
+  updateAuthUI();
+  document.getElementById("syncStatus").textContent = "Signed out. Progress still saved locally.";
+  showUnlockToast("👋", "Signed out", "Progress saved on this device");
 }
-window.addEventListener("DOMContentLoaded",init);
+
+// ══════════════════════════════════════════════════
+//  SUPABASE SYNC
+// ══════════════════════════════════════════════════
+
+// Pull profile from Supabase and merge into G (cloud wins if newer)
+async function pullProfile() {
+  if (!currentUser) return;
+  const { data, error } = await supa
+    .from("profiles")
+    .select("*")
+    .eq("id", currentUser.id)
+    .single();
+  if (error || !data) return;
+  // Only override local if cloud has more XP (handles multi-device)
+  if (data.total_xp >= G.totalXp) {
+    G.streak    = data.streak    || G.streak;
+    G.best      = data.best_score || G.best;
+    G.totalXp   = data.total_xp  || G.totalXp;
+    G.difficulty= data.difficulty || G.difficulty;
+    // Merge history: cloud + local, keep all days
+    const cloudHistory = data.history || {};
+    G.history = Object.assign({}, cloudHistory, G.history);
+    saveStore();
+    updateXpUI(); updateDiffButtons(); updatePanel();
+    document.getElementById("syncStatus").textContent = "✓ Progress loaded from your account.";
+  } else {
+    // Local is ahead — push up
+    await pushProfile();
+  }
+}
+
+// Push G state up to Supabase
+async function pushProfile() {
+  if (!currentUser) return;
+  const payload = {
+    id:          currentUser.id,
+    email:       currentUser.email,
+    streak:      G.streak,
+    best_score:  G.best,
+    total_xp:    G.totalXp,
+    difficulty:  G.difficulty,
+    history:     G.history,
+    updated_at:  new Date().toISOString()
+  };
+  const { error } = await supa.from("profiles").upsert(payload);
+  if (!error) {
+    document.getElementById("syncStatus").textContent = "✓ Progress synced — " + new Date().toLocaleTimeString();
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  STORAGE (localStorage + Supabase)
+// ══════════════════════════════════════════════════
+function saveStore() {
+  try {
+    localStorage.setItem("nw", JSON.stringify({
+      streak: G.streak, best: G.best, history: G.history,
+      totalXp: G.totalXp, difficulty: G.difficulty
+    }));
+  } catch(e) {}
+}
+
+async function saveStoreAndSync() {
+  saveStore();
+  await pushProfile();
+}
+
+function loadStore() {
+  try {
+    const d = JSON.parse(localStorage.getItem("nw") || "{}");
+    G.streak     = d.streak     || 0;
+    G.best       = d.best       || 0;
+    G.history    = d.history    || {};
+    G.totalXp    = d.totalXp    || 0;
+    G.difficulty = d.difficulty || 'normal';
+  } catch(e) {}
+}
+
+// ══════════════════════════════════════════════════
+//  AUTH INIT — runs on page load
+// ══════════════════════════════════════════════════
+async function initAuth() {
+  // Check for existing session (handles magic link redirect too)
+  const { data: { session } } = await supa.auth.getSession();
+  if (session?.user) {
+    currentUser = session.user;
+    await pullProfile();
+    updateAuthUI();
+  }
+
+  // Listen for future auth changes (magic link click)
+  supa.auth.onAuthStateChange(async (event, session) => {
+    if (event === "SIGNED_IN" && session?.user) {
+      currentUser = session.user;
+      await pullProfile();
+      updateAuthUI();
+      showUnlockToast("✓", "Signed in!", "Progress syncing across devices");
+    } else if (event === "SIGNED_OUT") {
+      currentUser = null;
+      updateAuthUI();
+    }
+  });
+}
+
+window.addEventListener("DOMContentLoaded", () => { init(); initAuth(); });
 </script>
 </body>
 </html>

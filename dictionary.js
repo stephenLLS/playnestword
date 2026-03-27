@@ -1,45 +1,114 @@
-// NestWord — Dictionary + Scoring Engine
-// Standard pts:     3=1  4=2  5=3  6+=5
-// Forward bonus:    3=3  4=5  5=8  6+=12
-// Reverse bonus:    3=5  4=8  5=12 6+=18
+// NestWord — Dictionary + Scoring Engine v2
+//
+// WORD TYPES:
+//   consecutive  — letters appear in-order inside the big word (forward or reverse)
+//   rearranged   — letters used but scrambled (not consecutive)
+//
+// CONSECUTIVE scoring (base by length, no bonuses):
+//   3=1  4=2  5=3  6+=5
+//
+// REARRANGED scoring (base + stacking length bonuses):
+//   Base:        3=2  4=3  5=4  6+=6
+//   +3 bonus if word uses >= 50% of big word's letters
+//   +6 bonus if word uses >= 75% of big word's letters
+//   +10 bonus if word uses ALL letters AND is genuinely rearranged
+//              (not a consecutive slice — must fail both fwd + rev checks)
+//
+// SPEED CHAIN (managed in index.html, passed in via checkWord):
+//   Find a word within 8s of last = +1 speed pt
+//   Every 3 consecutive quick finds = next word x2
 
-function getStdPts(l){return l>=6?5:({3:1,4:2,5:3}[l]||1);}
-function getFwdPts(l){return l>=6?12:({3:3,4:5,5:8}[l]||3);}
-function getRevPts(l){return l>=6?18:({3:5,4:8,5:12}[l]||5);}
+function getConsPts(l)   { return l >= 6 ? 5 : ({3:1,4:2,5:3}[l] || 1); }
+function getRearrBase(l) { return l >= 6 ? 6 : ({3:2,4:3,5:4}[l] || 2); }
 
-function isContained(small,big){
-  const a={};
-  for(const c of big.toLowerCase())a[c]=(a[c]||0)+1;
-  for(const c of small.toLowerCase()){if(!a[c])return false;a[c]--;}
+function isContained(small, big) {
+  const a = {};
+  for (const c of big.toLowerCase()) a[c] = (a[c]||0) + 1;
+  for (const c of small.toLowerCase()) { if (!a[c]) return false; a[c]--; }
   return true;
 }
-function isFwdConsec(small,big){return big.toLowerCase().includes(small.toLowerCase());}
-function isRevConsec(small,big){return big.toLowerCase().split("").reverse().join("").includes(small.toLowerCase());}
 
-function checkWord(word,bigWord){
-  if(!word||word.length<3)return{valid:false};
-  if(!isValidWord(word))return{valid:false};
-  if(!isContained(word,bigWord))return{valid:false};
-  const fwd=isFwdConsec(word,bigWord);
-  const rev=!fwd&&isRevConsec(word,bigWord);
-  const pts=fwd?getFwdPts(word.length):rev?getRevPts(word.length):getStdPts(word.length);
-  return{valid:true,isBonus:fwd||rev,direction:fwd?"forward":rev?"reverse":null,points:pts};
+function isFwdConsec(small, big) { return big.toLowerCase().includes(small.toLowerCase()); }
+function isRevConsec(small, big) { return big.toLowerCase().split("").reverse().join("").includes(small.toLowerCase()); }
+
+function letterUsagePct(word, bigWord) { return word.length / bigWord.length; }
+
+function isFullRearrange(word, bigWord) {
+  if (word.length !== bigWord.length) return false;
+  if (isFwdConsec(word, bigWord)) return false;
+  if (isRevConsec(word, bigWord)) return false;
+  return isContained(word, bigWord);
 }
 
-function analyzeWord(bigWord){
-  const results=[];let total=0;
-  for(const w of DICTIONARY){
-    if(w.length<3||w.length>bigWord.length)continue;
-    const r=checkWord(w,bigWord);
-    if(r.valid){results.push({word:w.toUpperCase(),...r});total+=r.points;}
+// speedMultiplier: 1 = normal, 2 = chain active (passed from game state)
+function scoreWord(word, bigWord, speedMultiplier) {
+  speedMultiplier = speedMultiplier || 1;
+  const w = word.toLowerCase(), b = bigWord.toLowerCase();
+  const fwd = isFwdConsec(w, b);
+  const rev = !fwd && isRevConsec(w, b);
+  const isConsecutive = fwd || rev;
+
+  let pts = 0, lengthBonus = 0, wordType, breakdown = [];
+
+  if (isConsecutive) {
+    pts = getConsPts(word.length);
+    wordType = fwd ? 'consecutive-fwd' : 'consecutive-rev';
+    breakdown.push({ label: fwd ? 'In-order (forward)' : 'In-order (reverse)', val: pts });
+  } else {
+    const base = getRearrBase(word.length);
+    pts = base;
+    wordType = 'rearranged';
+    breakdown.push({ label: 'Rearranged (base)', val: base });
+
+    const pct = letterUsagePct(word, bigWord);
+    if (isFullRearrange(word, bigWord)) {
+      lengthBonus = 10;
+      wordType = 'rearranged-full';
+      breakdown.push({ label: '🏆 Full rearrange! (all letters)', val: lengthBonus });
+    } else if (pct >= 0.75) {
+      lengthBonus = 6;
+      wordType = 'rearranged-75';
+      breakdown.push({ label: '75%+ letters used (+6)', val: lengthBonus });
+    } else if (pct >= 0.50) {
+      lengthBonus = 3;
+      wordType = 'rearranged-50';
+      breakdown.push({ label: '50%+ letters used (+3)', val: lengthBonus });
+    }
+    pts += lengthBonus;
   }
-  results.sort((a,b)=>b.points-a.points||a.word.localeCompare(b.word));
-  return{words:results,totalPoints:total};
+
+  const baseTotal = pts;
+  if (speedMultiplier > 1) {
+    pts = pts * speedMultiplier;
+    breakdown.push({ label: '⚡ Speed chain ×' + speedMultiplier, val: pts - baseTotal });
+  }
+
+  return { pts, wordType, isConsecutive, lengthBonus, breakdown };
 }
 
-function isValidWord(w){return w&&w.length>=3&&DICTIONARY.has(w.toLowerCase());}
+function checkWord(word, bigWord, speedMultiplier) {
+  if (!word || word.length < 3) return { valid: false };
+  if (!isValidWord(word)) return { valid: false };
+  if (!isContained(word, bigWord)) return { valid: false };
+  return { valid: true, ...scoreWord(word, bigWord, speedMultiplier || 1) };
+}
 
-const DICTIONARY=new Set([
+function analyzeWord(bigWord) {
+  const results = []; let total = 0;
+  for (const w of DICTIONARY) {
+    if (w.length < 3 || w.length > bigWord.length) continue;
+    if (!isContained(w, bigWord)) continue;
+    const score = scoreWord(w, bigWord, 1);
+    results.push({ word: w.toUpperCase(), ...score });
+    total += score.pts;
+  }
+  results.sort((a, b) => b.pts - a.pts || a.word.localeCompare(b.word));
+  return { words: results, totalPoints: total };
+}
+
+function isValidWord(w) { return w && w.length >= 3 && DICTIONARY.has(w.toLowerCase()); }
+
+const DICTIONARY = new Set([
 "ace","act","add","age","ago","aid","aim","air","ale","all","and","ant","ape","arc","are","ark","arm","art","ash","ask","ate","awe","axe","aye",
 "bad","bag","ban","bar","bat","bay","bed","bet","bid","big","bit","bog","bow","box","boy","bud","bug","bun","bus","but","buy",
 "cab","can","cap","car","cat","cob","cod","cop","cot","cow","cry","cub","cup","cut",
