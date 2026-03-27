@@ -168,7 +168,7 @@ header{width:100%;max-width:640px;position:relative;z-index:10;padding:14px 0 10
   </div>
   <div style="display:flex;align-items:center;gap:8px;">
     <div style="font-family:var(--fn);font-size:14px;color:var(--gold);" id="questXpDisp">0 XP</div>
-    <a href="game.html" class="ico-btn" title="Daily Game">🎰</a>
+    <a href="game.html" class="ico-btn" title="Daily Game">▶</a>
   </div>
 </header>
 
@@ -219,7 +219,7 @@ header{width:100%;max-width:640px;position:relative;z-index:10;padding:14px 0 10
 
   <div class="found-sec">
     <div class="found-hdr">
-      <span class="found-ttl">♠ Words Found</span>
+      <span class="found-ttl">Words Found</span>
       <span class="found-ct" id="qFoundCt">0 words</span>
     </div>
     <div class="words-grid" id="qGrid"></div>
@@ -486,8 +486,8 @@ function showWordComplete(allFound) {
   const pct=max>0?Math.round((QG.pts/max)*100):0;
   let ico='🌱',ttl='Keep Going!';
   if(allFound){ico='🏆';ttl='PERFECT!';}
-  else if(pct>=75){ico='🎰';ttl='Great Work!';}
-  else if(pct>=50){ico='🎲';ttl='Nice Round!';}
+  else if(pct>=75){ico='🌟';ttl='Great Work!';}
+  else if(pct>=50){ico='💡';ttl='Nice Round!';}
   document.getElementById('wcIco').textContent=ico;
   document.getElementById('wcTtl').textContent=ttl;
   document.getElementById('wcSub').textContent=QG.word+' · '+QG.found.length+'/'+wObj.nested.length+' words found';
