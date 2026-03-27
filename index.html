@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -43,15 +43,15 @@
 
 /* ── LIGHT THEME ── */
 [data-theme="light"] {
-  --bg:#f4f0e8; --felt:#e8e0cc;
-  --panel:#fffef8; --panel2:#f0ebe0; --panel3:#e8e0cc;
-  --rim:#d4c9a8; --rim2:#b8a880;
-  --tx:#1a1400; --tx2:#5a4f30; --tx3:#9a8f6a;
-  --scan:rgba(0,0,0,.02);
-  --suits:rgba(0,0,0,.04);
-  --ng-text:#15803d; --np-text:#9333ea; --nb-text:#1d4ed8;
-  --ng-bd:rgba(21,128,61,.45); --np-bd:rgba(147,51,234,.45); --nb-bd:rgba(29,78,216,.45);
-  --ng-bg:rgba(21,128,61,.08); --np-bg:rgba(147,51,234,.08); --nb-bg:rgba(29,78,216,.08);
+  --bg:#ede8dc; --felt:#ddd6c4;
+  --panel:#fdfcf7; --panel2:#f0e9d8; --panel3:#e4dbc8;
+  --rim:#c4b896; --rim2:#a09060;
+  --tx:#0f0c00; --tx2:#4a3f20; --tx3:#7a6f50;
+  --scan:rgba(0,0,0,.025);
+  --suits:rgba(0,0,0,.05);
+  --ng-text:#116b2e; --np-text:#7c1fa0; --nb-text:#1a3db5;
+  --ng-bd:rgba(17,107,46,.5); --np-bd:rgba(124,31,160,.5); --nb-bd:rgba(26,61,181,.5);
+  --ng-bg:rgba(17,107,46,.09); --np-bg:rgba(124,31,160,.09); --nb-bg:rgba(26,61,181,.09);
 }
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -98,6 +98,17 @@ header{
 
 .ico-btn{width:34px;height:34px;border-radius:50%;background:var(--panel2);border:2px solid var(--rim2);color:var(--tx2);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:var(--fn);transition:all var(--tr);}
 .ico-btn:hover{background:var(--panel3);color:var(--tx);border-color:var(--gold-b);}
+
+/* account button logged-in dot */
+.acct-btn{position:relative;}
+.acct-btn.signed-in::after{
+  content:'';
+  position:absolute;top:2px;right:2px;
+  width:8px;height:8px;border-radius:50%;
+  background:var(--ng-text);
+  border:2px solid var(--panel2);
+  box-shadow:0 0 6px var(--ng-text);
+}
 
 /* ── THEME TOGGLE ── */
 .theme-toggle{
@@ -154,10 +165,8 @@ header{
 .word-section{width:100%;max-width:640px;margin-top:22px;text-align:center;position:relative;z-index:10;}
 .word-lbl{font-size:11px;letter-spacing:3px;color:var(--tx2);text-transform:uppercase;font-family:var(--mo);margin-bottom:10px;}
 .word-frame{background:var(--panel);border:3px solid var(--rim2);border-radius:var(--r2);padding:18px 20px 16px;position:relative;box-shadow:0 0 0 1px var(--rim), inset 0 0 40px rgba(0,0,0,.05);}
-.word-frame::before,.word-frame::after{content:'★ ★ ★';position:absolute;left:50%;font-size:10px;color:var(--gold-b);letter-spacing:8px;}
-.word-frame::before{top:-1px;transform:translateX(-50%) translateY(-50%);background:var(--panel);padding:0 8px;}
-.word-frame::after{bottom:-1px;transform:translateX(-50%) translateY(50%);background:var(--panel);padding:0 8px;}
-.big-word{font-family:var(--fn);font-size:clamp(30px,8vw,58px);color:var(--gold);letter-spacing:6px;text-transform:uppercase;text-shadow:0 0 20px rgba(245,200,66,.25);word-break:break-all;line-height:1;}
+.big-word{font-family:var(--fn);font-size:clamp(30px,8vw,58px);color:var(--gold);letter-spacing:6px;text-transform:uppercase;text-shadow:0 0 20px rgba(245,200,66,.25);word-break:break-all;line-height:1;transition:opacity .3s ease;}
+.big-word.hidden span{color:transparent;border-bottom:3px solid var(--gold-b);margin:0 2px;}
 .big-word span{display:inline-block;transition:color .15s,transform .15s,text-shadow .15s;}
 .big-word span.hl{color:var(--nb-text);transform:translateY(-3px) scale(1.1);}
 .bulb{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px var(--gold);animation:bulb-blink 2.4s ease-in-out infinite;}
@@ -326,6 +335,29 @@ footer{width:100%;max-width:640px;margin-top:32px;padding-top:16px;border-top:2p
 .btn-s{width:100%;padding:11px;background:transparent;color:var(--tx2);border:2px solid var(--rim2);border-radius:var(--r);font-family:var(--fn2);font-size:15px;cursor:pointer;transition:all var(--tr);margin-bottom:6px;}
 .btn-s:hover{background:var(--panel2);color:var(--tx);border-color:var(--gold-b);}
 
+/* Play Again button with AD badge */
+.btn-play-again{
+  width:100%;padding:14px;
+  background:var(--panel2);
+  color:var(--tx);
+  border:2px solid var(--gold-b);
+  border-radius:var(--r);
+  font-family:var(--fn);font-size:18px;
+  cursor:pointer;transition:all var(--tr);
+  margin-bottom:8px;
+  position:relative;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.btn-play-again:hover{background:var(--gold-d);border-color:var(--gold);color:var(--gold);}
+.ad-badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  background:var(--tx2);color:var(--panel);
+  font-family:var(--mo);font-size:9px;font-weight:700;
+  letter-spacing:.5px;
+  padding:2px 6px;border-radius:4px;
+  line-height:1;
+}
+
 /* ── XP GAINED BOX ── */
 .xp-gained-box{background:var(--panel2);border:2px solid var(--nb-bd);border-radius:var(--r);padding:14px 18px;margin-bottom:14px;text-align:left;}
 .xp-gained-title{font-family:var(--fn);font-size:16px;color:var(--nb-text);margin-bottom:10px;}
@@ -476,9 +508,10 @@ footer{width:100%;max-width:640px;margin-top:32px;padding-top:16px;border-top:2p
       <span class="lb-name" id="hdrRankName">Dealer</span>
     </div>
     <div class="streak-chip" onclick="openPanel()">🔥 <span id="streakNum">0</span></div>
+    <button class="ico-btn acct-btn" onclick="openPanel()" id="acctBtn" title="My Account">👤</button>
     <div class="theme-toggle" title="Toggle light/dark">
-      <button class="tt-opt active" id="ttDark" onclick="setTheme('dark')">🌙</button>
-      <button class="tt-opt" id="ttLight" onclick="setTheme('light')">☀️</button>
+      <button class="tt-opt" id="ttDark" onclick="setTheme('dark')">🌙</button>
+      <button class="tt-opt active" id="ttLight" onclick="setTheme('light')">☀️</button>
     </div>
     <button class="ico-btn" onclick="showHow()">?</button>
   </div>
@@ -521,7 +554,7 @@ footer{width:100%;max-width:640px;margin-top:32px;padding-top:16px;border-top:2p
 </div>
 
 <div class="word-section">
-  <div class="word-lbl">Today's NestWord</div>
+  <div class="word-lbl" id="wordLbl">Today's NestWord</div>
   <div class="word-frame">
     <div class="bulb"></div><div class="bulb"></div>
     <div class="bulb"></div><div class="bulb"></div>
@@ -624,8 +657,9 @@ footer{width:100%;max-width:640px;margin-top:32px;padding-top:16px;border-top:2p
     <div class="m-ico" id="stIco">🎰</div>
     <div class="m-ttl">NestWord</div>
     <div class="m-sub" id="stSub">Find as many words hidden inside today's word as you can. Bonus points for consecutive letters — forward or reverse!</div>
-    <div class="m-word" id="stWord">—</div>
+    <div class="m-word" id="stWord" style="letter-spacing:8px;color:var(--tx2);font-size:22px;" id="stWord">— — —</div>
     <div class="m-theme" id="stTheme"></div>
+    <div style="font-size:12px;color:var(--tx2);font-family:var(--mo);margin-bottom:16px;" id="stWordLen"></div>
     <button class="btn-p" id="stBtn" onclick="startGame()">🎲 PLAY TODAY'S WORD</button>
     <button class="btn-s" onclick="showHow()">How to Play</button>
     <div style="font-size:11px;color:var(--tx2);font-family:var(--mo);margin-top:10px;line-height:1.7;">
@@ -672,8 +706,10 @@ footer{width:100%;max-width:640px;margin-top:32px;padding-top:16px;border-top:2p
       </div>
     </div>
     <div class="share-msg" id="shareMsg"></div>
-    <button class="btn-s" onclick="showMissed()">Reveal All Words</button>
-    <button class="btn-s" onclick="bonusRound()">♦ Bonus Round (new word)</button>
+    <button class="btn-play-again" onclick="showTryAgainAd()">
+      ♦ Play Again
+      <span class="ad-badge">AD</span>
+    </button>
     <button class="btn-s" onclick="showLevels()">⚡ View Ranks & Unlocks</button>
     <div style="font-size:11px;color:var(--tx2);font-family:var(--mo);margin-top:10px;">New daily word every midnight!</div>
   </div>
@@ -784,6 +820,23 @@ footer{width:100%;max-width:640px;margin-top:32px;padding-top:16px;border-top:2p
   </div>
 </div>
 
+<!-- TRY AGAIN AD OVERLAY -->
+<div class="ov off" id="tryAgainAdOv" style="z-index:560;">
+  <div class="modal" style="max-width:380px;">
+    <div class="modal-corner"></div><div class="modal-corner"></div>
+    <div class="modal-corner"></div><div class="modal-corner"></div>
+    <div class="m-ico">🎲</div>
+    <div class="m-ttl">Play Again?</div>
+    <div class="m-sub">Watch a short ad to play a bonus round with a new word</div>
+    <div style="width:100%;min-height:120px;background:var(--panel2);border:2px dashed var(--rim2);border-radius:var(--r);display:flex;align-items:center;justify-content:center;color:var(--tx3);font-size:11px;font-family:var(--mo);margin-bottom:16px;position:relative;">
+      AD SPACE — GOOGLE ADSENSE
+      <div style="position:absolute;top:8px;right:10px;font-family:var(--mo);font-size:13px;color:var(--gold);" id="tryAgainCountdown">15</div>
+    </div>
+    <button class="btn-p" id="tryAgainPlayBtn" onclick="startBonusAfterAd()" disabled style="opacity:.4;">⏳ Play Again (<span id="tryAgainSec">15</span>s)</button>
+    <button class="btn-s" onclick="closeTryAgainAd()">← Back to Results</button>
+  </div>
+</div>
+
 <!-- UNLOCK TOAST -->
 <div class="unlock-toast" id="unlockToast">
   <div class="ut-ico" id="utIco">🔓</div>
@@ -808,7 +861,7 @@ function setTheme(t) {
   document.getElementById('ttLight').classList.toggle('active', t === 'light');
 }
 (function() {
-  const saved = localStorage.getItem('nw_theme') || 'dark';
+  const saved = localStorage.getItem('nw_theme') || 'light';
   setTheme(saved);
 })();
 
@@ -931,15 +984,16 @@ function init() {
   document.getElementById("thDate").textContent = ds;
   document.getElementById("themeBar").style.borderColor = td.color + "55";
   document.getElementById("stIco").textContent = td.emoji;
-  document.getElementById("stWord").textContent = word;
+  document.getElementById("stWord").textContent = "_ ".repeat(word.length).trim();
   document.getElementById("stWord").style.color = td.color;
-  document.getElementById("stTheme").textContent = td.name + " · " + ds;
+  document.getElementById("stWordLen").textContent = word.length + " letters · " + td.name;
+  document.getElementById("stTheme").textContent = ds;
   document.getElementById("fyear").textContent = new Date().getFullYear();
   document.getElementById("streakNum").textContent = G.streak;
 
   renderWord(word);
-
-  G.possible = findAllValidWords(word);
+  document.getElementById("bigWord").classList.add("hidden");
+  document.getElementById("wordLbl").textContent = G.word.length + " letters — play to reveal";
   const maxPts = totalPossiblePoints(G.possible);
   document.getElementById("scMax").textContent = maxPts;
   document.getElementById("psMax").textContent = maxPts;
@@ -956,6 +1010,8 @@ function init() {
     document.getElementById("stBtn").textContent = "See My Results";
     document.getElementById("stBtn").onclick = () => {
       document.getElementById("startOv").classList.add("off");
+      document.getElementById("bigWord").classList.remove("hidden");
+      document.getElementById("wordLbl").textContent = "Today's NestWord";
       showEnd(p.pts, p.bonus||0, p.words||[], p.streak||G.streak, false, null, null);
     };
   }
@@ -1032,7 +1088,8 @@ function hlWord(typed) {
 // ══════════════════════════════════════════════════
 function startGame() {
   document.getElementById("startOv").classList.add("off");
-  const inp = document.getElementById("wordIn");
+  document.getElementById("bigWord").classList.remove("hidden");
+  document.getElementById("wordLbl").textContent = "Today's NestWord";
   inp.disabled = false;
   document.getElementById("subBtn").disabled = false;
   inp.focus();
@@ -1315,12 +1372,6 @@ function showSM(msg) { const el = document.getElementById("shareMsg"); el.textCo
 // ══════════════════════════════════════════════════
 //  OVERLAYS
 // ══════════════════════════════════════════════════
-function showMissed() {
-  document.getElementById("endOv").classList.add("off");
-  const found = new Set(G.found);
-  G.possible.forEach(w => { if (!found.has(w.word)) addChip(w.word, w.wordType, true); });
-  document.getElementById("foundCt").textContent = "All " + G.possible.length + " possible words";
-}
 
 function bonusRound() {
   const keys = Object.keys(WORD_BANK);
@@ -1416,6 +1467,44 @@ function updateAuthUI() {
   if (loggedIn) {
     document.getElementById("authUserEmail").textContent = currentUser.email;
   }
+  // Green dot on account button when signed in
+  const acctBtn = document.getElementById("acctBtn");
+  if (acctBtn) acctBtn.classList.toggle("signed-in", loggedIn);
+}
+
+// ── Try Again Ad ──
+let tryAgainIv = null;
+function showTryAgainAd() {
+  document.getElementById("endOv").classList.add("off");
+  document.getElementById("tryAgainAdOv").classList.remove("off");
+  let secs = 15;
+  const btn = document.getElementById("tryAgainPlayBtn");
+  const secEl = document.getElementById("tryAgainSec");
+  const cdEl = document.getElementById("tryAgainCountdown");
+  btn.disabled = true; btn.style.opacity = ".4";
+  btn.innerHTML = "⏳ Play Again (" + secs + "s)";
+  if (tryAgainIv) clearInterval(tryAgainIv);
+  tryAgainIv = setInterval(() => {
+    secs--;
+    secEl.textContent = secs;
+    cdEl.textContent = secs;
+    btn.innerHTML = "⏳ Play Again (" + secs + "s)";
+    if (secs <= 0) {
+      clearInterval(tryAgainIv);
+      btn.disabled = false; btn.style.opacity = "1";
+      btn.innerHTML = "🎲 Play Again!";
+    }
+  }, 1000);
+}
+function closeTryAgainAd() {
+  if (tryAgainIv) clearInterval(tryAgainIv);
+  document.getElementById("tryAgainAdOv").classList.add("off");
+  document.getElementById("endOv").classList.remove("off");
+}
+function startBonusAfterAd() {
+  if (tryAgainIv) clearInterval(tryAgainIv);
+  document.getElementById("tryAgainAdOv").classList.add("off");
+  bonusRound();
 }
 
 // ── Magic link send ──
@@ -1427,6 +1516,8 @@ async function sendMagicLink() {
     msg.textContent = "Please enter a valid email.";
     msg.className = "auth-msg err"; return;
   }
+  // Save current game progress to localStorage before auth redirect
+  saveStore();
   btn.disabled = true;
   btn.textContent = "Sending...";
   msg.textContent = ""; msg.className = "auth-msg";
@@ -1439,7 +1530,7 @@ async function sendMagicLink() {
     msg.className = "auth-msg err";
     btn.disabled = false; btn.textContent = "✉ Send Magic Link";
   } else {
-    msg.textContent = "✓ Check your email! Click the link to sign in. You can close this panel.";
+    msg.textContent = "✓ Check your email! Click the link to sign in. Your progress will sync automatically.";
     msg.className = "auth-msg ok";
     btn.textContent = "Link Sent ✓";
   }
