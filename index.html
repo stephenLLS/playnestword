@@ -602,6 +602,7 @@ footer{width:100%;max-width:640px;margin-top:32px;padding-top:16px;border-top:2p
   <button class="diff-btn active" id="diffNormal" onclick="setDifficulty('normal')">⚡ Normal</button>
   <button class="diff-btn locked" id="diffHard" onclick="setDifficulty('hard')">🔥 Hard</button>
   <button class="diff-btn locked" id="diffBlitz" onclick="setDifficulty('blitz')">💥 Blitz</button>
+  <button class="diff-btn locked" id="diffEndurance" onclick="setDifficulty('endurance')">♾ Endurance</button>
   <span class="diff-unlock-tip" id="diffTip"></span>
 </div>
 
@@ -857,6 +858,26 @@ footer{width:100%;max-width:640px;margin-top:32px;padding-top:16px;border-top:2p
   </div>
 </div>
 
+<!-- ENDURANCE AD OVERLAY -->
+<div class="ov off" id="enduranceAdOv" style="z-index:570;">
+  <div class="modal" style="max-width:380px;">
+    <div class="modal-corner"></div><div class="modal-corner"></div>
+    <div class="modal-corner"></div><div class="modal-corner"></div>
+    <div class="m-ico">♾</div>
+    <div class="m-ttl">Endurance Mode</div>
+    <div class="m-sub">Time's up! Watch an ad to keep playing with the same words and score.</div>
+    <!-- Ad slot -->
+    <div style="width:100%;min-height:120px;background:var(--panel2);border:2px dashed var(--rim2);border-radius:var(--r);display:flex;align-items:center;justify-content:center;color:var(--tx3);font-size:11px;font-family:var(--mo);margin-bottom:16px;position:relative;">
+      AD SPACE — GOOGLE ADSENSE
+      <div style="position:absolute;top:8px;right:10px;font-family:var(--mo);font-size:14px;color:var(--gold);font-weight:bold;" id="enduranceCountdown">15</div>
+    </div>
+    <button class="btn-p" id="enduranceKeepBtn" onclick="continueEndurance()" disabled style="opacity:.4;">
+      ⏳ Keep Playing (<span id="enduranceSec">15</span>s)
+    </button>
+    <button class="btn-s" id="enduranceDoneBtn" onclick="finishEndurance()">✓ I'm Done — See My Score</button>
+  </div>
+</div>
+
 <!-- TRY AGAIN AD OVERLAY -->
 <div class="ov off" id="tryAgainAdOv" style="z-index:560;">
   <div class="modal" style="max-width:380px;">
@@ -993,7 +1014,7 @@ function calcXpEarned(pts, maxPts, bonusPts, difficulty, streak) {
 // ══════════════════════════════════════════════════
 //  GAME STATE
 // ══════════════════════════════════════════════════
-const DIFF_TIMES = { normal:90, hard:60, blitz:45 };
+const DIFF_TIMES = { normal:90, hard:60, blitz:45, endurance:90 };
 
 let G = {
   word:"", theme:null, possible:[], found:[], pts:0, bonusPts:0,
@@ -1003,7 +1024,9 @@ let G = {
   // speed chain
   lastWordTime:0, quickCount:0, chainActive:false,
   // replay tracking
-  isReplay:false, replayPrevScore:0
+  isReplay:false, replayPrevScore:0,
+  // endurance mode
+  enduranceRounds:0, enduranceTotalTime:0, enduranceStartTime:0
 };
 
 // ══════════════════════════════════════════════════
@@ -1092,16 +1115,19 @@ function updateDiffButtons() {
   const rank = getRankFromXp(G.totalXp);
   const hardOk = rank.level >= 3;
   const blitzOk = rank.level >= 6;
+  const enduranceOk = rank.level >= 5;
 
-  ["normal","hard","blitz"].forEach(m => {
+  ["normal","hard","blitz","endurance"].forEach(m => {
     const btn = document.getElementById("diff" + m.charAt(0).toUpperCase() + m.slice(1));
-    btn.classList.toggle("active", G.difficulty === m);
+    if (btn) btn.classList.toggle("active", G.difficulty === m);
   });
   document.getElementById("diffHard").classList.toggle("locked", !hardOk);
   document.getElementById("diffBlitz").classList.toggle("locked", !blitzOk);
+  document.getElementById("diffEndurance").classList.toggle("locked", !enduranceOk);
 
   const tip = document.getElementById("diffTip");
-  if (!hardOk) tip.textContent = "Hard unlocks at Sharp (Lv 3) · Blitz at High Roller (Lv 6)";
+  if (!hardOk) tip.textContent = "Hard: Lv 3 · Blitz: Lv 6 · Endurance: Lv 5";
+  else if (!enduranceOk) tip.textContent = "Endurance unlocks at Pit Boss (Lv 5)";
   else if (!blitzOk) tip.textContent = "Blitz unlocks at High Roller (Lv 6)";
   else tip.textContent = "";
 }
@@ -1111,6 +1137,7 @@ function setDifficulty(mode) {
   const rank = getRankFromXp(G.totalXp);
   if (mode === 'hard' && rank.level < 3) { showUnlockToast("🔒","Locked","Reach Sharp (Lv 3) for Hard Mode"); return; }
   if (mode === 'blitz' && rank.level < 6) { showUnlockToast("🔒","Locked","Reach High Roller (Lv 6) for Blitz"); return; }
+  if (mode === 'endurance' && rank.level < 5) { showUnlockToast("🔒","Locked","Reach Pit Boss (Lv 5) for Endurance Mode"); return; }
   G.difficulty = mode;
   G.timer = DIFF_TIMES[mode];
   updateDiffButtons();
@@ -1149,6 +1176,10 @@ function startGame() {
   G.running = true; G.done = false; G.found = []; G.pts = 0; G.bonusPts = 0;
   G.lastWordTime = 0; G.quickCount = 0; G.chainActive = false;
   if (!G.isReplay) { G.replayPrevScore = 0; }
+  if (G.difficulty === 'endurance') {
+    G.enduranceRounds = 0; G.enduranceTotalTime = 0;
+    G.enduranceStartTime = Date.now();
+  }
   G.timer = DIFF_TIMES[G.difficulty] || 90;
   document.getElementById("wGrid").innerHTML = "";
   ["scPts","scBonus","scWords","psPts","psBon","psWds"].forEach(id => document.getElementById(id).textContent = "0");
@@ -1172,11 +1203,25 @@ function tickUI() {
 }
 
 function endGame() {
-  clearInterval(G.iv); G.running = false; G.done = true;
+  clearInterval(G.iv); G.running = false;
   document.getElementById("wordIn").disabled = true;
   document.getElementById("subBtn").disabled = true;
   document.getElementById("timerDisp").textContent = "0:00";
   document.getElementById("timerHint").textContent = "Time's up!";
+
+  // ── ENDURANCE MODE: show ad overlay instead of ending ──
+  if (G.difficulty === 'endurance') {
+    G.enduranceRounds++;
+    G.enduranceTotalTime += DIFF_TIMES['endurance'];
+    showEnduranceAd();
+    return;
+  }
+
+  finishGame();
+}
+
+function finishGame() {
+  G.done = true;
 
   if (G.pts > G.best) G.best = G.pts;
   const prevK = "d" + (G.day - 1);
@@ -1221,6 +1266,66 @@ function endGame() {
 
   const didRankUp = newRank.level > oldRank.level;
   showEnd(G.pts, G.bonusPts, G.found, G.streak, true, xpResult, didRankUp ? newRank : null);
+}
+
+// ══════════════════════════════════════════════════
+//  ENDURANCE MODE
+// ══════════════════════════════════════════════════
+let enduranceAdIv = null;
+
+function showEnduranceAd() {
+  document.getElementById("enduranceAdOv").classList.remove("off");
+  let secs = 15;
+  const btn = document.getElementById("enduranceKeepBtn");
+  const secEl = document.getElementById("enduranceSec");
+  const cdEl = document.getElementById("enduranceCountdown");
+  btn.disabled = true; btn.style.opacity = ".4";
+  btn.innerHTML = "⏳ Keep Playing (" + secs + "s)";
+  if (enduranceAdIv) clearInterval(enduranceAdIv);
+  enduranceAdIv = setInterval(() => {
+    secs--;
+    secEl.textContent = secs;
+    cdEl.textContent = secs;
+    btn.innerHTML = "⏳ Keep Playing (" + secs + "s)";
+    if (secs <= 0) {
+      clearInterval(enduranceAdIv);
+      btn.disabled = false; btn.style.opacity = "1";
+      btn.innerHTML = "♾ Keep Playing!";
+    }
+  }, 1000);
+}
+
+function continueEndurance() {
+  if (enduranceAdIv) clearInterval(enduranceAdIv);
+  document.getElementById("enduranceAdOv").classList.add("off");
+  // Resume: re-enable input, reset timer only, keep all words + score
+  const inp = document.getElementById("wordIn");
+  inp.disabled = false; inp.value = "";
+  document.getElementById("subBtn").disabled = false;
+  G.running = true;
+  G.timer = DIFF_TIMES['endurance'];
+  tickUI();
+  document.getElementById("timerHint").textContent = "Keep finding words!";
+  if (G.iv) clearInterval(G.iv);
+  G.iv = setInterval(() => { G.timer--; tickUI(); if (G.timer <= 0) endGame(); }, 1000);
+  inp.focus();
+}
+
+function finishEndurance() {
+  if (enduranceAdIv) clearInterval(enduranceAdIv);
+  document.getElementById("enduranceAdOv").classList.add("off");
+  // Calculate total time played
+  const totalSecs = G.enduranceTotalTime + (DIFF_TIMES['endurance'] - G.timer);
+  const mins = Math.floor(totalSecs / 60), secs = totalSecs % 60;
+  const timeStr = mins > 0 ? mins + "m " + secs + "s" : secs + "s";
+  G.enduranceTotalTime = totalSecs;
+  // End as normal game
+  G.difficulty = 'endurance'; // keep for XP calc
+  finishGame();
+  // Update end screen sub to show endurance stats
+  document.getElementById("endSub").textContent =
+    G.enduranceRounds + " round" + (G.enduranceRounds !== 1 ? "s" : "") +
+    " · " + timeStr + " total · " + G.found.length + " words found";
 }
 
 function showEnd(pts, bonusPts, words, streak, showXp, xpResult, newRank) {
@@ -1636,32 +1741,33 @@ function buildShareText() {
 async function shareWithCard(platform) {
   const canvas = buildScoreCard();
   const blob = await canvasToBlob(canvas);
-  const file = new File([blob], 'nestword-score.png', { type: 'image/png' });
   const txt = buildShareText();
 
-  // Web Share API — works on mobile, shares image natively
-  if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+  // Mobile Web Share API — only use on mobile (touch device) to avoid Windows share sheet on desktop
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  if (isMobile && navigator.share) {
+    const file = new File([blob], 'nestword-score.png', { type: 'image/png' });
     try {
-      await navigator.share({ files: [file], title: 'NestWord Score', text: txt });
-      showSM('Shared!'); return;
-    } catch(e) { /* fall through */ }
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'NestWord Score', text: txt });
+        showSM('Shared!'); return;
+      }
+    } catch(e) { /* fall through to platform-specific */ }
   }
 
-  // Desktop fallback per platform
+  // Desktop + platform-specific fallbacks
   if (platform === 'fb') {
-    // Download image + open FB
     downloadCard(canvas);
-    setTimeout(() => window.open("https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent("https://playnestword.com"), "_blank", "width=600,height=400"), 600);
-    showSM('Image downloaded — attach it to your post!');
+    showSM('📥 Image saved! Open Facebook, create a post, and attach the downloaded image.');
   } else if (platform === 'wa') {
-    window.open("https://wa.me/?text=" + encodeURIComponent(txt), "_blank");
     downloadCard(canvas);
-    showSM('Image downloaded — attach in WhatsApp!');
+    window.open("https://wa.me/?text=" + encodeURIComponent(txt), "_blank");
+    showSM('📥 Image saved! Attach it in WhatsApp after it opens.');
   } else if (platform === 'sms') {
     window.location.href = "sms:?body=" + encodeURIComponent(txt);
   } else if (platform === 'tt') {
     await copyCardToClipboard(canvas, txt);
-    showSM('Image + text copied — paste into TikTok!');
+    showSM('✓ Score card copied! Paste it into TikTok.');
   } else {
     await copyCardToClipboard(canvas, txt);
   }

@@ -212,5 +212,8 @@ const DICTIONARY = new Set([
 "drafts","grafts","shafts","craves","craved","braves","braved","graves","knaves","cloves","groves",
 "droves","crawls","sprawl","screws","strews","creeps","soared","graced","spaced","traced","braced",
 "roared","barred","jarred","tarred","warred",
-"prowled","drafted","crawled","sprawls","screwed","strewed","scarred","sprawled"
+"prowled","drafted","crawled","sprawls","screwed","strewed","scarred","sprawled",
+// ── Added v3: additional missing words ──
+"rear","sear","pear","seal","veal","bead","lead","mead","seam","ream","team","moan",
+"gnaw","thaw","skew","spew","ears","cock","hock","jock","cloak","croak","frock","smock"
 ]);
