@@ -2,6 +2,8 @@
   "version": 2,
   "routes": [
     { "src": "/", "dest": "/index.html" },
+    { "src": "/play", "dest": "/game.html" },
+    { "src": "/quest", "dest": "/quest.html" },
     { "src": "/(.*)", "dest": "/$1" }
   ],
   "headers": [
