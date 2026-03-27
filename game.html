@@ -2158,4 +2158,18 @@ async function initAuth() {
       updateAuthUI();
       showUnlockToast("✓", "Signed in!", "Progress syncing across devices");
     } else if (event === "SIGNED_OUT") {
-   
+         currentUser = null;
+      updateAuthUI();
+    }
+  });
+}
+
+initAuth();
+loadStore();
+updateXpUI();
+updateDiffButtons();
+updatePanel();
+initDay();
+</script>
+</body>
+</html>
