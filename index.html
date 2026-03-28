@@ -312,6 +312,28 @@ footer{
   </div>
 </section>
 
+<section class="contact-section">
+  <div class="section-title">Contact</div>
+  <div class="contact-form">
+    <div class="cf-row">
+      <div class="cf-field">
+        <label class="cf-label">Name</label>
+        <input class="cf-input" type="text" id="cfName" placeholder="Your name" maxlength="80">
+      </div>
+      <div class="cf-field">
+        <label class="cf-label">Email</label>
+        <input class="cf-input" type="email" id="cfEmail" placeholder="your@email.com" maxlength="120">
+      </div>
+    </div>
+    <div class="cf-field">
+      <label class="cf-label">Message</label>
+      <textarea class="cf-textarea" id="cfMessage" placeholder="What's on your mind?" maxlength="1000"></textarea>
+    </div>
+    <button class="cf-submit" onclick="submitContact()">Send Message</button>
+    <div class="cf-msg" id="cfMsg"></div>
+  </div>
+</section>
+
 <footer>
   <div class="foot-l">&copy; <span id="fyear"></span> <a href="https://allsparkenterprisesltd.ca" target="_blank">All Spark Enterprises Ltd.</a></div>
   <div class="foot-r">
@@ -449,6 +471,51 @@ async function loadLB(period, tabEl) {
 
 document.getElementById('fyear').textContent = new Date().getFullYear();
 loadLB('today');
+
+// ── Contact form ──
+async function submitContact() {
+  const name    = document.getElementById('cfName').value.trim();
+  const email   = document.getElementById('cfEmail').value.trim();
+  const message = document.getElementById('cfMessage').value.trim();
+  const msg     = document.getElementById('cfMsg');
+
+  if (!name || !email || !message) {
+    msg.textContent = 'Please fill in all fields.';
+    msg.style.color = '#e53e3e';
+    return;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    msg.textContent = 'Please enter a valid email address.';
+    msg.style.color = '#e53e3e';
+    return;
+  }
+
+  const btn = document.querySelector('.cf-submit');
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+
+  try {
+    const { error } = await supa.from('contact_messages').insert([{
+      name, email, message,
+      submitted_at: new Date().toISOString()
+    }]);
+    if (error) throw error;
+    msg.textContent = '✓ Message sent — we\'ll be in touch!';
+    msg.style.color = 'var(--ng, #0d5c26)';
+    document.getElementById('cfName').value = '';
+    document.getElementById('cfEmail').value = '';
+    document.getElementById('cfMessage').value = '';
+  } catch(e) {
+    // Fallback to mailto
+    const subject = encodeURIComponent('NestWord Contact: ' + name);
+    const body    = encodeURIComponent('From: ' + name + ' <' + email + '>\n\n' + message);
+    window.open('mailto:StephenLavoie@AllSparkEnterprisesLtd.com?subject=' + subject + '&body=' + body);
+    msg.textContent = 'Opening your email app as fallback.';
+    msg.style.color = 'var(--tx2)';
+  }
+  btn.disabled = false;
+  btn.textContent = 'Send Message';
+}
 </script>
 <style>
 .hw-letter.hw-brown       { background:var(--panel2); border-color:var(--rim2); color:var(--tx); }
@@ -460,6 +527,20 @@ loadLB('today');
 [data-theme="dark"] .hw-letter.hw-purple      { background:rgba(212,61,255,.15); border-color:rgba(212,61,255,.5); color:#d43dff; }
 [data-theme="dark"] .hw-letter.hw-purple-green{ background:rgba(212,61,255,.15); border-color:rgba(212,61,255,.5); color:#3dff78; font-weight:700; }
 @keyframes letterPop{from{transform:scale(0) rotate(-10deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
-</style>
+
+/* ── CONTACT ── */
+.contact-section{width:100%;max-width:800px;padding:40px 0;border-top:2px solid var(--rim);position:relative;z-index:10;}
+.contact-form{background:var(--panel);border:2px solid var(--rim);border-radius:var(--r2);padding:24px;}
+.cf-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:500px){.cf-row{grid-template-columns:1fr;}}
+.cf-field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.cf-label{font-size:11px;color:var(--tx2);font-family:var(--mo);letter-spacing:.5px;text-transform:uppercase;}
+.cf-input{background:var(--panel2);border:2px solid var(--rim2);border-radius:var(--r);color:var(--tx);font-family:var(--mo);font-size:13px;padding:10px 12px;outline:none;transition:border-color var(--tr);}
+.cf-input:focus{border-color:var(--gold-b);}
+.cf-textarea{background:var(--panel2);border:2px solid var(--rim2);border-radius:var(--r);color:var(--tx);font-family:var(--mo);font-size:13px;padding:10px 12px;outline:none;transition:border-color var(--tr);resize:vertical;min-height:100px;width:100%;}
+.cf-textarea:focus{border-color:var(--gold-b);}
+.cf-submit{width:100%;padding:13px;background:var(--gold);color:#fff8ee;border:none;border-radius:var(--r);font-family:var(--fn);font-size:17px;cursor:pointer;transition:all var(--tr);margin-top:4px;}
+.cf-submit:hover{background:var(--gold2);}
+.cf-msg{font-size:12px;font-family:var(--mo);margin-top:8px;min-height:18px;text-align:center;}</style>
 </body>
 </html>

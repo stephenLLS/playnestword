@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NestWord Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0d0d1a;--panel:#13132a;--panel2:#1a1a35;--rim:#2a2a50;--rim2:#3a3a68;
+  --tx:#e8e0cc;--tx2:#8a8068;--tx3:#504838;
+  --gold:#f5c842;--gold-d:rgba(245,200,66,.12);--gold-b:rgba(245,200,66,.4);
+  --green:#3dff78;--red:#ff4444;--blue:#3dc8ff;
+  --r:8px;--fn:'Fredoka One',cursive;--mo:'Share Tech Mono',monospace;
+}
+body{background:var(--bg);color:var(--tx);font-family:var(--mo);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px 16px 60px;}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.15) 3px,rgba(0,0,0,.15) 4px);pointer-events:none;z-index:0;}
+
+/* LOGIN */
+.login-wrap{position:relative;z-index:10;width:100%;max-width:380px;margin-top:80px;}
+.login-box{background:var(--panel);border:2px solid var(--rim2);border-radius:12px;padding:32px 28px;text-align:center;}
+.login-logo{font-family:var(--fn);font-size:28px;color:var(--gold);margin-bottom:4px;text-shadow:0 0 16px rgba(245,200,66,.3);}
+.login-sub{font-size:11px;color:var(--tx2);margin-bottom:28px;letter-spacing:2px;}
+.login-field{width:100%;background:var(--panel2);border:2px solid var(--rim2);border-radius:var(--r);color:var(--tx);font-family:var(--mo);font-size:14px;padding:11px 14px;outline:none;margin-bottom:12px;transition:border-color .15s;}
+.login-field:focus{border-color:var(--gold-b);}
+.login-btn{width:100%;padding:12px;background:var(--gold);color:#0d0d1a;border:none;border-radius:var(--r);font-family:var(--fn);font-size:17px;cursor:pointer;transition:all .15s;margin-bottom:8px;}
+.login-btn:hover{background:#ffe066;}
+.login-err{font-size:12px;color:var(--red);min-height:18px;margin-top:4px;}
+
+/* DASHBOARD */
+.dashboard{position:relative;z-index:10;width:100%;max-width:1000px;display:none;}
+.dash-header{display:flex;align-items:center;justify-content:space-between;padding:16px 0 12px;border-bottom:2px solid var(--rim2);margin-bottom:24px;}
+.dash-title{font-family:var(--fn);font-size:26px;color:var(--gold);}
+.dash-meta{font-size:11px;color:var(--tx2);}
+.logout-btn{padding:7px 16px;background:transparent;border:2px solid var(--rim2);border-radius:var(--r);color:var(--tx2);font-family:var(--mo);font-size:11px;cursor:pointer;transition:all .15s;}
+.logout-btn:hover{border-color:var(--red);color:var(--red);}
+
+/* TABS */
+.tab-row{display:flex;gap:8px;margin-bottom:20px;}
+.tab{padding:8px 20px;border-radius:var(--r);border:2px solid var(--rim2);background:var(--panel2);color:var(--tx2);font-family:var(--mo);font-size:11px;cursor:pointer;transition:all .15s;}
+.tab:hover{border-color:var(--gold-b);}
+.tab.active{background:var(--gold-d);border-color:var(--gold-b);color:var(--gold);}
+.tab-badge{display:inline-block;background:var(--gold);color:#0d0d1a;border-radius:10px;padding:1px 7px;font-size:10px;margin-left:6px;font-family:var(--fn);}
+
+/* TABLE */
+.section{display:none;}
+.section.active{display:block;}
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.section-title{font-family:var(--fn);font-size:18px;color:var(--gold);}
+.refresh-btn{padding:6px 14px;background:var(--panel2);border:2px solid var(--rim2);border-radius:var(--r);color:var(--tx2);font-family:var(--mo);font-size:10px;cursor:pointer;transition:all .15s;}
+.refresh-btn:hover{border-color:var(--gold-b);color:var(--gold);}
+.data-table{width:100%;border-collapse:collapse;font-size:12px;}
+.data-table th{text-align:left;padding:10px 12px;border-bottom:2px solid var(--rim2);color:var(--tx2);letter-spacing:1px;font-size:10px;text-transform:uppercase;font-weight:normal;}
+.data-table td{padding:12px;border-bottom:1px solid var(--rim);color:var(--tx);vertical-align:top;line-height:1.5;}
+.data-table tr:hover td{background:var(--panel2);}
+.data-table tr:last-child td{border-bottom:none;}
+.word-cell{font-family:var(--fn);font-size:16px;color:var(--gold);letter-spacing:2px;}
+.tried-cell{color:var(--blue);font-family:var(--fn);}
+.desc-cell{color:var(--tx);max-width:300px;}
+.date-cell{color:var(--tx2);font-size:10px;white-space:nowrap;}
+.status-new{display:inline-block;padding:2px 8px;background:rgba(61,255,120,.15);border:1px solid rgba(61,255,120,.4);border-radius:10px;color:var(--green);font-size:10px;}
+.status-old{display:inline-block;padding:2px 8px;background:var(--panel2);border:1px solid var(--rim);border-radius:10px;color:var(--tx2);font-size:10px;}
+.empty-msg{text-align:center;padding:40px;color:var(--tx2);font-size:12px;}
+.loading-msg{text-align:center;padding:40px;color:var(--tx2);font-size:12px;}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;}
+.stat-card{background:var(--panel);border:2px solid var(--rim);border-radius:var(--r);padding:16px;text-align:center;}
+.stat-val{font-family:var(--fn);font-size:32px;color:var(--gold);line-height:1;}
+.stat-lbl{font-size:10px;color:var(--tx2);margin-top:4px;letter-spacing:1px;text-transform:uppercase;}
+
+/* DELETE btn */
+.del-btn{padding:4px 10px;background:transparent;border:1px solid rgba(255,68,68,.4);border-radius:4px;color:var(--red);font-family:var(--mo);font-size:10px;cursor:pointer;transition:all .15s;opacity:.6;}
+.del-btn:hover{opacity:1;background:rgba(255,68,68,.1);}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="loginWrap">
+  <div class="login-box">
+    <div class="login-logo">NestWord</div>
+    <div class="login-sub">ADMIN ACCESS · ALL SPARK</div>
+    <input class="login-field" type="email" id="adminEmail" placeholder="admin@email.com" autocomplete="email">
+    <input class="login-field" type="password" id="adminPass" placeholder="password" autocomplete="current-password">
+    <button class="login-btn" onclick="doLogin()">Sign In</button>
+    <div class="login-err" id="loginErr"></div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard" id="dashboard">
+  <div class="dash-header">
+    <div>
+      <div class="dash-title">Admin Dashboard</div>
+      <div class="dash-meta" id="dashMeta">NestWord · All Spark Enterprises Ltd.</div>
+    </div>
+    <button class="logout-btn" onclick="doLogout()">Sign Out</button>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-val" id="statReports">—</div><div class="stat-lbl">Word Reports</div></div>
+    <div class="stat-card"><div class="stat-val" id="statContacts">—</div><div class="stat-lbl">Contact Messages</div></div>
+    <div class="stat-card"><div class="stat-val" id="statPlayers">—</div><div class="stat-lbl">Registered Players</div></div>
+  </div>
+
+  <div class="tab-row">
+    <button class="tab active" onclick="showTab('reports',this)">Word Reports <span class="tab-badge" id="badgeReports">0</span></button>
+    <button class="tab" onclick="showTab('contacts',this)">Contact Messages <span class="tab-badge" id="badgeContacts">0</span></button>
+  </div>
+
+  <!-- REPORTS TAB -->
+  <div class="section active" id="tab-reports">
+    <div class="section-hdr">
+      <div class="section-title">Word Problem Reports</div>
+      <button class="refresh-btn" onclick="loadReports()">↻ Refresh</button>
+    </div>
+    <div id="reportsTable"><div class="loading-msg">Loading...</div></div>
+  </div>
+
+  <!-- CONTACTS TAB -->
+  <div class="section" id="tab-contacts">
+    <div class="section-hdr">
+      <div class="section-title">Contact Messages</div>
+      <button class="refresh-btn" onclick="loadContacts()">↻ Refresh</button>
+    </div>
+    <div id="contactsTable"><div class="loading-msg">Loading...</div></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPA_URL = 'https://tklmmctaocvewxkgdaew.supabase.co';
+const SUPA_KEY = 'sb_publishable_VJ1FX2RYr6fcWyVupuRR7w_Xzx97b5w';
+const supa = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+// ── ADMIN CREDENTIALS (stored in Supabase auth — never hardcoded) ──
+// Login uses Supabase email+password auth
+// Create the admin account once via Supabase dashboard:
+// Authentication → Users → Invite user → StephenLavoie@AllSparkEnterprisesLtd.com
+
+async function doLogin() {
+  const email = document.getElementById('adminEmail').value.trim();
+  const pass  = document.getElementById('adminPass').value;
+  const err   = document.getElementById('loginErr');
+  err.textContent = '';
+
+  if (!email || !pass) { err.textContent = 'Enter email and password.'; return; }
+
+  const { data, error } = await supa.auth.signInWithPassword({ email, password: pass });
+  if (error) { err.textContent = 'Invalid credentials.'; return; }
+
+  showDashboard(data.user);
+}
+
+async function doLogout() {
+  await supa.auth.signOut();
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('loginWrap').style.display = '';
+  document.getElementById('adminPass').value = '';
+}
+
+function showDashboard(user) {
+  document.getElementById('loginWrap').style.display = 'none';
+  document.getElementById('dashboard').style.display = '';
+  document.getElementById('dashMeta').textContent = 'Signed in as ' + user.email;
+  loadAll();
+}
+
+async function loadAll() {
+  loadReports();
+  loadContacts();
+  loadStats();
+}
+
+// ── STATS ──
+async function loadStats() {
+  const [r, c, p] = await Promise.all([
+    supa.from('reports').select('id', { count:'exact', head:true }),
+    supa.from('contact_messages').select('id', { count:'exact', head:true }),
+    supa.from('profiles').select('id', { count:'exact', head:true }),
+  ]);
+  document.getElementById('statReports').textContent  = r.count ?? '—';
+  document.getElementById('statContacts').textContent = c.count ?? '—';
+  document.getElementById('statPlayers').textContent  = p.count ?? '—';
+  document.getElementById('badgeReports').textContent  = r.count ?? 0;
+  document.getElementById('badgeContacts').textContent = c.count ?? 0;
+}
+
+// ── REPORTS ──
+async function loadReports() {
+  document.getElementById('reportsTable').innerHTML = '<div class="loading-msg">Loading...</div>';
+  const { data, error } = await supa.from('reports')
+    .select('*').order('submitted_at', { ascending: false });
+
+  if (error || !data) {
+    document.getElementById('reportsTable').innerHTML = '<div class="empty-msg">Could not load reports. Check Supabase table.</div>';
+    return;
+  }
+  if (data.length === 0) {
+    document.getElementById('reportsTable').innerHTML = '<div class="empty-msg">No reports yet.</div>';
+    return;
+  }
+
+  document.getElementById('reportsTable').innerHTML = `
+    <table class="data-table">
+      <thead><tr>
+        <th>Word</th><th>Tried</th><th>Description</th><th>Date</th><th></th>
+      </tr></thead>
+      <tbody>
+        ${data.map(r => `<tr>
+          <td class="word-cell">${r.word || '—'}</td>
+          <td class="tried-cell">${r.tried_word || '—'}</td>
+          <td class="desc-cell">${r.description || '—'}</td>
+          <td class="date-cell">${formatDate(r.submitted_at)}</td>
+          <td><button class="del-btn" onclick="deleteRow('reports','${r.id}',this)">Delete</button></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+// ── CONTACTS ──
+async function loadContacts() {
+  document.getElementById('contactsTable').innerHTML = '<div class="loading-msg">Loading...</div>';
+  const { data, error } = await supa.from('contact_messages')
+    .select('*').order('submitted_at', { ascending: false });
+
+  if (error || !data) {
+    document.getElementById('contactsTable').innerHTML = '<div class="empty-msg">Could not load messages. Check Supabase table.</div>';
+    return;
+  }
+  if (data.length === 0) {
+    document.getElementById('contactsTable').innerHTML = '<div class="empty-msg">No messages yet.</div>';
+    return;
+  }
+
+  document.getElementById('contactsTable').innerHTML = `
+    <table class="data-table">
+      <thead><tr>
+        <th>Name</th><th>Email</th><th>Message</th><th>Date</th><th></th>
+      </tr></thead>
+      <tbody>
+        ${data.map(m => `<tr>
+          <td style="font-family:var(--fn);color:var(--gold)">${m.name || '—'}</td>
+          <td><a href="mailto:${m.email}" style="color:var(--blue);text-decoration:none;">${m.email || '—'}</a></td>
+          <td class="desc-cell">${m.message || '—'}</td>
+          <td class="date-cell">${formatDate(m.submitted_at)}</td>
+          <td><button class="del-btn" onclick="deleteRow('contact_messages','${m.id}',this)">Delete</button></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+// ── DELETE ──
+async function deleteRow(table, id, btn) {
+  if (!confirm('Delete this record?')) return;
+  const { error } = await supa.from(table).delete().eq('id', id);
+  if (!error) {
+    btn.closest('tr').remove();
+    loadStats();
+  }
+}
+
+// ── TABS ──
+function showTab(name, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+function formatDate(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-CA') + ' ' + d.toLocaleTimeString('en-CA', { hour:'2-digit', minute:'2-digit' });
+}
+
+// ── AUTO-LOGIN if session exists ──
+supa.auth.getSession().then(({ data }) => {
+  if (data.session?.user) showDashboard(data.session.user);
+});
+
+// Enter key on password
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('adminPass')?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') doLogin();
+  });
+});
+</script>
+</body>
+</html>
