@@ -719,6 +719,7 @@ footer{width:100%;max-width:640px;margin-top:32px;padding-top:16px;border-top:2p
 <!-- END OVERLAY -->
 <div class="ov off" id="endOv">
   <div class="modal">
+    <button onclick="document.getElementById('endOv').classList.add('off')" style="position:absolute;top:10px;right:14px;background:none;border:none;font-size:22px;color:var(--tx2);cursor:pointer;line-height:1;z-index:10;" title="Close">×</button>
     <div class="modal-corner"></div><div class="modal-corner"></div>
     <div class="modal-corner"></div><div class="modal-corner"></div>
     <div class="m-ico" id="endIco">🏆</div>
@@ -726,11 +727,11 @@ footer{width:100%;max-width:640px;margin-top:32px;padding-top:16px;border-top:2p
     <div class="m-sub" id="endSub">Here's your final score</div>
     <div class="pts-display">
       <div class="pts-main"><span id="endPts">0</span> <span class="pts-denom">/ <span id="endMax">?</span></span></div>
-      <div class="pts-sub">points earned · <span id="endPct">0</span>% of maximum · <span id="endStrk">0</span>🔥 streak</div>
+      <div class="pts-sub">points earned · <span id="endStrk">0</span>🔥 streak</div>
     </div>
     <div class="end-grid">
       <div class="eg"><div class="eg-n" style="color:var(--ng-text)" id="endWds">0</div><div class="eg-l">words found</div></div>
-      <div class="eg"><div class="eg-n" style="color:var(--np-text)" id="endBon">0</div><div class="eg-l">bonus ★ pts</div></div>
+      <div class="eg"><div class="eg-n" style="color:var(--ng-text)" id="endWdMax">0</div><div class="eg-l">possible words</div></div>
       <div class="eg"><div class="eg-n" style="color:var(--gold)" id="endBest">0</div><div class="eg-l">personal best</div></div>
     </div>
     <div class="xp-gained-box" id="xpGainedBox" style="display:none">
@@ -759,7 +760,64 @@ footer{width:100%;max-width:640px;margin-top:32px;padding-top:16px;border-top:2p
       <span class="ad-badge">AD</span>
     </button>
     <button class="btn-s" onclick="showLevels()">⚡ View Ranks & Unlocks</button>
+    <button class="btn-s" style="color:var(--tx3);font-size:12px;margin-top:4px;" onclick="openReport()">⚑ Report a Problem</button>
+    <div style="font-size:11px;color:var(--tx2);font-family:var(--mo);margin-top:6px;">New daily word every midnight!</div>
+  </div>
+</div>
+    <div class="xp-gained-box" id="xpGainedBox" style="display:none">
+      <div class="xp-gained-title">⚡ XP Earned This Round</div>
+      <div class="xp-gained-rows" id="xpGainedRows"></div>
+    </div>
+    <div class="rankup-banner" id="rankupBanner" style="display:none">
+      <div class="rankup-ico" id="rankupIco">🏆</div>
+      <div class="rankup-title" id="rankupTitle">RANK UP!</div>
+      <div class="rankup-sub" id="rankupSub"></div>
+    </div>
+    <div class="share-sheet">
+      <div class="share-ttl">Share Your Score</div>
+      <div id="scoreCardPreview" style="margin-bottom:12px;border-radius:var(--r);overflow:hidden;border:2px solid var(--rim2);"></div>
+      <div class="share-grid">
+        <a class="sh-btn" href="#" onclick="shareFB();return false;"><span class="sh-ico">📘</span>Facebook</a>
+        <a class="sh-btn" href="#" onclick="shareWA();return false;"><span class="sh-ico">💬</span>WhatsApp</a>
+        <a class="sh-btn" href="#" onclick="shareSMS();return false;"><span class="sh-ico">📱</span>Text Message</a>
+        <a class="sh-btn" href="#" onclick="shareTT();return false;"><span class="sh-ico">🎵</span>TikTok</a>
+        <a class="sh-btn sh-copy" href="#" onclick="shareCopy();return false;"><span class="sh-ico">📋</span>Copy to Clipboard</a>
+      </div>
+    </div>
+    <div class="share-msg" id="shareMsg"></div>
+    <button class="btn-play-again" onclick="showTryAgainAd()">
+      Play Again
+      <span class="ad-badge">AD</span>
+    </button>
+    <button class="btn-s" onclick="showLevels()">⚡ View Ranks & Unlocks</button>
     <div style="font-size:11px;color:var(--tx2);font-family:var(--mo);margin-top:10px;">New daily word every midnight!</div>
+  </div>
+</div>
+
+<!-- REPORT OVERLAY -->
+<div class="ov off" id="reportOv" style="z-index:970;">
+  <div class="modal" style="max-width:400px;">
+    <button onclick="document.getElementById('reportOv').classList.add('off')" style="position:absolute;top:10px;right:14px;background:none;border:none;font-size:22px;color:var(--tx2);cursor:pointer;line-height:1;z-index:10;">×</button>
+    <div class="modal-corner"></div><div class="modal-corner"></div>
+    <div class="modal-corner"></div><div class="modal-corner"></div>
+    <div class="m-ico">⚑</div>
+    <div class="m-ttl" style="font-size:20px;">Report a Problem</div>
+    <div class="m-sub">Found a word that should work but doesn't? Something feel wrong? Let us know.</div>
+    <div style="text-align:left;margin-bottom:10px;">
+      <div style="font-size:11px;color:var(--tx2);font-family:var(--mo);margin-bottom:5px;">Today's word</div>
+      <input id="reportWord" type="text" readonly style="width:100%;background:var(--panel2);border:2px solid var(--rim2);border-radius:var(--r);color:var(--gold);font-family:var(--mo);font-size:14px;padding:8px 12px;letter-spacing:4px;">
+    </div>
+    <div style="text-align:left;margin-bottom:10px;">
+      <div style="font-size:11px;color:var(--tx2);font-family:var(--mo);margin-bottom:5px;">Word you tried (if any)</div>
+      <input id="reportTriedWord" type="text" placeholder="e.g. RESTING" style="width:100%;background:var(--panel2);border:2px solid var(--rim2);border-radius:var(--r);color:var(--tx);font-family:var(--mo);font-size:14px;padding:8px 12px;letter-spacing:2px;text-transform:uppercase;outline:none;">
+    </div>
+    <div style="text-align:left;margin-bottom:14px;">
+      <div style="font-size:11px;color:var(--tx2);font-family:var(--mo);margin-bottom:5px;">Describe the problem</div>
+      <textarea id="reportDesc" placeholder="e.g. RESTING should be valid — all letters are in THRESHING" rows="3" style="width:100%;background:var(--panel2);border:2px solid var(--rim2);border-radius:var(--r);color:var(--tx);font-family:var(--mo);font-size:13px;padding:8px 12px;resize:vertical;outline:none;"></textarea>
+    </div>
+    <div id="reportMsg" style="font-size:12px;font-family:var(--mo);color:var(--ng-text);margin-bottom:8px;min-height:18px;"></div>
+    <button class="btn-p" onclick="submitReport()">Submit Report</button>
+    <button class="btn-s" onclick="document.getElementById('reportOv').classList.add('off')">Cancel</button>
   </div>
 </div>
 
@@ -1377,14 +1435,16 @@ function showEnd(pts, bonusPts, words, streak, showXp, xpResult, newRank) {
   else if (pct >= 20) { ico = "📝"; ttl = "GETTING THERE!"; }
   document.getElementById("endIco").textContent = ico;
   document.getElementById("endTtl").textContent = ttl;
-  document.getElementById("endSub").textContent = "You scored " + pct + "% of the maximum points!";
+  document.getElementById("endSub").textContent = words.length + " of " + G.possible.length + " possible words found";
   document.getElementById("endPts").textContent = pts;
   document.getElementById("endMax").textContent = max;
-  document.getElementById("endPct").textContent = pct;
   document.getElementById("endStrk").textContent = streak;
   document.getElementById("endWds").textContent = words.length;
-  document.getElementById("endBon").textContent = bonusPts + " pts";
+  document.getElementById("endWdMax").textContent = G.possible.length;
   document.getElementById("endBest").textContent = G.best + " pts";
+  // Pre-fill report word for when player clicks Report
+  const rw = document.getElementById("reportWord");
+  if (rw) rw.value = G.word ? G.word.toUpperCase() : "";
 
   const xpBox = document.getElementById("xpGainedBox");
   if (showXp && xpResult) {
@@ -1842,6 +1902,46 @@ function shareCopy() { shareWithCard('copy'); }
 function showSM(msg) { const el = document.getElementById("shareMsg"); el.textContent = msg; setTimeout(() => { el.textContent = ""; }, 3500); }
 
 // ══════════════════════════════════════════════════
+//  REPORT
+// ══════════════════════════════════════════════════
+function openReport() {
+  document.getElementById("reportWord").value = G.word ? G.word.toUpperCase() : "";
+  document.getElementById("reportTriedWord").value = "";
+  document.getElementById("reportDesc").value = "";
+  document.getElementById("reportMsg").textContent = "";
+  document.getElementById("reportOv").classList.remove("off");
+}
+
+async function submitReport() {
+  const word = document.getElementById("reportWord").value;
+  const tried = document.getElementById("reportTriedWord").value.trim().toUpperCase();
+  const desc = document.getElementById("reportDesc").value.trim();
+  const msgEl = document.getElementById("reportMsg");
+
+  if (!desc) { msgEl.textContent = "Please describe the problem."; msgEl.style.color = "#e53e3e"; return; }
+
+  try {
+    const { error } = await supa.from("reports").insert([{
+      word,
+      tried_word: tried || null,
+      description: desc,
+      submitted_at: new Date().toISOString(),
+    }]);
+    if (error) throw error;
+    msgEl.textContent = "✓ Report submitted — thank you!";
+    msgEl.style.color = "var(--ng-text)";
+    setTimeout(() => document.getElementById("reportOv").classList.add("off"), 2000);
+  } catch(e) {
+    // Fallback: email-style mailto
+    const subject = encodeURIComponent("NestWord Report: " + word);
+    const body = encodeURIComponent("Word: " + word + "\nTried: " + tried + "\n\n" + desc);
+    window.open("mailto:StephenLavoie@AllSparkEnterprisesLtd.com?subject=" + subject + "&body=" + body);
+    msgEl.textContent = "✓ Opening email client as fallback.";
+    msgEl.style.color = "var(--ng-text)";
+  }
+}
+
+// ══════════════════════════════════════════════════
 //  OVERLAYS
 // ══════════════════════════════════════════════════
 
@@ -1910,7 +2010,14 @@ function openPanel() { document.getElementById("aPanel").classList.add("open"); 
 
 // Auto-open profile panel if arriving via #profile link
 if (window.location.hash === '#profile') {
-  window.addEventListener('load', () => { setTimeout(openPanel, 400); });
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      // Close start overlay so panel is visible
+      document.getElementById('startOv').classList.add('off');
+      document.getElementById('bigWord').classList.remove('hidden');
+      openPanel();
+    }, 300);
+  });
 }
 function closePanel() { document.getElementById("aPanel").classList.remove("open"); }
 
@@ -2162,6 +2269,47 @@ async function initAuth() {
       updateAuthUI();
     }
   });
+}
+
+// ── REPORT ──
+function openReport() {
+  document.getElementById('reportWord').value = G.word ? G.word.toUpperCase() : '—';
+  document.getElementById('reportTriedWord').value = '';
+  document.getElementById('reportDesc').value = '';
+  document.getElementById('reportMsg').textContent = '';
+  document.getElementById('reportOv').classList.remove('off');
+}
+
+async function submitReport() {
+  const word      = document.getElementById('reportWord').value;
+  const tried     = document.getElementById('reportTriedWord').value.trim().toUpperCase();
+  const desc      = document.getElementById('reportDesc').value.trim();
+  const msgEl     = document.getElementById('reportMsg');
+
+  if (!desc) { msgEl.textContent = 'Please describe the problem.'; msgEl.style.color='#e53e3e'; return; }
+
+  try {
+    const { error } = await supa.from('reports').insert([{
+      word,
+      tried_word: tried || null,
+      description: desc,
+      created_at: new Date().toISOString(),
+    }]);
+    if (error) throw error;
+    msgEl.textContent = '✓ Report submitted — thank you!';
+    msgEl.style.color = 'var(--ng-text)';
+    setTimeout(() => document.getElementById('reportOv').classList.add('off'), 2000);
+  } catch(e) {
+    msgEl.textContent = '✓ Noted! (offline — report saved locally)';
+    msgEl.style.color = 'var(--ng-text)';
+    // Save locally as fallback
+    try {
+      const reports = JSON.parse(localStorage.getItem('nw_reports')||'[]');
+      reports.push({ word, tried, desc, date: new Date().toISOString() });
+      localStorage.setItem('nw_reports', JSON.stringify(reports));
+    } catch(e2){}
+    setTimeout(() => document.getElementById('reportOv').classList.add('off'), 2000);
+  }
 }
 
 initAuth();
