@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NestWord Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Fredoka+One&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -129,7 +130,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPA_URL = 'https://tklmmctaocvewxkgdaew.supabase.co';
 const SUPA_KEY = 'sb_publishable_VJ1FX2RYr6fcWyVupuRR7w_Xzx97b5w';
@@ -285,16 +285,18 @@ function formatDate(iso) {
   return d.toLocaleDateString('en-CA') + ' ' + d.toLocaleTimeString('en-CA', { hour:'2-digit', minute:'2-digit' });
 }
 
-// ── AUTO-LOGIN if session exists ──
-supa.auth.getSession().then(({ data }) => {
-  if (data.session?.user) showDashboard(data.session.user);
-});
-
-// Enter key on password
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('adminPass')?.addEventListener('keydown', e => {
+// ── INIT — wait for DOM then check session ──
+document.addEventListener('DOMContentLoaded', async () => {
+  // Enter key on password field
+  document.getElementById('adminPass').addEventListener('keydown', e => {
     if (e.key === 'Enter') doLogin();
   });
+
+  // Check for existing session
+  const { data } = await supa.auth.getSession();
+  if (data.session?.user) {
+    showDashboard(data.session.user);
+  }
 });
 </script>
 </body>
