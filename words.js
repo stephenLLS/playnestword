@@ -19,7 +19,26 @@ const THEMES={
   general:{name:"Word Fest",color:"#c84ae8",emoji:"✨",desc:"The best of everything"}
 };
 const THEME_ORDER=["trades","nature","food","sports","farming","canadian","outdoors","general"];
-function getTodayTheme(){const s=new Date("2024-01-01"),n=new Date(),w=Math.floor((n-s)/(7*24*60*60*1000));return THEME_ORDER[w%THEME_ORDER.length];}
-function getTodayWord(){const t=getTodayTheme(),words=WORD_BANK[t],d=new Date(),dy=Math.floor((d-new Date(d.getFullYear(),0,0))/(864e5)),seed=d.getFullYear()*1000+dy;return words[seed%words.length].replace(/\s/g,"");}
+function getTodayTheme(){
+  // Use local date so word changes at local midnight, not UTC midnight
+  const now=new Date();
+  const localStart=new Date(2024,0,1); // Jan 1 2024 local time
+  const localNow=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const w=Math.floor((localNow-localStart)/(7*24*60*60*1000));
+  return THEME_ORDER[w%THEME_ORDER.length];
+}
+function getTodayWord(){
+  const now=new Date();
+  const t=getTodayTheme(),words=WORD_BANK[t];
+  // Seed based on local date components — changes at local midnight
+  const seed=now.getFullYear()*10000+((now.getMonth()+1)*100)+now.getDate();
+  return words[seed%words.length].replace(/\s/g,"");
+}
 function getTodayDateStr(){return new Date().toLocaleDateString("en-CA",{weekday:"long",year:"numeric",month:"long",day:"numeric"});}
-function getDayNumber(){return Math.floor((new Date()-new Date("2024-01-01"))/(864e5));}
+function getDayNumber(){
+  // Local midnight to local midnight
+  const now=new Date();
+  const localToday=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const localStart=new Date(2024,0,1);
+  return Math.floor((localToday-localStart)/(864e5));
+}

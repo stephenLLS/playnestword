@@ -1950,12 +1950,15 @@ function bonusRound() {
   const tk = keys[Math.floor(Math.random() * keys.length)];
   const words = WORD_BANK[tk];
   const word = words[Math.floor(Math.random() * words.length)].replace(/\s/g, "");
+  // Store the bonus word — don't overwrite G.day so streak/history stays correct
   G.word = word; G.theme = THEMES[tk];
   G.possible = findAllValidWords(word);
   const max = totalPossiblePoints(G.possible);
   document.getElementById("scMax").textContent = max;
   document.getElementById("psMax").textContent = max;
   renderWord(word);
+  // Label it as a bonus round clearly
+  document.getElementById("wordLbl").textContent = "Bonus Word";
   document.getElementById("endOv").classList.add("off");
   startGame();
 }
