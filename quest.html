@@ -5,149 +5,254 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NestWord — Word Quest</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Share+Tech+Mono&family=Fredoka+One&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Share+Tech+Mono&family=Press+Start+2P&family=Fredoka+One&display=swap" rel="stylesheet">
 <script src="words.js"></script>
 <script src="dictionary.js"></script>
 <script src="words_quest.js"></script>
 <style>
-:root{--fn:'Fredoka One',cursive;--fn2:'Boogaloo',cursive;--mo:'Share Tech Mono',monospace;--r:8px;--r2:14px;--tr:.16s ease;}
-[data-theme="dark"]{--bg:#07070f;--felt:#0c150e;--panel:#10101e;--panel2:#181830;--panel3:#20203c;--rim:#2c2c52;--rim2:#3e3e70;--tx:#f0e8d0;--tx2:#90886a;--tx3:#50483a;--gold:#f5c842;--gold2:#ffe066;--gold-d:rgba(245,200,66,.13);--gold-b:rgba(245,200,66,.38);--ng-text:#3dff78;--np-text:#d43dff;--nb-text:#3dc8ff;--ng-bd:rgba(61,255,120,.32);--np-bd:rgba(212,61,255,.38);--nb-bd:rgba(61,200,255,.30);--ng-bg:rgba(61,255,120,.11);--np-bg:rgba(212,61,255,.13);--nb-bg:rgba(61,200,255,.10);--suits:rgba(255,255,255,.022);}
-[data-theme="light"]{--bg:#e8e2d4;--felt:#d8d0bc;--panel:#f8f4ec;--panel2:#ede6d4;--panel3:#e0d8c4;--rim:#b8a878;--rim2:#8a7848;--tx:#0a0800;--tx2:#3a3010;--tx3:#6a6040;--gold:#7a5800;--gold2:#5a3e00;--gold-d:rgba(122,88,0,.12);--gold-b:rgba(122,88,0,.45);--ng-text:#0d5c26;--np-text:#6b1590;--nb-text:#1530a0;--ng-bd:rgba(13,92,38,.55);--np-bd:rgba(107,21,144,.55);--nb-bd:rgba(21,48,160,.55);--ng-bg:rgba(13,92,38,.10);--np-bg:rgba(107,21,144,.10);--nb-bg:rgba(21,48,160,.10);--suits:rgba(0,0,0,.05);}
-[data-theme="light"] .sub-btn,[data-theme="light"] .btn-p{background:var(--gold);color:#fff8ee;}
-[data-theme="light"] .qg-word,[data-theme="light"] .m-ttl,[data-theme="light"] .pts-main,[data-theme="light"] .sc-val.gold,[data-theme="light"] .qh-title{color:var(--gold);text-shadow:none;}
-[data-theme="light"] .word-in{color:var(--gold);}
+:root{--fn:'Fredoka One',cursive;--fn2:'Boogaloo',cursive;--mo:'Share Tech Mono',monospace;--pixel:'Press Start 2P',monospace;--r:8px;--r2:14px;--tr:.16s ease;}
+[data-theme="dark"]{
+  --bg:#07070f;--felt:#0c0c18;--panel:#10101e;--panel2:#181830;--panel3:#20203c;
+  --rim:#2c2c52;--rim2:#3e3e70;--tx:#f0e8d0;--tx2:#90886a;--tx3:#50483a;
+  --gold:#f5c842;--gold2:#ffe066;--gold-d:rgba(245,200,66,.13);--gold-b:rgba(245,200,66,.4);
+  --ng-text:#3dff78;--np-text:#d43dff;--nb-text:#3dc8ff;
+  --ng-bd:rgba(61,255,120,.32);--np-bd:rgba(212,61,255,.38);--nb-bd:rgba(61,200,255,.30);
+  --ng-bg:rgba(61,255,120,.11);--np-bg:rgba(212,61,255,.13);--nb-bg:rgba(61,200,255,.10);
+  --suits:rgba(255,255,255,.018);
+  --arcade-glow:rgba(245,200,66,.2);
+}
+[data-theme="light"]{
+  --bg:#1a1428;--felt:#12102a;--panel:#1e1c38;--panel2:#252244;--panel3:#2e2a50;
+  --rim:#3a3660;--rim2:#4a4878;--tx:#f0e8d0;--tx2:#b8a878;--tx3:#786850;
+  --gold:#f5c842;--gold2:#ffe066;--gold-d:rgba(245,200,66,.15);--gold-b:rgba(245,200,66,.45);
+  --ng-text:#3dff78;--np-text:#d43dff;--nb-text:#3dc8ff;
+  --ng-bd:rgba(61,255,120,.4);--np-bd:rgba(212,61,255,.45);--nb-bd:rgba(61,200,255,.38);
+  --ng-bg:rgba(61,255,120,.12);--np-bg:rgba(212,61,255,.15);--nb-bg:rgba(61,200,255,.12);
+  --suits:rgba(255,255,255,.018);
+  --arcade-glow:rgba(245,200,66,.25);
+}
+/* Force dark arcade theme for quest regardless of site theme */
+body{ background:var(--bg) !important; color:var(--tx) !important; }
+
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--tx);font-family:var(--fn2);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:0 14px 100px;position:relative;overflow-x:hidden;}
-body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.025) 3px,rgba(0,0,0,.025) 4px);pointer-events:none;z-index:900;}
-.letters-bg{position:fixed;inset:0;z-index:0;pointer-events:none;display:flex;flex-direction:column;gap:50px;justify-content:center;overflow:hidden;}
-.letters-row{font-size:16px;color:var(--suits);white-space:nowrap;letter-spacing:16px;font-family:var(--mo);font-weight:700;animation:drift 80s linear infinite;}
-.letters-row:nth-child(even){animation-direction:reverse;letter-spacing:20px;}
-@keyframes drift{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+body{
+  background:var(--bg);color:var(--tx);font-family:var(--fn2);
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;
+  padding:0 14px 100px;position:relative;overflow-x:hidden;
+}
+/* Scanline overlay */
+body::before{
+  content:'';position:fixed;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.18) 2px,rgba(0,0,0,.18) 4px);
+  pointer-events:none;z-index:900;
+}
+/* Drifting letter bg */
+.letters-bg{position:fixed;inset:0;z-index:0;pointer-events:none;display:flex;flex-direction:column;gap:60px;justify-content:center;overflow:hidden;}
+.letters-row{font-size:14px;color:var(--suits);white-space:nowrap;letter-spacing:14px;font-family:var(--mo);font-weight:700;animation:drift 80s linear infinite;}
+.letters-row:nth-child(even){animation-direction:reverse;}
+@keyframes drift{from{transform:translateX(0)}to{transform:translateX(-40%)}}
 
 /* NAV */
-header{width:100%;max-width:640px;position:relative;z-index:10;padding:14px 0 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--rim);}
-.logo-name{font-family:var(--fn);font-size:22px;color:var(--gold);}
-.logo-tag{font-size:10px;color:var(--tx2);font-family:var(--mo);}
-.ico-btn{width:34px;height:34px;border-radius:50%;background:var(--panel2);border:2px solid var(--rim2);color:var(--tx2);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:var(--fn);transition:all var(--tr);text-decoration:none;flex-shrink:0;}
-.ico-btn:hover{background:var(--panel3);color:var(--tx);border-color:var(--gold-b);}
+header{width:100%;max-width:800px;position:relative;z-index:10;padding:14px 0 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--rim2);}
+.logo-name{font-family:var(--fn);font-size:22px;color:var(--gold);text-shadow:0 0 12px var(--gold-b);}
+.logo-tag{font-size:9px;color:var(--tx2);font-family:var(--mo);}
+.ico-btn{width:34px;height:34px;border-radius:6px;background:var(--panel2);border:2px solid var(--rim2);color:var(--tx2);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:var(--fn);transition:all var(--tr);text-decoration:none;}
+.ico-btn:hover{background:var(--panel3);color:var(--gold);border-color:var(--gold-b);box-shadow:0 0 8px var(--arcade-glow);}
 
-/* THEME ROW */
-.theme-bar{width:100%;max-width:640px;margin-top:12px;position:relative;z-index:10;}
-.theme-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;}
-.theme-scroll::-webkit-scrollbar{display:none;}
-.th-pill{flex-shrink:0;padding:6px 14px;border-radius:20px;border:2px solid var(--rim2);background:var(--panel2);color:var(--tx2);font-family:var(--mo);font-size:11px;cursor:pointer;transition:all var(--tr);white-space:nowrap;display:flex;align-items:center;gap:5px;}
-.th-pill:hover:not(.locked){border-color:var(--gold-b);color:var(--tx);}
-.th-pill.active{background:var(--gold-d);border-color:var(--gold-b);color:var(--gold);}
-.th-pill.locked{opacity:.4;cursor:not-allowed;}
+/* PROGRESS BAR */
+.quest-progress{
+  width:100%;max-width:800px;margin-top:14px;position:relative;z-index:10;
+  background:var(--panel);border:2px solid var(--rim2);border-radius:var(--r);padding:10px 16px;
+}
+.qp-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.qp-label{font-family:var(--pixel);font-size:7px;color:var(--gold);letter-spacing:1px;}
+.qp-count{font-family:var(--pixel);font-size:9px;color:var(--gold);text-shadow:0 0 8px var(--gold-b);}
+.qp-track{width:100%;height:10px;background:var(--panel2);border-radius:5px;border:1px solid var(--rim2);overflow:hidden;}
+.qp-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,#3dc8ff,#3dff78,var(--gold));transition:width .5s ease;box-shadow:0 0 6px rgba(61,255,120,.4);}
+.qp-unlock-msg{font-family:var(--mo);font-size:10px;color:var(--ng-text);margin-top:5px;text-align:center;display:none;}
+.qp-unlock-msg.show{display:block;}
 
-/* TIER TABS */
-.tier-tabs{width:100%;max-width:640px;margin-top:10px;display:flex;gap:6px;position:relative;z-index:10;}
-.tier-tab{flex:1;padding:8px 4px;text-align:center;border-radius:var(--r);border:2px solid var(--rim2);background:var(--panel2);color:var(--tx2);font-family:var(--mo);font-size:10px;cursor:pointer;transition:all var(--tr);line-height:1.3;}
-.tier-tab:hover:not(.locked){border-color:var(--gold-b);}
-.tier-tab.active{background:var(--gold-d);border-color:var(--gold-b);color:var(--gold);}
-.tier-tab.locked{opacity:.4;cursor:not-allowed;}
-.tier-tab .tier-name{font-family:var(--fn);font-size:13px;display:block;}
-.tier-tab .tier-range{font-size:9px;color:var(--tx3);}
+/* THEME GRID (arcade cabinet cards) */
+.theme-section{width:100%;max-width:800px;margin-top:20px;position:relative;z-index:10;}
+.section-label{font-family:var(--pixel);font-size:8px;color:var(--tx2);letter-spacing:2px;margin-bottom:14px;}
+.theme-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+@media(max-width:600px){.theme-grid{grid-template-columns:repeat(2,1fr);}}
 
-/* CHAPTER HEADER */
-.quest-header{width:100%;max-width:640px;margin-top:14px;position:relative;z-index:10;}
-.qh-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
-.qh-title{font-family:var(--fn);font-size:20px;color:var(--gold);}
-.qh-prog{font-size:11px;color:var(--tx2);font-family:var(--mo);}
-.ch-prog-track{width:100%;height:5px;background:var(--panel2);border-radius:3px;border:1px solid var(--rim);overflow:hidden;margin-bottom:14px;}
-.ch-prog-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--ng-text),var(--gold));transition:width .5s ease;}
+/* ARCADE CABINET CARD */
+.arcade-card{
+  background:var(--panel);
+  border:3px solid var(--rim2);
+  border-radius:10px;
+  cursor:pointer;
+  transition:all .2s ease;
+  overflow:hidden;
+  position:relative;
+}
+.arcade-card::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.1) 2px,rgba(0,0,0,.1) 4px);
+  pointer-events:none;z-index:1;border-radius:8px;
+}
+.arcade-card:hover:not(.locked){
+  border-color:var(--gold-b);
+  box-shadow:0 0 16px var(--arcade-glow),0 0 32px var(--gold-d);
+  transform:translateY(-3px) scale(1.02);
+}
+.arcade-card.active{border-color:var(--gold);box-shadow:0 0 20px var(--arcade-glow);}
+.arcade-card.locked{opacity:.45;cursor:not-allowed;filter:grayscale(60%);}
+.arcade-card.completed{border-color:var(--ng-bd);}
+
+/* Card screen (pixel art area) */
+.card-screen{
+  width:100%;aspect-ratio:1;
+  background:var(--panel2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:clamp(28px,8vw,52px);
+  position:relative;z-index:2;
+  border-bottom:3px solid var(--rim2);
+  padding:8px;
+}
+.card-screen-inner{
+  width:90%;height:90%;
+  background:linear-gradient(135deg,var(--panel3),var(--panel2));
+  border:2px solid var(--rim);
+  border-radius:6px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:4px;
+  position:relative;overflow:hidden;
+}
+.card-screen-inner::after{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,255,255,.03) 3px,rgba(255,255,255,.03) 4px);
+}
+.card-emoji{font-size:clamp(24px,6vw,42px);filter:drop-shadow(0 0 6px rgba(255,255,255,.3));line-height:1;}
+.card-pixel-art{font-size:clamp(10px,2.5vw,16px);font-family:var(--mo);color:var(--tx2);letter-spacing:1px;opacity:.7;}
+
+/* Card info */
+.card-info{padding:8px;position:relative;z-index:2;}
+.card-name{font-family:var(--pixel);font-size:clamp(5px,1.2vw,8px);color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;text-shadow:0 0 6px var(--gold-b);}
+.card-prog{font-family:var(--mo);font-size:9px;color:var(--tx2);margin-bottom:5px;}
+.card-bar-track{width:100%;height:4px;background:var(--panel2);border-radius:2px;overflow:hidden;}
+.card-bar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--nb-text),var(--ng-text));transition:width .4s ease;}
+.card-lock{position:absolute;top:8px;right:8px;font-size:14px;z-index:3;}
+
+/* TIER SELECT (shown after clicking theme card) */
+.tier-section{width:100%;max-width:800px;margin-top:20px;position:relative;z-index:10;display:none;}
+.tier-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.tier-back{padding:6px 14px;background:var(--panel2);border:2px solid var(--rim2);border-radius:var(--r);font-family:var(--mo);font-size:11px;color:var(--tx2);cursor:pointer;transition:all var(--tr);}
+.tier-back:hover{border-color:var(--gold-b);color:var(--gold);}
+.tier-theme-name{font-family:var(--pixel);font-size:9px;color:var(--gold);text-shadow:0 0 8px var(--gold-b);}
+.tier-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+@media(max-width:480px){.tier-grid{grid-template-columns:1fr;}}
+
+/* TIER CARD */
+.tier-card{
+  background:var(--panel);border:2px solid var(--rim2);border-radius:var(--r);
+  padding:16px;cursor:pointer;transition:all var(--tr);position:relative;overflow:hidden;
+}
+.tier-card::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 8px,rgba(255,255,255,.02) 8px,rgba(255,255,255,.02) 9px);pointer-events:none;}
+.tier-card:hover:not(.locked){border-color:var(--gold-b);box-shadow:0 0 12px var(--arcade-glow);}
+.tier-card.locked{opacity:.4;cursor:not-allowed;}
+.tier-emoji{font-size:28px;margin-bottom:8px;}
+.tier-name{font-family:var(--pixel);font-size:8px;color:var(--gold);margin-bottom:4px;text-shadow:0 0 6px var(--gold-b);}
+.tier-range{font-family:var(--mo);font-size:10px;color:var(--tx2);margin-bottom:8px;}
+.tier-stats{font-family:var(--mo);font-size:10px;color:var(--tx3);}
+.tier-prog-track{width:100%;height:5px;background:var(--panel2);border-radius:3px;margin-top:8px;overflow:hidden;}
+.tier-prog-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--nb-text),var(--ng-text));transition:width .4s ease;}
 
 /* WORD LIST */
-.word-list{width:100%;max-width:640px;display:flex;flex-direction:column;gap:6px;position:relative;z-index:10;}
-.wl-item{background:var(--panel);border:2px solid var(--rim);border-radius:var(--r);padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:all var(--tr);}
-.wl-item:hover:not(.locked-item){border-color:var(--gold-b);transform:translateX(3px);}
+.word-section{width:100%;max-width:800px;margin-top:20px;position:relative;z-index:10;display:none;}
+.wl-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.wl-back{padding:6px 14px;background:var(--panel2);border:2px solid var(--rim2);border-radius:var(--r);font-family:var(--mo);font-size:11px;color:var(--tx2);cursor:pointer;transition:all var(--tr);}
+.wl-back:hover{border-color:var(--gold-b);color:var(--gold);}
+.wl-title{font-family:var(--pixel);font-size:8px;color:var(--gold);text-shadow:0 0 6px var(--gold-b);}
+.word-list{display:flex;flex-direction:column;gap:7px;}
+.wl-item{
+  background:var(--panel);border:2px solid var(--rim);border-radius:var(--r);
+  padding:12px 14px;display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;transition:all var(--tr);
+}
+.wl-item:hover:not(.locked-item){border-color:var(--gold-b);box-shadow:0 0 8px var(--arcade-glow);}
 .wl-item.completed{border-color:var(--ng-bd);background:var(--ng-bg);}
-.wl-item.active-item{border-color:var(--gold-b);background:var(--gold-d);}
 .wl-item.locked-item{opacity:.4;cursor:not-allowed;}
 .wl-left{display:flex;align-items:center;gap:10px;}
-.wl-num{width:26px;height:26px;border-radius:50%;background:var(--panel2);border:2px solid var(--rim2);display:flex;align-items:center;justify-content:center;font-family:var(--fn);font-size:12px;color:var(--tx2);flex-shrink:0;}
+.wl-num{width:26px;height:26px;border-radius:4px;background:var(--panel2);border:2px solid var(--rim2);display:flex;align-items:center;justify-content:center;font-family:var(--pixel);font-size:8px;color:var(--tx2);flex-shrink:0;}
 .wl-item.completed .wl-num{background:var(--ng-bg);border-color:var(--ng-bd);color:var(--ng-text);}
-.wl-word{font-family:var(--fn);font-size:16px;color:var(--tx);letter-spacing:2px;}
+.wl-word{font-family:var(--fn);font-size:18px;color:var(--tx);letter-spacing:2px;}
 .wl-item.locked-item .wl-word{filter:blur(4px);user-select:none;}
 .wl-meta{font-size:10px;color:var(--tx2);font-family:var(--mo);margin-top:2px;}
 .wl-score{font-family:var(--fn);font-size:14px;color:var(--gold);}
-.wl-check{font-size:16px;}
 
 /* GAME AREA */
-.quest-game{width:100%;max-width:640px;position:relative;z-index:10;display:none;}
+.quest-game{width:100%;max-width:800px;position:relative;z-index:10;display:none;}
 .qg-header{background:var(--panel);border:2px solid var(--rim2);border-radius:var(--r2);padding:14px 16px;margin-bottom:12px;}
-.qg-word{font-family:var(--fn);font-size:clamp(24px,6vw,46px);color:var(--gold);letter-spacing:5px;text-transform:uppercase;word-break:break-all;}
+.qg-word{font-family:var(--fn);font-size:clamp(24px,6vw,46px);color:var(--gold);letter-spacing:5px;text-transform:uppercase;word-break:break-all;text-shadow:0 0 16px var(--gold-b);}
 .qg-info{font-size:11px;color:var(--tx2);font-family:var(--mo);margin-top:4px;}
 .qg-progress{display:flex;align-items:center;gap:8px;margin-top:8px;}
-.qg-prog-track{flex:1;height:5px;background:var(--panel2);border-radius:3px;overflow:hidden;}
+.qg-prog-track{flex:1;height:6px;background:var(--panel2);border-radius:3px;overflow:hidden;border:1px solid var(--rim);}
 .qg-prog-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--ng-text),var(--gold));transition:width .4s ease;}
 .qg-count{font-size:11px;color:var(--tx2);font-family:var(--mo);}
-
-.score-strip{width:100%;max-width:640px;margin-top:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;position:relative;z-index:10;}
+.score-strip{width:100%;max-width:800px;margin-top:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;position:relative;z-index:10;}
 .sc-card{background:var(--panel);border:2px solid var(--rim);border-radius:var(--r);padding:10px 8px;text-align:center;}
 .sc-val{font-family:var(--fn);font-size:22px;line-height:1;}
-.sc-val.gold{color:var(--gold);}
+.sc-val.gold{color:var(--gold);text-shadow:0 0 8px var(--gold-d);}
 .sc-val.grn{color:var(--ng-text);}
 .sc-val.wht{color:var(--tx);}
-.sc-lbl{font-size:9px;color:var(--tx2);font-family:var(--mo);margin-top:3px;letter-spacing:.5px;text-transform:uppercase;}
-
-.input-sec{width:100%;max-width:640px;margin-top:12px;position:relative;z-index:10;}
+.sc-lbl{font-size:9px;color:var(--tx2);font-family:var(--mo);margin-top:3px;text-transform:uppercase;}
+.input-sec{width:100%;max-width:800px;margin-top:12px;position:relative;z-index:10;}
 .input-row{display:flex;gap:10px;}
 .word-in{flex:1;background:var(--panel);border:2px solid var(--rim2);border-radius:var(--r);color:var(--gold);font-family:var(--mo);font-size:20px;text-transform:uppercase;letter-spacing:4px;padding:12px 14px;outline:none;transition:all var(--tr);caret-color:var(--gold);}
 .word-in::placeholder{color:var(--tx3);font-size:13px;letter-spacing:2px;}
-.word-in:focus{border-color:var(--gold-b);background:var(--panel2);}
+.word-in:focus{border-color:var(--gold-b);background:var(--panel2);box-shadow:0 0 8px var(--arcade-glow);}
 .word-in.shake{animation:shake .3s ease;}
 .word-in.pulse-g{animation:pulseg .35s ease;}
 .word-in.pulse-p{animation:pulsep .35s ease;}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 @keyframes pulseg{0%,100%{box-shadow:none}50%{box-shadow:0 0 0 4px var(--ng-bg)}}
 @keyframes pulsep{0%,100%{box-shadow:none}50%{box-shadow:0 0 0 4px var(--np-bg)}}
-.sub-btn{background:var(--gold);color:#0a0a14;border:none;border-radius:var(--r);font-family:var(--fn);font-size:16px;padding:12px 20px;cursor:pointer;transition:all var(--tr);}
-.sub-btn:hover{background:var(--gold2);}
+.sub-btn{background:var(--gold);color:#07070f;border:none;border-radius:var(--r);font-family:var(--fn);font-size:16px;padding:12px 20px;cursor:pointer;transition:all var(--tr);font-weight:bold;}
+.sub-btn:hover{background:var(--gold2);box-shadow:0 0 12px var(--arcade-glow);}
 .fb{min-height:20px;font-size:12px;font-family:var(--mo);margin-top:6px;color:var(--tx2);}
 .fb.good{color:var(--ng-text);}
 .fb.bonus{color:var(--np-text);font-family:var(--fn);font-size:13px;}
-.fb.bad{color:#e53e3e;}
-
-.found-sec{width:100%;max-width:640px;margin-top:14px;position:relative;z-index:10;}
+.fb.bad{color:#ff4444;}
+.found-sec{width:100%;max-width:800px;margin-top:14px;position:relative;z-index:10;}
 .found-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--rim);}
-.found-ttl{font-family:var(--fn);font-size:14px;color:var(--tx);}
+.found-ttl{font-family:var(--fn);font-size:15px;color:var(--tx);}
 .found-ct{font-size:11px;color:var(--tx2);font-family:var(--mo);}
 .words-grid{display:flex;flex-wrap:wrap;gap:6px;min-height:32px;}
-.chip{border-radius:20px;padding:4px 12px;font-family:var(--mo);font-size:12px;letter-spacing:1px;animation:chip-in .25s cubic-bezier(.34,1.56,.64,1);}
+.chip{border-radius:4px;padding:4px 12px;font-family:var(--mo);font-size:12px;letter-spacing:1px;animation:chip-in .25s cubic-bezier(.34,1.56,.64,1);}
 .chip.std{background:var(--ng-bg);border:1.5px solid var(--ng-bd);color:var(--ng-text);}
 .chip.rea{background:var(--np-bg);border:1.5px solid var(--np-bd);color:var(--np-text);}
 @keyframes chip-in{0%{transform:scale(.4) rotate(-8deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
-
-.action-btns{width:100%;max-width:640px;margin-top:10px;display:flex;gap:8px;position:relative;z-index:10;}
+.action-btns{width:100%;max-width:800px;margin-top:10px;display:flex;gap:8px;position:relative;z-index:10;}
 .btn-done{flex:1;padding:12px;background:var(--panel);border:2px solid var(--rim2);border-radius:var(--r);font-family:var(--fn2);font-size:15px;color:var(--tx2);cursor:pointer;transition:all var(--tr);}
 .btn-done:hover{border-color:var(--gold-b);color:var(--gold);}
-.btn-back{padding:12px 16px;background:var(--panel2);border:2px solid var(--rim);border-radius:var(--r);font-family:var(--fn2);font-size:14px;color:var(--tx2);cursor:pointer;transition:all var(--tr);}
-.btn-back:hover{border-color:var(--gold-b);color:var(--gold);}
+.btn-back-game{padding:12px 16px;background:var(--panel2);border:2px solid var(--rim);border-radius:var(--r);font-family:var(--fn2);font-size:14px;color:var(--tx2);cursor:pointer;transition:all var(--tr);}
+.btn-back-game:hover{border-color:var(--gold-b);color:var(--gold);}
 
 /* UNLOCK TOAST */
-.unlock-toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-120px);background:var(--panel);border:2px solid var(--gold);border-radius:var(--r2);padding:12px 20px;z-index:950;text-align:center;transition:transform .4s cubic-bezier(.34,1.56,.64,1),opacity .4s;opacity:0;min-width:240px;box-shadow:0 4px 20px var(--gold-d);}
+.unlock-toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-130px);background:var(--panel);border:2px solid var(--gold);border-radius:var(--r2);padding:12px 20px;z-index:980;text-align:center;transition:transform .4s cubic-bezier(.34,1.56,.64,1),opacity .4s;opacity:0;min-width:240px;box-shadow:0 4px 24px var(--arcade-glow);}
 .unlock-toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
-.ut-title{font-family:var(--fn);font-size:15px;color:var(--gold);}
-.ut-sub{font-size:11px;color:var(--tx2);font-family:var(--mo);margin-top:3px;}
+.ut-title{font-family:var(--pixel);font-size:8px;color:var(--gold);text-shadow:0 0 8px var(--gold-b);}
+.ut-sub{font-size:11px;color:var(--tx2);font-family:var(--mo);margin-top:4px;}
 
 /* COMPLETE OVERLAY */
-.ov{position:fixed;inset:0;background:rgba(7,7,15,.92);display:flex;align-items:center;justify-content:center;z-index:500;padding:14px;backdrop-filter:blur(6px);}
-[data-theme="light"] .ov{background:rgba(200,190,170,.9);}
+.ov{position:fixed;inset:0;background:rgba(4,3,12,.94);display:flex;align-items:center;justify-content:center;z-index:960;padding:14px;backdrop-filter:blur(4px);}
 .ov.off{display:none;}
-.modal{background:var(--panel);border:2px solid var(--rim2);border-radius:var(--r2);padding:26px 22px;max-width:380px;width:100%;text-align:center;max-height:92vh;overflow-y:auto;}
+.modal{background:var(--panel);border:3px solid var(--gold-b);border-radius:var(--r2);padding:26px 22px;max-width:380px;width:100%;text-align:center;max-height:92vh;overflow-y:auto;box-shadow:0 0 40px var(--arcade-glow);}
 .m-ico{font-size:44px;margin-bottom:8px;}
-.m-ttl{font-family:var(--fn);font-size:26px;color:var(--gold);margin-bottom:6px;}
-.m-sub{font-size:13px;color:var(--tx2);font-family:var(--mo);line-height:1.6;margin-bottom:16px;}
+.m-ttl{font-family:var(--pixel);font-size:12px;color:var(--gold);margin-bottom:8px;text-shadow:0 0 10px var(--gold-b);}
+.m-sub{font-size:12px;color:var(--tx2);font-family:var(--mo);line-height:1.6;margin-bottom:16px;}
 .pts-display{background:var(--felt);border:2px solid var(--gold-b);border-radius:var(--r);padding:14px;margin-bottom:14px;}
-.pts-main{font-family:var(--fn);font-size:42px;color:var(--gold);line-height:1;}
-.pts-sub{font-size:12px;color:var(--tx2);font-family:var(--mo);margin-top:4px;}
+.pts-main{font-family:var(--fn);font-size:42px;color:var(--gold);line-height:1;text-shadow:0 0 12px var(--gold-b);}
+.pts-sub{font-size:11px;color:var(--tx2);font-family:var(--mo);margin-top:4px;}
 .stat-row{display:flex;justify-content:space-between;font-family:var(--mo);font-size:12px;padding:6px 0;border-bottom:1px solid var(--rim);}
 .stat-row:last-child{border-bottom:none;}
 .stat-lbl{color:var(--tx2);}
 .stat-val{color:var(--gold);}
-.btn-p{width:100%;padding:13px;background:var(--gold);color:#fff8ee;border:none;border-radius:var(--r);font-family:var(--fn);font-size:17px;cursor:pointer;transition:all var(--tr);margin-bottom:8px;}
-.btn-p:hover{background:var(--gold2);}
+.btn-p{width:100%;padding:13px;background:var(--gold);color:#07070f;border:none;border-radius:var(--r);font-family:var(--fn);font-size:17px;cursor:pointer;transition:all var(--tr);margin-bottom:8px;font-weight:bold;}
+.btn-p:hover{background:var(--gold2);box-shadow:0 0 12px var(--arcade-glow);}
 .btn-s{width:100%;padding:10px;background:transparent;color:var(--tx2);border:2px solid var(--rim2);border-radius:var(--r);font-family:var(--fn2);font-size:14px;cursor:pointer;transition:all var(--tr);margin-bottom:6px;}
 .btn-s:hover{background:var(--panel2);color:var(--tx);border-color:var(--gold-b);}
 </style>
@@ -156,6 +261,7 @@ header{width:100%;max-width:640px;position:relative;z-index:10;padding:14px 0 10
 <div class="letters-bg" aria-hidden="true">
   <div class="letters-row">N E S T W O R D N E S T W O R D N E S T W O R D N E S T W O R D N E S T W O R D N E S T W O R D</div>
   <div class="letters-row">F I N D R E A R R A N G E S C O R E F I N D R E A R R A N G E S C O R E F I N D R E A R R A N G E</div>
+  <div class="letters-row">W O R D S H I D D E N I N S I D E W O R D S H I D D E N I N S I D E W O R D S H I D D E N</div>
 </div>
 
 <header>
@@ -167,30 +273,44 @@ header{width:100%;max-width:640px;position:relative;z-index:10;padding:14px 0 10
     </div>
   </div>
   <div style="display:flex;align-items:center;gap:8px;">
-    <div style="font-family:var(--fn);font-size:14px;color:var(--gold);" id="questXpDisp">0 XP</div>
+    <div style="font-family:var(--pixel);font-size:8px;color:var(--gold);text-shadow:0 0 6px var(--gold-b);" id="questXpDisp">0 XP</div>
     <a href="game.html" class="ico-btn" title="Daily Game">▶</a>
   </div>
 </header>
 
-<!-- THEME PILLS -->
-<div class="theme-bar">
-  <div class="theme-scroll" id="themeScroll"></div>
+<!-- OVERALL PROGRESS BAR -->
+<div class="quest-progress" id="questProgress">
+  <div class="qp-row">
+    <span class="qp-label">TOTAL PROGRESS</span>
+    <span class="qp-count"><span id="qpDone">0</span> / 25 → UNLOCKS NEXT THEME</span>
+  </div>
+  <div class="qp-track"><div class="qp-fill" id="qpFill" style="width:0%"></div></div>
+  <div class="qp-unlock-msg" id="qpMsg">🔓 Next theme unlocked!</div>
 </div>
 
-<!-- TIER TABS -->
-<div class="tier-tabs" id="tierTabs"></div>
+<!-- THEME GRID -->
+<div class="theme-section" id="themeSection">
+  <div class="section-label">SELECT THEME</div>
+  <div class="theme-grid" id="themeGrid"></div>
+</div>
 
-<!-- CHAPTER HEADER -->
-<div class="quest-header">
-  <div class="qh-row">
-    <div class="qh-title" id="qhTitle">Select a Theme</div>
-    <div class="qh-prog" id="qhProg"></div>
+<!-- TIER SELECT -->
+<div class="tier-section" id="tierSection">
+  <div class="tier-header">
+    <button class="tier-back" onclick="showThemeGrid()">← Themes</button>
+    <span class="tier-theme-name" id="tierThemeName"></span>
   </div>
-  <div class="ch-prog-track"><div class="ch-prog-fill" id="chProgFill" style="width:0%"></div></div>
+  <div class="tier-grid" id="tierGrid"></div>
 </div>
 
 <!-- WORD LIST -->
-<div class="word-list" id="wordList"></div>
+<div class="word-section" id="wordSection">
+  <div class="wl-header">
+    <button class="wl-back" onclick="showTierSelect()">← Levels</button>
+    <span class="wl-title" id="wlTitle"></span>
+  </div>
+  <div class="word-list" id="wordList"></div>
+</div>
 
 <!-- GAME AREA -->
 <div class="quest-game" id="questGame">
@@ -202,13 +322,11 @@ header{width:100%;max-width:640px;position:relative;z-index:10;padding:14px 0 10
       <div class="qg-count" id="qgCount">0/0</div>
     </div>
   </div>
-
   <div class="score-strip">
     <div class="sc-card"><div class="sc-val gold" id="qPts">0</div><div class="sc-lbl">Points</div></div>
     <div class="sc-card"><div class="sc-val wht" id="qMax">?</div><div class="sc-lbl">Max Pts</div></div>
     <div class="sc-card"><div class="sc-val grn" id="qWords">0</div><div class="sc-lbl">Found</div></div>
   </div>
-
   <div class="input-sec">
     <div class="input-row">
       <input type="text" class="word-in" id="qWordIn" placeholder="TYPE A WORD..." maxlength="20" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
@@ -216,7 +334,6 @@ header{width:100%;max-width:640px;position:relative;z-index:10;padding:14px 0 10
     </div>
     <div class="fb" id="qFb">Find all the words hidden inside</div>
   </div>
-
   <div class="found-sec">
     <div class="found-hdr">
       <span class="found-ttl">Words Found</span>
@@ -224,16 +341,15 @@ header{width:100%;max-width:640px;position:relative;z-index:10;padding:14px 0 10
     </div>
     <div class="words-grid" id="qGrid"></div>
   </div>
-
   <div class="action-btns">
     <button class="btn-done" onclick="doneWithWord()">✓ I'm done with this word</button>
-    <button class="btn-back" onclick="backToList()">← List</button>
+    <button class="btn-back-game" onclick="backToWordList()">← Words</button>
   </div>
 </div>
 
 <!-- UNLOCK TOAST -->
 <div class="unlock-toast" id="unlockToast">
-  <div class="ut-title" id="utTitle">🔓 Next word unlocked!</div>
+  <div class="ut-title" id="utTitle">🔓 NEXT WORD UNLOCKED!</div>
   <div class="ut-sub" id="utSub"></div>
 </div>
 
@@ -241,7 +357,7 @@ header{width:100%;max-width:640px;position:relative;z-index:10;padding:14px 0 10
 <div class="ov off" id="wordCompleteOv">
   <div class="modal">
     <div class="m-ico" id="wcIco">🏆</div>
-    <div class="m-ttl" id="wcTtl">Word Complete!</div>
+    <div class="m-ttl" id="wcTtl">WORD COMPLETE!</div>
     <div class="m-sub" id="wcSub"></div>
     <div class="pts-display">
       <div class="pts-main" id="wcPts">0</div>
@@ -249,7 +365,7 @@ header{width:100%;max-width:640px;position:relative;z-index:10;padding:14px 0 10
     </div>
     <div id="wcStats" style="margin-bottom:16px;"></div>
     <button class="btn-p" id="wcNextBtn" onclick="nextQuestWord()">Next Word →</button>
-    <button class="btn-s" onclick="document.getElementById('wordCompleteOv').classList.add('off');backToList()">← Back to Chapter</button>
+    <button class="btn-s" onclick="document.getElementById('wordCompleteOv').classList.add('off');backToWordList()">← Back to Words</button>
   </div>
 </div>
 
@@ -259,295 +375,383 @@ const SUPA_URL = 'https://tklmmctaocvewxkgdaew.supabase.co';
 const SUPA_KEY = 'sb_publishable_VJ1FX2RYr6fcWyVupuRR7w_Xzx97b5w';
 const supa = supabase.createClient(SUPA_URL, SUPA_KEY);
 
-// Theme
-function setTheme(t){document.documentElement.setAttribute('data-theme',t);localStorage.setItem('nw_theme',t);}
-(function(){setTheme(localStorage.getItem('nw_theme')||'light');})();
+// ── Theme (always dark for quest) ──
+document.documentElement.setAttribute('data-theme','light'); // uses the dark arcade CSS
 
-// ── Quest Progress ──
+// ── Theme pixel art representations ──
+const THEME_ART = {
+  foods:    { art:['🍞','🥘','🍳'], pixel:'[ KITCHEN ]' },
+  nature:   { art:['🌿','⛰️','🌊'], pixel:'[ NATURE ]' },
+  animals:  { art:['🦁','🦅','🐋'], pixel:'[ ANIMALS ]' },
+  sports:   { art:['⚡','🏆','🎯'], pixel:'[ SPORTS ]' },
+  trades:   { art:['🔧','⚙️','🏗️'], pixel:'[ TRADES ]' },
+  weather:  { art:['⛈️','❄️','🌈'], pixel:'[ WEATHER ]' },
+  ocean:    { art:['🌊','🐬','⚓'], pixel:'[ OCEAN ]' },
+  canadian: { art:['🍁','🦌','🛶'], pixel:'[ CANADA ]' },
+};
+
+// ── Progress ──
 let QP = { progress:{}, totalXp:0 };
-// progress[themeId][tier][wordIdx] = { pts, foundCount }
 
 function loadProgress() {
-  try { const d=JSON.parse(localStorage.getItem('nw_quest_v2')||'{}'); QP.progress=d.progress||{}; QP.totalXp=d.totalXp||0; } catch(e){}
-  document.getElementById('questXpDisp').textContent = QP.totalXp+' XP';
+  try {
+    const d = JSON.parse(localStorage.getItem('nw_quest_v2')||'{}');
+    QP.progress = d.progress || {};
+    QP.totalXp  = d.totalXp  || 0;
+  } catch(e) {}
+  document.getElementById('questXpDisp').textContent = QP.totalXp + ' XP';
 }
+
 function saveProgress() {
-  try { localStorage.setItem('nw_quest_v2',JSON.stringify({progress:QP.progress,totalXp:QP.totalXp})); } catch(e){}
-  document.getElementById('questXpDisp').textContent = QP.totalXp+' XP';
-  supa.auth.getSession().then(({data})=>{
-    if(data.session?.user) supa.from('profiles').update({quest_progress:{progress:QP.progress,totalXp:QP.totalXp}}).eq('id',data.session.user.id);
+  localStorage.setItem('nw_quest_v2', JSON.stringify({ progress:QP.progress, totalXp:QP.totalXp }));
+  document.getElementById('questXpDisp').textContent = QP.totalXp + ' XP';
+  supa.auth.getSession().then(({data}) => {
+    if (data.session?.user) {
+      supa.from('profiles').update({ quest_progress:{ progress:QP.progress, totalXp:QP.totalXp } }).eq('id', data.session.user.id);
+    }
   });
 }
 
-function getWordProg(themeId,tier,idx){ return ((QP.progress[themeId]||{})[tier]||{})[idx]; }
-function setWordProg(themeId,tier,idx,data){
-  if(!QP.progress[themeId]) QP.progress[themeId]={};
-  if(!QP.progress[themeId][tier]) QP.progress[themeId][tier]={};
-  QP.progress[themeId][tier][idx]=data;
+function getWordProg(themeId, tier, idx) {
+  return ((QP.progress[themeId]||{})[tier]||{})[idx];
+}
+function setWordProg(themeId, tier, idx, data) {
+  if (!QP.progress[themeId]) QP.progress[themeId] = {};
+  if (!QP.progress[themeId][tier]) QP.progress[themeId][tier] = {};
+  QP.progress[themeId][tier][idx] = data;
 }
 
-// Is word unlocked?
-function wordUnlocked(themeId, tier, idx) {
-  if (idx===0) return true;
-  return !!getWordProg(themeId, tier, idx-1);
+// Count words done in a theme (all tiers)
+function countThemeDone(themeId) {
+  let done = 0;
+  QUEST_TIERS.forEach(t => {
+    const words = QUEST_WORDS[themeId]?.[t] || [];
+    words.forEach((_,i) => { if (getWordProg(themeId,t,i)) done++; });
+  });
+  return done;
 }
 
-// Is theme unlocked (first theme always is, rest need Easy tier 1 of previous theme completed)
+// Count words done in current theme for unlock counter (25 = unlock next)
+function countCurrentThemeDone(themeId) {
+  return countThemeDone(themeId);
+}
+
+// Is theme unlocked? First theme always is. Others unlock when previous theme has 25 total done.
 function themeUnlocked(themeIdx) {
-  if (themeIdx===0) return true;
+  if (themeIdx === 0) return true;
   const prevTheme = QUEST_THEMES[themeIdx-1];
-  return !!getWordProg(prevTheme.id,'easy',0); // just need first word of prev theme done
+  return countThemeDone(prevTheme.id) >= 25;
+}
+
+// Is a word unlocked within a tier?
+function wordUnlocked(themeId, tier, idx) {
+  if (idx === 0) return true;
+  return !!getWordProg(themeId, tier, idx-1);
 }
 
 // ── State ──
 let QS = { themeId:'foods', tier:'easy' };
 let QG = { word:'', nested:[], found:[], pts:0, unlockFired:false, themeId:'', tier:'', wordIdx:0 };
 
-// ── Build UI ──
-function buildThemePills() {
-  const scroll = document.getElementById('themeScroll');
-  scroll.innerHTML = '';
-  QUEST_THEMES.forEach((th,i) => {
+// ── Update progress bar for current theme ──
+function updateProgressBar(themeId) {
+  const done = countThemeDone(themeId);
+  const pct = Math.min(Math.round((done/25)*100), 100);
+  document.getElementById('qpDone').textContent = done;
+  document.getElementById('qpFill').style.width = pct + '%';
+  const msg = document.getElementById('qpMsg');
+  msg.classList.toggle('show', done >= 25);
+}
+
+// ── BUILD THEME GRID ──
+function buildThemeGrid() {
+  const grid = document.getElementById('themeGrid');
+  grid.innerHTML = '';
+  QUEST_THEMES.forEach((th, i) => {
     const unlocked = themeUnlocked(i);
-    const pill = document.createElement('div');
-    pill.className = 'th-pill'+(th.id===QS.themeId?' active':'')+(!unlocked?' locked':'');
-    const doneCount = countThemeDone(th.id);
-    pill.innerHTML = th.emoji+' '+th.name+' <span style="opacity:.6;font-size:9px;">'+doneCount+'</span>';
-    if(unlocked) pill.onclick = ()=>{ QS.themeId=th.id; QS.tier='easy'; refresh(); };
-    scroll.appendChild(pill);
+    const done = countThemeDone(th.id);
+    const total = QUEST_TIERS.reduce((s,t) => s + (QUEST_WORDS[th.id]?.[t]?.length||0), 0);
+    const pct = total > 0 ? Math.round((done/total)*100) : 0;
+    const art = THEME_ART[th.id] || { art:[th.emoji], pixel:'[ '+th.id.toUpperCase()+' ]' };
+
+    const card = document.createElement('div');
+    card.className = 'arcade-card' + (!unlocked ? ' locked' : '') + (done >= 25 ? ' completed' : '');
+
+    card.innerHTML = `
+      ${!unlocked ? '<div class="card-lock">🔒</div>' : ''}
+      <div class="card-screen">
+        <div class="card-screen-inner">
+          <div class="card-emoji">${art.art[0]}</div>
+          <div class="card-pixel-art">${art.pixel}</div>
+        </div>
+      </div>
+      <div class="card-info">
+        <div class="card-name">${th.name}</div>
+        <div class="card-prog">${unlocked ? done+' / '+total+' words' : 'LOCKED'}</div>
+        <div class="card-bar-track"><div class="card-bar-fill" style="width:${unlocked?pct:0}%"></div></div>
+      </div>`;
+
+    if (unlocked) card.onclick = () => selectTheme(th.id);
+    grid.appendChild(card);
   });
 }
 
-function countThemeDone(themeId) {
-  let done=0;
-  QUEST_TIERS.forEach(t => { const words=QUEST_WORDS[themeId]?.[t]||[]; words.forEach((_,i)=>{ if(getWordProg(themeId,t,i)) done++; }); });
-  return done;
+// ── SELECT THEME → show tier cards ──
+function selectTheme(themeId) {
+  QS.themeId = themeId;
+  const th = QUEST_THEMES.find(t=>t.id===themeId);
+  updateProgressBar(themeId);
+  document.getElementById('tierThemeName').textContent = th.emoji + ' ' + th.name;
+  showView('tier');
+  buildTierGrid(themeId);
 }
 
-function buildTierTabs() {
-  const tabs = document.getElementById('tierTabs');
-  tabs.innerHTML = '';
+function buildTierGrid(themeId) {
+  const grid = document.getElementById('tierGrid');
+  grid.innerHTML = '';
+  const tierEmojis = { easy:'⚡', medium:'🔥', hard:'💎', master:'👑' };
   QUEST_TIERS.forEach(tier => {
-    const words = QUEST_WORDS[QS.themeId]?.[tier]||[];
-    const done = words.filter((_,i)=>!!getWordProg(QS.themeId,tier,i)).length;
-    const tab = document.createElement('div');
-    tab.className = 'tier-tab'+(tier===QS.tier?' active':'');
-    tab.innerHTML = '<span class="tier-name">'+QUEST_TIER_LABELS[tier]+'</span><span class="tier-range">'+QUEST_TIER_RANGE[tier]+'</span><div style="font-size:9px;color:var(--tx3);margin-top:2px;">'+done+'/'+words.length+'</div>';
-    tab.onclick = ()=>{ QS.tier=tier; refresh(); };
-    tabs.appendChild(tab);
+    const words = QUEST_WORDS[themeId]?.[tier] || [];
+    const done = words.filter((_,i) => !!getWordProg(themeId,tier,i)).length;
+    const pct = words.length > 0 ? Math.round((done/words.length)*100) : 0;
+
+    const card = document.createElement('div');
+    card.className = 'tier-card';
+    card.innerHTML = `
+      <div class="tier-emoji">${tierEmojis[tier]}</div>
+      <div class="tier-name">${QUEST_TIER_LABELS[tier]}</div>
+      <div class="tier-range">${QUEST_TIER_RANGE[tier]}</div>
+      <div class="tier-stats">${done} / ${words.length} words completed</div>
+      <div class="tier-prog-track"><div class="tier-prog-fill" style="width:${pct}%"></div></div>`;
+    card.onclick = () => selectTier(themeId, tier);
+    grid.appendChild(card);
   });
 }
 
-function buildWordList() {
-  const words = QUEST_WORDS[QS.themeId]?.[QS.tier]||[];
-  const th = QUEST_THEMES.find(t=>t.id===QS.themeId);
-  const done = words.filter((_,i)=>!!getWordProg(QS.themeId,QS.tier,i)).length;
-  const pct = words.length>0 ? Math.round((done/words.length)*100) : 0;
+// ── SELECT TIER → show word list ──
+function selectTier(themeId, tier) {
+  QS.themeId = themeId; QS.tier = tier;
+  const th = QUEST_THEMES.find(t=>t.id===themeId);
+  document.getElementById('wlTitle').textContent = th.emoji + ' ' + th.name + ' — ' + QUEST_TIER_LABELS[tier];
+  showView('words');
+  buildWordList(themeId, tier);
+}
 
-  document.getElementById('qhTitle').textContent = th.emoji+' '+th.name+' — '+QUEST_TIER_LABELS[QS.tier];
-  document.getElementById('qhProg').textContent = done+'/'+words.length+' done';
-  document.getElementById('chProgFill').style.width = pct+'%';
-
+function buildWordList(themeId, tier) {
+  const words = QUEST_WORDS[themeId]?.[tier] || [];
   const list = document.getElementById('wordList');
-  list.innerHTML = ''; list.style.display='flex';
-  document.getElementById('questGame').style.display='none';
-
-  if (words.length===0) {
-    list.innerHTML='<div style="padding:20px;text-align:center;color:var(--tx2);font-family:var(--mo);font-size:12px;">No words available for this tier yet.</div>';
-    return;
-  }
-
-  words.forEach((wObj,i) => {
-    const prog = getWordProg(QS.themeId, QS.tier, i);
+  list.innerHTML = '';
+  words.forEach((wObj, i) => {
+    const prog = getWordProg(themeId, tier, i);
     const completed = !!prog;
-    const unlocked = wordUnlocked(QS.themeId, QS.tier, i);
+    const unlocked = wordUnlocked(themeId, tier, i);
     const item = document.createElement('div');
-    item.className='wl-item'+(completed?' completed':'')+(unlocked?'':' locked-item');
-    item.innerHTML=`
+    item.className = 'wl-item' + (completed ? ' completed' : '') + (!unlocked ? ' locked-item' : '');
+    item.innerHTML = `
       <div class="wl-left">
-        <div class="wl-num">${completed?'✓':(!unlocked?'🔒':(i+1))}</div>
+        <div class="wl-num">${completed ? '✓' : (!unlocked ? '🔒' : (i+1))}</div>
         <div>
-          <div class="wl-word">${!unlocked?'? '.repeat(Math.min(wObj.word.length,7)).trim():wObj.word}</div>
+          <div class="wl-word">${!unlocked ? '? '.repeat(Math.min(wObj.word.length,7)).trim() : wObj.word}</div>
           <div class="wl-meta">${wObj.word.length} letters · ${wObj.nested.length} hidden words · unlock at ${wObj.unlockAt} found</div>
         </div>
       </div>
-      <div class="wl-right">
-        ${completed?'<span class="wl-score">'+prog.pts+' pts</span>':''}
-        <span class="wl-check">${completed?'✅':(!unlocked?'🔒':'▶')}</span>
+      <div style="display:flex;align-items:center;gap:8px;">
+        ${completed ? '<span class="wl-score">'+prog.pts+' pts</span>' : ''}
+        <span style="font-size:16px;">${completed ? '✅' : (!unlocked ? '🔒' : '▶')}</span>
       </div>`;
-    if(unlocked) item.onclick = ()=>startQuestWord(QS.themeId, QS.tier, i);
+    if (unlocked) item.onclick = () => startQuestWord(themeId, tier, i);
     list.appendChild(item);
   });
 }
 
-function refresh() {
-  buildThemePills();
-  buildTierTabs();
-  buildWordList();
+// ── Navigation ──
+function showView(view) {
+  document.getElementById('themeSection').style.display  = view==='themes' ? '' : 'none';
+  document.getElementById('tierSection').style.display   = view==='tier'   ? '' : 'none';
+  document.getElementById('wordSection').style.display   = view==='words'  ? '' : 'none';
+  document.getElementById('questGame').style.display     = view==='game'   ? '' : 'none';
+}
+function showThemeGrid() {
+  buildThemeGrid();
+  showView('themes');
+}
+function showTierSelect() {
+  buildTierGrid(QS.themeId);
+  showView('tier');
 }
 
-// ── Scoring ──
+// ── SCORING ──
 function scoreWord(word, bigWord) {
   const w=word.toLowerCase(), b=bigWord.toLowerCase();
   const fwd=b.includes(w), rev=!fwd&&b.split('').reverse().join('').includes(w);
-  if(fwd||rev) return ({3:1,4:2,5:3}[word.length])||( word.length>=6?5:1);
-  const base=({3:2,4:3,5:4}[word.length])||(word.length>=6?6:2);
-  const pct=word.length/bigWord.length;
-  const bonus=word.length===bigWord.length?10:pct>=.75?6:pct>=.5?3:0;
-  return base+bonus;
+  if (fwd||rev) return ({3:1,4:2,5:3}[word.length])||(word.length>=6?5:1);
+  const base = ({3:2,4:3,5:4}[word.length])||(word.length>=6?6:2);
+  const pct = word.length/bigWord.length;
+  return base + (word.length===bigWord.length?10:pct>=.75?6:pct>=.5?3:0);
 }
 
-// ── Start word ──
+// ── START WORD ──
 function startQuestWord(themeId, tier, wordIdx) {
   const wObj = QUEST_WORDS[themeId][tier][wordIdx];
   const th = QUEST_THEMES.find(t=>t.id===themeId);
   QG = { word:wObj.word, nested:wObj.nested, found:[], pts:0, unlockFired:false, themeId, tier, wordIdx };
 
-  document.getElementById('wordList').style.display='none';
-  document.getElementById('questGame').style.display='block';
+  showView('game');
   document.getElementById('qgWord').textContent = wObj.word;
   document.getElementById('qgInfo').textContent = th.emoji+' '+th.name+' · '+QUEST_TIER_LABELS[tier]+' · Word '+(wordIdx+1)+' · '+wObj.nested.length+' hidden words';
-  document.getElementById('qGrid').innerHTML='';
-  document.getElementById('qFoundCt').textContent='0 words';
-  document.getElementById('qPts').textContent='0';
-  document.getElementById('qWords').textContent='0';
-  const max=wObj.nested.reduce((s,w)=>s+scoreWord(w,wObj.word),0);
-  document.getElementById('qMax').textContent=max;
-  document.getElementById('qgProgFill').style.width='0%';
-  document.getElementById('qgCount').textContent='0/'+wObj.nested.length;
-  document.getElementById('qFb').textContent='Find all the words hidden inside';
-  document.getElementById('qFb').className='fb';
-  const inp=document.getElementById('qWordIn');
-  inp.value=''; inp.focus();
+  document.getElementById('qGrid').innerHTML = '';
+  document.getElementById('qFoundCt').textContent = '0 words';
+  document.getElementById('qPts').textContent = '0';
+  document.getElementById('qWords').textContent = '0';
+  const max = wObj.nested.reduce((s,w)=>s+scoreWord(w,wObj.word),0);
+  document.getElementById('qMax').textContent = max;
+  document.getElementById('qgProgFill').style.width = '0%';
+  document.getElementById('qgCount').textContent = '0/'+wObj.nested.length;
+  document.getElementById('qFb').textContent = 'Find all the words hidden inside';
+  document.getElementById('qFb').className = 'fb';
+  const inp = document.getElementById('qWordIn');
+  inp.value = ''; inp.focus();
 }
 
-document.getElementById('qWordIn').addEventListener('keydown',function(e){if(e.key==='Enter')qSubmit();});
+document.getElementById('qWordIn').addEventListener('keydown', function(e){ if(e.key==='Enter') qSubmit(); });
 
 function qSubmit() {
-  const inp=document.getElementById('qWordIn');
-  const raw=inp.value.trim().toUpperCase();
-  inp.value='';
-  if(!raw||raw.length<3){qFb('Minimum 3 letters','bad');qShake();return;}
-  if(QG.found.includes(raw)){qFb('Already found '+raw+'!','bad');qShake();return;}
-  if(!QG.nested.includes(raw)){
-    if(!isContained(raw.toLowerCase(),QG.word.toLowerCase())) qFb(raw+' uses letters not in '+QG.word,'bad');
+  const inp = document.getElementById('qWordIn');
+  const raw = inp.value.trim().toUpperCase();
+  inp.value = '';
+  if (!raw || raw.length < 3) { qFb('Minimum 3 letters','bad'); qShake(); return; }
+  if (QG.found.includes(raw)) { qFb('Already found '+raw+'!','bad'); qShake(); return; }
+  if (!QG.nested.includes(raw)) {
+    if (!isContained(raw.toLowerCase(),QG.word.toLowerCase())) qFb(raw+' — letters not in '+QG.word,'bad');
     else qFb(raw+' is not a valid hidden word here','bad');
     qShake(); return;
   }
-  const pts=scoreWord(raw,QG.word);
-  const isConsec=QG.word.toLowerCase().includes(raw.toLowerCase())||QG.word.toLowerCase().split('').reverse().join('').includes(raw.toLowerCase());
-  QG.found.push(raw); QG.pts+=pts;
 
-  const chip=document.createElement('div');
-  chip.className='chip '+(isConsec?'std':'rea');
-  chip.textContent=raw;
+  const pts = scoreWord(raw, QG.word);
+  const isConsec = QG.word.toLowerCase().includes(raw.toLowerCase()) || QG.word.toLowerCase().split('').reverse().join('').includes(raw.toLowerCase());
+  QG.found.push(raw); QG.pts += pts;
+
+  const chip = document.createElement('div');
+  chip.className = 'chip ' + (isConsec ? 'std' : 'rea');
+  chip.textContent = raw;
   document.getElementById('qGrid').appendChild(chip);
+  qFb((isConsec ? '+'+pts+' pts — ' : '🔀 Rearranged +'+pts+' pts — ')+raw, isConsec?'good':'bonus');
 
-  qFb((isConsec?'+'+pts+' pts — ':' 🔀 Rearranged +'+pts+' pts — ')+raw, isConsec?'good':'bonus');
-  const e=document.getElementById('qWordIn');
+  const e = document.getElementById('qWordIn');
   e.classList.add(isConsec?'pulse-g':'pulse-p');
   setTimeout(()=>e.classList.remove('pulse-g','pulse-p'),400);
 
-  const wc=QG.found.length, total=QG.nested.length;
-  document.getElementById('qPts').textContent=QG.pts;
-  document.getElementById('qWords').textContent=wc;
-  document.getElementById('qFoundCt').textContent=wc+' word'+(wc!==1?'s':'');
-  document.getElementById('qgProgFill').style.width=Math.round((wc/total)*100)+'%';
-  document.getElementById('qgCount').textContent=wc+'/'+total;
+  const wc = QG.found.length, total = QG.nested.length;
+  document.getElementById('qPts').textContent = QG.pts;
+  document.getElementById('qWords').textContent = wc;
+  document.getElementById('qFoundCt').textContent = wc+' word'+(wc!==1?'s':'');
+  document.getElementById('qgProgFill').style.width = Math.round((wc/total)*100)+'%';
+  document.getElementById('qgCount').textContent = wc+'/'+total;
 
-  // Check unlock threshold
-  const wObj=QUEST_WORDS[QG.themeId][QG.tier][QG.wordIdx];
-  if(!QG.unlockFired && wc>=wObj.unlockAt) {
-    QG.unlockFired=true;
-    // Save progress so next word unlocks
+  // Check unlock threshold for next word
+  const wObj = QUEST_WORDS[QG.themeId][QG.tier][QG.wordIdx];
+  if (!QG.unlockFired && wc >= wObj.unlockAt) {
+    QG.unlockFired = true;
     saveWordProgress(false);
-    // Check if there's a next word to unlock
-    const words=QUEST_WORDS[QG.themeId][QG.tier];
-    if(QG.wordIdx+1 < words.length) {
-      const nextWord=words[QG.wordIdx+1];
-      showUnlockToast('🔓 Next word unlocked!', nextWord.word+' is now available');
+    const words = QUEST_WORDS[QG.themeId][QG.tier];
+    if (QG.wordIdx+1 < words.length) {
+      showUnlockToast('🔓 NEXT WORD UNLOCKED!', words[QG.wordIdx+1].word + ' is now available');
     }
+    // Check if we've hit 25 for theme unlock
+    const themeDone = countThemeDone(QG.themeId);
+    if (themeDone >= 25) {
+      const thIdx = QUEST_THEMES.findIndex(t=>t.id===QG.themeId);
+      if (thIdx < QUEST_THEMES.length-1) {
+        setTimeout(()=>showUnlockToast('🔓 NEW THEME UNLOCKED!', QUEST_THEMES[thIdx+1].name+' is now available!'),2000);
+      }
+    }
+    updateProgressBar(QG.themeId);
   }
 
-  if(wc>=total) setTimeout(()=>showWordComplete(true),400);
+  if (wc >= total) setTimeout(()=>showWordComplete(true), 400);
 }
 
 function saveWordProgress(done) {
-  const prev=getWordProg(QG.themeId,QG.tier,QG.wordIdx);
-  const prevPts=prev?.pts||0;
-  setWordProg(QG.themeId,QG.tier,QG.wordIdx,{ pts:Math.max(QG.pts,prevPts), foundCount:QG.found.length });
-  QP.totalXp+=Math.max(QG.pts-prevPts,0);
+  const prev = getWordProg(QG.themeId, QG.tier, QG.wordIdx);
+  const prevPts = prev?.pts || 0;
+  setWordProg(QG.themeId, QG.tier, QG.wordIdx, { pts:Math.max(QG.pts,prevPts), foundCount:QG.found.length });
+  QP.totalXp += Math.max(QG.pts - prevPts, 0);
   saveProgress();
 }
 
 function showWordComplete(allFound) {
-  const wObj=QUEST_WORDS[QG.themeId][QG.tier][QG.wordIdx];
-  const max=wObj.nested.reduce((s,w)=>s+scoreWord(w,wObj.word),0);
-  const pct=max>0?Math.round((QG.pts/max)*100):0;
-  let ico='🌱',ttl='Keep Going!';
-  if(allFound){ico='🏆';ttl='PERFECT!';}
-  else if(pct>=75){ico='🌟';ttl='Great Work!';}
-  else if(pct>=50){ico='💡';ttl='Nice Round!';}
-  document.getElementById('wcIco').textContent=ico;
-  document.getElementById('wcTtl').textContent=ttl;
-  document.getElementById('wcSub').textContent=QG.word+' · '+QG.found.length+'/'+wObj.nested.length+' words found';
-  document.getElementById('wcPts').textContent=QG.pts;
-  document.getElementById('wcPtsSub').textContent=pct+'% of maximum · '+max+' pts possible';
-  document.getElementById('wcStats').innerHTML=`
+  const wObj = QUEST_WORDS[QG.themeId][QG.tier][QG.wordIdx];
+  const max = wObj.nested.reduce((s,w)=>s+scoreWord(w,wObj.word),0);
+  const pct = max>0 ? Math.round((QG.pts/max)*100) : 0;
+  let ico='🌱', ttl='KEEP GOING!';
+  if (allFound)      { ico='🏆'; ttl='PERFECT!'; }
+  else if (pct>=75)  { ico='🌟'; ttl='GREAT WORK!'; }
+  else if (pct>=50)  { ico='💡'; ttl='NICE ROUND!'; }
+  document.getElementById('wcIco').textContent = ico;
+  document.getElementById('wcTtl').textContent = ttl;
+  document.getElementById('wcSub').textContent = QG.word+' · '+QG.found.length+'/'+wObj.nested.length+' words found';
+  document.getElementById('wcPts').textContent = QG.pts;
+  document.getElementById('wcPtsSub').textContent = pct+'% of maximum · '+max+' pts possible';
+  document.getElementById('wcStats').innerHTML = `
     <div class="stat-row"><span class="stat-lbl">Words found</span><span class="stat-val">${QG.found.length} / ${wObj.nested.length}</span></div>
     <div class="stat-row"><span class="stat-lbl">Score</span><span class="stat-val">${QG.pts} / ${max} pts</span></div>
     <div class="stat-row"><span class="stat-lbl">Completion</span><span class="stat-val">${pct}%</span></div>`;
   saveWordProgress(true);
-  const words=QUEST_WORDS[QG.themeId][QG.tier];
-  const nextBtn=document.getElementById('wcNextBtn');
-  const nextIdx=QG.wordIdx+1;
-  if(nextIdx<words.length && wordUnlocked(QG.themeId,QG.tier,nextIdx)){
-    nextBtn.style.display='';
-    nextBtn.textContent='Next: '+words[nextIdx].word+' →';
+  updateProgressBar(QG.themeId);
+  const words = QUEST_WORDS[QG.themeId][QG.tier];
+  const nextBtn = document.getElementById('wcNextBtn');
+  const nextIdx = QG.wordIdx + 1;
+  if (nextIdx < words.length && wordUnlocked(QG.themeId, QG.tier, nextIdx)) {
+    nextBtn.style.display = '';
+    nextBtn.textContent = 'Next: '+words[nextIdx].word+' →';
   } else {
-    nextBtn.style.display='none';
+    nextBtn.style.display = 'none';
   }
   document.getElementById('wordCompleteOv').classList.remove('off');
 }
 
 function nextQuestWord() {
   document.getElementById('wordCompleteOv').classList.add('off');
-  const words=QUEST_WORDS[QG.themeId][QG.tier];
-  const nextIdx=QG.wordIdx+1;
-  if(nextIdx<words.length) startQuestWord(QG.themeId,QG.tier,nextIdx);
-  else backToList();
+  const words = QUEST_WORDS[QG.themeId][QG.tier];
+  const nextIdx = QG.wordIdx + 1;
+  if (nextIdx < words.length) startQuestWord(QG.themeId, QG.tier, nextIdx);
+  else backToWordList();
 }
 
 function doneWithWord() { showWordComplete(false); }
-
-function backToList() {
-  document.getElementById('questGame').style.display='none';
+function backToWordList() {
   document.getElementById('wordCompleteOv').classList.add('off');
-  refresh();
+  buildWordList(QS.themeId, QS.tier);
+  showView('words');
 }
 
-function qFb(msg,type){const el=document.getElementById('qFb');el.textContent=msg;el.className='fb '+(type||'');setTimeout(()=>{el.textContent='Find more words...';el.className='fb';},2500);}
-function qShake(){const e=document.getElementById('qWordIn');e.classList.add('shake');setTimeout(()=>e.classList.remove('shake'),350);}
+function qFb(msg,type){ const el=document.getElementById('qFb'); el.textContent=msg; el.className='fb '+(type||''); setTimeout(()=>{el.textContent='Find more words...';el.className='fb';},2500); }
+function qShake(){ const e=document.getElementById('qWordIn'); e.classList.add('shake'); setTimeout(()=>e.classList.remove('shake'),350); }
 
-let unlockTimeout=null;
-function showUnlockToast(title,sub){
-  const t=document.getElementById('unlockToast');
-  document.getElementById('utTitle').textContent=title;
-  document.getElementById('utSub').textContent=sub;
+let unlockTimeout = null;
+function showUnlockToast(title,sub) {
+  const t = document.getElementById('unlockToast');
+  document.getElementById('utTitle').textContent = title;
+  document.getElementById('utSub').textContent = sub;
   t.classList.add('show');
-  if(unlockTimeout) clearTimeout(unlockTimeout);
-  unlockTimeout=setTimeout(()=>t.classList.remove('show'),3500);
+  if (unlockTimeout) clearTimeout(unlockTimeout);
+  unlockTimeout = setTimeout(()=>t.classList.remove('show'), 3500);
 }
 
+// ── INIT ──
 function init() {
   loadProgress();
-  // Auto-select theme from URL
-  const params=new URLSearchParams(window.location.search);
-  const urlCh=params.get('chapter');
-  if(urlCh && QUEST_THEMES.find(t=>t.id===urlCh)) QS.themeId=urlCh;
-  refresh();
+  const params = new URLSearchParams(window.location.search);
+  const urlCh = params.get('chapter');
+  if (urlCh && QUEST_THEMES.find(t=>t.id===urlCh)) {
+    QS.themeId = urlCh;
+    selectTheme(urlCh);
+  } else {
+    showThemeGrid();
+  }
+  updateProgressBar(QS.themeId);
 }
-window.addEventListener('DOMContentLoaded',init);
+window.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>
