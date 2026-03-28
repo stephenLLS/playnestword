@@ -2317,7 +2317,11 @@ loadStore();
 updateXpUI();
 updateDiffButtons();
 updatePanel();
-init();
+if (typeof getTodayTheme === 'function') {
+  init();
+} else {
+  console.error('words.js not loaded — cannot initialise game');
+}
 </script>
 </body>
 </html>
