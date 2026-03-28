@@ -1176,9 +1176,7 @@ function init() {
     // Show "Try for Better Score" button
     document.getElementById("tryBetterBtn").style.display = "";
     document.getElementById("tryBetterBtn").onclick = () => {
-      G.replayPrevScore = p.pts; // track previous so we only add the difference
-      G.isReplay = true;
-      startGame();
+      showReplayAd(p.pts); // show 15s ad then start replay
     };
   } else {
     document.getElementById("tryBetterBtn").style.display = "none";
@@ -2108,6 +2106,8 @@ function showTryAgainAd() {
   const cdEl = document.getElementById("tryAgainCountdown");
   btn.disabled = true; btn.style.opacity = ".4";
   btn.innerHTML = "⏳ Play Again (" + secs + "s)";
+  // Restore bonus round onclick (in case replay ad changed it)
+  btn.onclick = startBonusAfterAd;
   if (tryAgainIv) clearInterval(tryAgainIv);
   tryAgainIv = setInterval(() => {
     secs--;
@@ -2120,6 +2120,49 @@ function showTryAgainAd() {
       btn.innerHTML = "▶ Play Again!";
     }
   }, 1000);
+}
+
+// Replay ad — same as try again but starts daily word replay instead of bonus round
+function showReplayAd(prevScore) {
+  document.getElementById("startOv").classList.add("off");
+  document.getElementById("tryAgainAdOv").classList.remove("off");
+  let secs = 15;
+  const btn = document.getElementById("tryAgainPlayBtn");
+  const secEl = document.getElementById("tryAgainSec");
+  const cdEl = document.getElementById("tryAgainCountdown");
+  btn.disabled = true; btn.style.opacity = ".4";
+  btn.innerHTML = "⏳ Starting (" + secs + "s)";
+  if (tryAgainIv) clearInterval(tryAgainIv);
+  // Override what happens when ad finishes — start replay not bonus
+  btn.onclick = () => startReplayAfterAd(prevScore);
+  tryAgainIv = setInterval(() => {
+    secs--;
+    secEl.textContent = secs;
+    cdEl.textContent = secs;
+    btn.innerHTML = "⏳ Starting (" + secs + "s)";
+    if (secs <= 0) {
+      clearInterval(tryAgainIv);
+      btn.disabled = false; btn.style.opacity = "1";
+      btn.innerHTML = "▶ Try for Better Score!";
+    }
+  }, 1000);
+}
+function startReplayAfterAd(prevScore) {
+  if (tryAgainIv) clearInterval(tryAgainIv);
+  document.getElementById("tryAgainAdOv").classList.add("off");
+  // Restore daily word (in case bonusRound changed it)
+  const dailyWord = getTodayWord();
+  const thKey = getTodayTheme();
+  G.word = dailyWord; G.theme = THEMES[thKey];
+  G.possible = findAllValidWords(dailyWord);
+  renderWord(dailyWord);
+  document.getElementById("wordLbl").textContent = "Today's NestWord";
+  const max = totalPossiblePoints(G.possible);
+  document.getElementById("scMax").textContent = max;
+  document.getElementById("psMax").textContent = max;
+  G.replayPrevScore = prevScore;
+  G.isReplay = true;
+  startGame();
 }
 function closeTryAgainAd() {
   if (tryAgainIv) clearInterval(tryAgainIv);
