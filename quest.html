@@ -31,8 +31,8 @@
   --suits:rgba(255,255,255,.018);
   --arcade-glow:rgba(245,200,66,.25);
 }
-/* Force dark arcade theme for quest regardless of site theme */
-body{ background:var(--bg) !important; color:var(--tx) !important; }
+/* Force dark arcade theme for quest */
+body{ background:#07070f !important; color:#f0e8d0 !important; }
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{
@@ -44,7 +44,7 @@ body{
 body::before{
   content:'';position:fixed;inset:0;
   background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.18) 2px,rgba(0,0,0,.18) 4px);
-  pointer-events:none;z-index:900;
+  pointer-events:none;z-index:9000;
 }
 /* Drifting letter bg */
 .letters-bg{position:fixed;inset:0;z-index:0;pointer-events:none;display:flex;flex-direction:column;gap:60px;justify-content:center;overflow:hidden;}
@@ -265,16 +265,17 @@ header{width:100%;max-width:800px;position:relative;z-index:10;padding:14px 0 10
 </div>
 
 <header>
-  <div style="display:flex;align-items:center;gap:10px;">
-    <a href="index.html" class="ico-btn" title="Home">←</a>
-    <div>
+  <div style="display:flex;align-items:center;gap:6px;">
+    <a href="index.html" class="ico-btn" title="Home">🏠</a>
+    <button class="ico-btn" id="backBtn" onclick="goBack()" title="Back">←</button>
+    <div style="margin-left:4px;">
       <div class="logo-name">Word Quest</div>
       <div class="logo-tag">NESTWORD · ALL SPARK</div>
     </div>
   </div>
   <div style="display:flex;align-items:center;gap:8px;">
     <div style="font-family:var(--pixel);font-size:8px;color:var(--gold);text-shadow:0 0 6px var(--gold-b);" id="questXpDisp">0 XP</div>
-    <a href="game.html" class="ico-btn" title="Daily Game">▶</a>
+    <a href="game.html#profile" class="ico-btn" title="My Profile">👤</a>
   </div>
 </header>
 
@@ -355,7 +356,8 @@ header{width:100%;max-width:800px;position:relative;z-index:10;padding:14px 0 10
 
 <!-- WORD COMPLETE OVERLAY -->
 <div class="ov off" id="wordCompleteOv">
-  <div class="modal">
+  <div class="modal" style="position:relative;">
+    <button onclick="document.getElementById('wordCompleteOv').classList.add('off')" style="position:absolute;top:10px;right:10px;background:var(--panel2);border:2px solid var(--rim2);border-radius:50%;width:28px;height:28px;color:var(--tx2);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;font-family:var(--fn);">✕</button>
     <div class="m-ico" id="wcIco">🏆</div>
     <div class="m-ttl" id="wcTtl">WORD COMPLETE!</div>
     <div class="m-sub" id="wcSub"></div>
@@ -366,6 +368,22 @@ header{width:100%;max-width:800px;position:relative;z-index:10;padding:14px 0 10
     <div id="wcStats" style="margin-bottom:16px;"></div>
     <button class="btn-p" id="wcNextBtn" onclick="nextQuestWord()">Next Word →</button>
     <button class="btn-s" onclick="document.getElementById('wordCompleteOv').classList.add('off');backToWordList()">← Back to Words</button>
+    <button class="btn-s" onclick="openReportPopup()" style="color:var(--tx3);border-color:var(--rim);font-size:12px;margin-top:4px;">⚑ Report a problem with this word</button>
+  </div>
+</div>
+
+<!-- REPORT POPUP -->
+<div class="ov off" id="reportOv" style="z-index:970;">
+  <div class="modal" style="position:relative;">
+    <button onclick="document.getElementById('reportOv').classList.add('off')" style="position:absolute;top:10px;right:10px;background:var(--panel2);border:2px solid var(--rim2);border-radius:50%;width:28px;height:28px;color:var(--tx2);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;">✕</button>
+    <div class="m-ttl" style="font-size:10px;margin-bottom:12px;">REPORT A PROBLEM</div>
+    <div style="font-family:var(--mo);font-size:11px;color:var(--tx2);margin-bottom:8px;">Word being played:</div>
+    <div id="reportWord" style="font-family:var(--fn);font-size:20px;color:var(--gold);letter-spacing:3px;background:var(--panel2);border:2px solid var(--rim2);border-radius:var(--r);padding:10px;margin-bottom:14px;text-align:center;"></div>
+    <div style="font-family:var(--mo);font-size:11px;color:var(--tx2);margin-bottom:6px;">Describe the issue or enter a word that should have worked:</div>
+    <textarea id="reportText" style="width:100%;min-height:80px;background:var(--panel2);border:2px solid var(--rim2);border-radius:var(--r);color:var(--tx);font-family:var(--mo);font-size:12px;padding:10px;resize:vertical;outline:none;" placeholder="e.g. RESTING should be valid..."></textarea>
+    <div id="reportMsg" style="font-family:var(--mo);font-size:11px;margin-top:6px;"></div>
+    <button class="btn-p" onclick="submitReport()" style="margin-top:10px;">Submit Report</button>
+    <button class="btn-s" onclick="document.getElementById('reportOv').classList.add('off')">Cancel</button>
   </div>
 </div>
 
@@ -375,8 +393,8 @@ const SUPA_URL = 'https://tklmmctaocvewxkgdaew.supabase.co';
 const SUPA_KEY = 'sb_publishable_VJ1FX2RYr6fcWyVupuRR7w_Xzx97b5w';
 const supa = supabase.createClient(SUPA_URL, SUPA_KEY);
 
-// ── Theme (always dark for quest) ──
-document.documentElement.setAttribute('data-theme','light'); // uses the dark arcade CSS
+// ── Theme: quest always uses dark arcade regardless of site setting ──
+document.documentElement.setAttribute('data-theme','dark');
 
 // ── Theme pixel art representations ──
 const THEME_ART = {
@@ -565,11 +583,25 @@ function buildWordList(themeId, tier) {
 }
 
 // ── Navigation ──
+let currentView = 'themes';
+
 function showView(view) {
+  currentView = view;
   document.getElementById('themeSection').style.display  = view==='themes' ? '' : 'none';
   document.getElementById('tierSection').style.display   = view==='tier'   ? '' : 'none';
   document.getElementById('wordSection').style.display   = view==='words'  ? '' : 'none';
   document.getElementById('questGame').style.display     = view==='game'   ? '' : 'none';
+  // Update back button state — hide on theme grid (home handles it)
+  const backBtn = document.getElementById('backBtn');
+  if (backBtn) backBtn.style.opacity = view === 'themes' ? '0.3' : '1';
+}
+
+function goBack() {
+  if (currentView === 'tier')   { showThemeGrid(); return; }
+  if (currentView === 'words')  { showTierSelect(); return; }
+  if (currentView === 'game')   { backToWordList(); return; }
+  // Already at themes — go home
+  window.location.href = 'index.html';
 }
 function showThemeGrid() {
   buildThemeGrid();
@@ -689,13 +721,13 @@ function showWordComplete(allFound) {
   else if (pct>=50)  { ico='💡'; ttl='NICE ROUND!'; }
   document.getElementById('wcIco').textContent = ico;
   document.getElementById('wcTtl').textContent = ttl;
-  document.getElementById('wcSub').textContent = QG.word+' · '+QG.found.length+'/'+wObj.nested.length+' words found';
+  document.getElementById('wcSub').textContent = QG.word;
   document.getElementById('wcPts').textContent = QG.pts;
-  document.getElementById('wcPtsSub').textContent = pct+'% of maximum · '+max+' pts possible';
+  document.getElementById('wcPtsSub').textContent = QG.found.length + ' of ' + wObj.nested.length + ' words found · ' + max + ' pts possible';
   document.getElementById('wcStats').innerHTML = `
     <div class="stat-row"><span class="stat-lbl">Words found</span><span class="stat-val">${QG.found.length} / ${wObj.nested.length}</span></div>
-    <div class="stat-row"><span class="stat-lbl">Score</span><span class="stat-val">${QG.pts} / ${max} pts</span></div>
-    <div class="stat-row"><span class="stat-lbl">Completion</span><span class="stat-val">${pct}%</span></div>`;
+    <div class="stat-row"><span class="stat-lbl">Your score</span><span class="stat-val">${QG.pts} pts</span></div>
+    <div class="stat-row"><span class="stat-lbl">Max possible</span><span class="stat-val">${max} pts</span></div>`;
   saveWordProgress(true);
   updateProgressBar(QG.themeId);
   const words = QUEST_WORDS[QG.themeId][QG.tier];
@@ -736,6 +768,40 @@ function showUnlockToast(title,sub) {
   t.classList.add('show');
   if (unlockTimeout) clearTimeout(unlockTimeout);
   unlockTimeout = setTimeout(()=>t.classList.remove('show'), 3500);
+}
+
+// ── REPORT ──
+function openReportPopup() {
+  document.getElementById('reportWord').textContent = QG.word;
+  document.getElementById('reportText').value = '';
+  document.getElementById('reportMsg').textContent = '';
+  document.getElementById('reportMsg').style.color = '';
+  document.getElementById('reportOv').classList.remove('off');
+}
+
+async function submitReport() {
+  const word = QG.word;
+  const text = document.getElementById('reportText').value.trim();
+  const msg = document.getElementById('reportMsg');
+  if (!text) { msg.textContent = 'Please describe the problem.'; msg.style.color='#ff4444'; return; }
+  try {
+    const { error } = await supa.from('reports').insert([{
+      word, report_text: text, theme: QG.themeId, tier: QG.tier,
+      created_at: new Date().toISOString()
+    }]);
+    if (error) throw error;
+    msg.textContent = '✓ Report submitted. Thank you!';
+    msg.style.color = 'var(--ng-text)';
+    setTimeout(() => document.getElementById('reportOv').classList.add('off'), 2000);
+  } catch(e) {
+    // Fallback: store locally if table doesn't exist yet
+    const reports = JSON.parse(localStorage.getItem('nw_reports')||'[]');
+    reports.push({ word, report_text:text, theme:QG.themeId, tier:QG.tier, created_at:new Date().toISOString() });
+    localStorage.setItem('nw_reports', JSON.stringify(reports));
+    msg.textContent = '✓ Report saved. Thank you!';
+    msg.style.color = 'var(--ng-text)';
+    setTimeout(() => document.getElementById('reportOv').classList.add('off'), 2000);
+  }
 }
 
 // ── INIT ──
