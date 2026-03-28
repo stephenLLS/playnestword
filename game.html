@@ -384,6 +384,15 @@ footer{width:100%;max-width:640px;margin-top:32px;padding-top:16px;border-top:2p
   display:flex;align-items:center;justify-content:center;gap:10px;
 }
 .btn-play-again:hover{background:var(--gold-d);border-color:var(--gold);color:var(--gold);}
+/* ── MODE CARDS ── */
+.mode-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.mode-card{border-radius:var(--r);border:2px solid var(--rim2);background:var(--panel2);padding:14px 12px;cursor:pointer;transition:all var(--tr);text-align:left;width:100%;}
+.mode-card:hover{border-color:var(--gold-b);}
+.mode-card.selected{border-color:var(--gold);background:var(--gold-d);}
+.mode-card-ico{font-size:22px;margin-bottom:6px;}
+.mode-card-name{font-family:var(--fn);font-size:14px;color:var(--gold);margin-bottom:4px;}
+.mode-card-desc{font-size:10px;color:var(--tx2);font-family:var(--mo);line-height:1.5;}
+[data-theme="light"] .mode-card.selected{border-color:var(--gold);}
 .ad-badge{
   display:inline-flex;align-items:center;justify-content:center;
   background:var(--tx2);color:var(--panel);
@@ -702,12 +711,35 @@ footer{width:100%;max-width:640px;margin-top:32px;padding-top:16px;border-top:2p
     <a href="index.html" style="position:absolute;top:18px;left:18px;width:28px;height:28px;border-radius:50%;background:var(--panel2);border:2px solid var(--rim);display:flex;align-items:center;justify-content:center;text-decoration:none;color:var(--tx2);font-size:14px;transition:all var(--tr);" title="Home">←</a>
     <div class="m-ico" id="stIco">📝</div>
     <div class="m-ttl">NestWord</div>
-    <div class="m-sub" id="stSub">Find words hidden inside today's word. Rearrange letters for bonus points — the more letters you use, the higher the score.</div>
+    <div class="m-sub" id="stSub">Find words hidden inside today's word. Rearrange letters for more points.</div>
     <div class="m-word" id="stWord" style="letter-spacing:8px;color:var(--tx2);font-size:22px;">— — —</div>
     <div class="m-theme" id="stTheme"></div>
-    <div style="font-size:12px;color:var(--tx2);font-family:var(--mo);margin-bottom:16px;" id="stWordLen"></div>
-    <button class="btn-p" id="stBtn" onclick="startGame()">▶ PLAY TODAY'S WORD</button>
-    <button class="btn-s" id="tryBetterBtn" style="display:none;" onclick="">🔄 Try for Better Score</button>
+    <div style="font-size:12px;color:var(--tx2);font-family:var(--mo);margin-bottom:14px;" id="stWordLen"></div>
+
+    <!-- MODE CARDS -->
+    <div id="modeCardsWrap">
+      <div style="font-size:11px;color:var(--tx2);font-family:var(--mo);margin-bottom:8px;text-align:left;letter-spacing:.5px;">SELECT MODE</div>
+      <div class="mode-cards">
+        <button class="mode-card selected" id="modeSingle" onclick="selectMode('single')">
+          <div class="mode-card-ico">⏱️</div>
+          <div class="mode-card-name">Single Pass</div>
+          <div class="mode-card-desc">1:30 on the clock. Find as many words as you can before time runs out.</div>
+        </button>
+        <button class="mode-card" id="modeContinuous" onclick="selectMode('continuous')">
+          <div class="mode-card-ico">♾️</div>
+          <div class="mode-card-name">Continuous</div>
+          <div class="mode-card-desc">Timer resets after each ad. Score and words carry over. Play as long as you want.</div>
+        </button>
+      </div>
+      <button class="btn-p" id="stBtn" onclick="startSelectedMode()">▶ PLAY TODAY'S WORD</button>
+    </div>
+
+    <!-- ALREADY PLAYED TODAY (replaces mode cards) -->
+    <div id="alreadyPlayedWrap" style="display:none;">
+      <button class="btn-p" id="seeResultsBtn" onclick="">See My Results</button>
+      <button class="btn-s" id="tryBetterBtn" style="display:none;" onclick="">🔄 Try for Better Score</button>
+    </div>
+
     <button class="btn-s" onclick="showHow()">How to Play</button>
     <div style="font-size:11px;color:var(--tx2);font-family:var(--mo);margin-top:10px;line-height:1.7;">
       Min 3 letters · Real English words · No proper nouns<br>
@@ -1166,20 +1198,23 @@ function init() {
   if (G.history[k]) {
     const p = G.history[k];
     document.getElementById("stSub").textContent = "Already played today! You scored " + p.pts + "/" + maxPts + " pts. New word at midnight!";
-    document.getElementById("stBtn").textContent = "See My Results";
-    document.getElementById("stBtn").onclick = () => {
+    // Hide mode cards, show already-played buttons
+    document.getElementById("modeCardsWrap").style.display = "none";
+    document.getElementById("alreadyPlayedWrap").style.display = "";
+    document.getElementById("seeResultsBtn").onclick = () => {
       document.getElementById("startOv").classList.add("off");
       document.getElementById("bigWord").classList.remove("hidden");
       document.getElementById("wordLbl").textContent = "Today's NestWord";
       showEnd(p.pts, p.bonus||0, p.words||[], p.streak||G.streak, false, null, null);
     };
-    // Show "Try for Better Score" button
     document.getElementById("tryBetterBtn").style.display = "";
     document.getElementById("tryBetterBtn").onclick = () => {
-      showReplayAd(p.pts); // show 15s ad then start replay
+      showReplayAd(p.pts);
     };
   } else {
-    document.getElementById("tryBetterBtn").style.display = "none";
+    // Show mode cards for fresh play
+    document.getElementById("modeCardsWrap").style.display = "";
+    document.getElementById("alreadyPlayedWrap").style.display = "none";
     G.isReplay = false;
     G.replayPrevScore = 0;
   }
@@ -1187,6 +1222,25 @@ function init() {
   updateXpUI();
   updateDiffButtons();
   updatePanel();
+}
+
+// ── MODE SELECTION ──
+let selectedMode = 'single';
+
+function selectMode(mode) {
+  selectedMode = mode;
+  document.getElementById("modeSingle").classList.toggle("selected", mode === "single");
+  document.getElementById("modeContinuous").classList.toggle("selected", mode === "continuous");
+}
+
+function startSelectedMode() {
+  if (selectedMode === "continuous") {
+    G.difficulty = "endurance";
+  } else {
+    // Keep whatever difficulty was set (normal/hard/blitz)
+    if (G.difficulty === "endurance") G.difficulty = "normal";
+  }
+  startGame();
 }
 
 // ── XP UI ──
@@ -1261,7 +1315,7 @@ function hlWord(typed) {
 function startGame() {
   document.getElementById("startOv").classList.add("off");
   document.getElementById("bigWord").classList.remove("hidden");
-  document.getElementById("wordLbl").textContent = "Today's NestWord";
+  document.getElementById("wordLbl").textContent = G.difficulty === "endurance" ? "Continuous Mode" : "Today's NestWord";
   const inp = document.getElementById("wordIn");
   inp.disabled = false;
   inp.value = "";
