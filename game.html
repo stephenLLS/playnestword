@@ -1012,14 +1012,15 @@ footer{width:100%;max-width:640px;margin-top:32px;padding-top:16px;border-top:2p
   <div class="modal" style="max-width:380px;">
     <div class="modal-corner"></div><div class="modal-corner"></div>
     <div class="modal-corner"></div><div class="modal-corner"></div>
-    <div class="m-ico">⏱️</div>
-    <div class="m-ttl">Play Again?</div>
-    <div class="m-sub">Watch a short ad to play a bonus round with a new word</div>
+    <div class="m-ico" id="tryAgainIco">⏱️</div>
+    <div class="m-ttl" id="tryAgainTitle">Play Again?</div>
+    <div class="m-sub" id="tryAgainSub">Watch a short ad to play a bonus round with a new word</div>
     <div style="width:100%;min-height:120px;background:var(--panel2);border:2px dashed var(--rim2);border-radius:var(--r);display:flex;align-items:center;justify-content:center;color:var(--tx3);font-size:11px;font-family:var(--mo);margin-bottom:16px;position:relative;">
       AD SPACE — GOOGLE ADSENSE
-      <div style="position:absolute;top:8px;right:10px;font-family:var(--mo);font-size:13px;color:var(--gold);" id="tryAgainCountdown">15</div>
+      <div style="position:absolute;top:8px;right:10px;font-family:var(--mo);font-size:22px;color:var(--gold);font-weight:bold;" id="tryAgainCountdown">15</div>
     </div>
-    <button class="btn-p" id="tryAgainPlayBtn" onclick="startBonusAfterAd()" disabled style="opacity:.4;">⏳ Play Again (<span id="tryAgainSec">15</span>s)</button>
+    <button class="btn-p" id="tryAgainPlayBtn" disabled style="opacity:.4;">⏳ 15s</button>
+    <button class="btn-s" id="tryAgainContinuousBtn" style="display:none;" onclick="startContinuousAfterAd()">♾️ Switch to Continuous Mode</button>
     <button class="btn-s" onclick="closeTryAgainAd()">← Back to Results</button>
   </div>
 </div>
@@ -2150,61 +2151,55 @@ function updateAuthUI() {
 }
 
 // ── Try Again Ad ──
-let tryAgainIv = null;
 function showTryAgainAd() {
   document.getElementById("endOv").classList.add("off");
+  document.getElementById("tryAgainIco").textContent = "⏱️";
+  document.getElementById("tryAgainTitle").textContent = "Play Again?";
+  document.getElementById("tryAgainSub").textContent = "Watch a short ad to play a bonus round with a new word";
+  document.getElementById("tryAgainContinuousBtn").style.display = "";
+  runAdCountdown(() => startBonusAfterAd(), "▶ Play Bonus Round!");
   document.getElementById("tryAgainAdOv").classList.remove("off");
-  let secs = 15;
-  const btn = document.getElementById("tryAgainPlayBtn");
-  const secEl = document.getElementById("tryAgainSec");
-  const cdEl = document.getElementById("tryAgainCountdown");
-  btn.disabled = true; btn.style.opacity = ".4";
-  btn.innerHTML = "⏳ Play Again (" + secs + "s)";
-  // Restore bonus round onclick (in case replay ad changed it)
-  btn.onclick = startBonusAfterAd;
-  if (tryAgainIv) clearInterval(tryAgainIv);
-  tryAgainIv = setInterval(() => {
-    secs--;
-    secEl.textContent = secs;
-    cdEl.textContent = secs;
-    btn.innerHTML = "⏳ Play Again (" + secs + "s)";
-    if (secs <= 0) {
-      clearInterval(tryAgainIv);
-      btn.disabled = false; btn.style.opacity = "1";
-      btn.innerHTML = "▶ Play Again!";
-    }
-  }, 1000);
 }
 
-// Replay ad — same as try again but starts daily word replay instead of bonus round
+// Replay ad — same daily word
 function showReplayAd(prevScore) {
   document.getElementById("startOv").classList.add("off");
+  document.getElementById("tryAgainIco").textContent = "🔄";
+  document.getElementById("tryAgainTitle").textContent = "Try for Better Score";
+  document.getElementById("tryAgainSub").textContent = "Watch a short ad then replay today's word";
+  document.getElementById("tryAgainContinuousBtn").style.display = "none";
+  runAdCountdown(() => startReplayAfterAd(prevScore), "▶ Try for Better Score!");
   document.getElementById("tryAgainAdOv").classList.remove("off");
-  let secs = 15;
+}
+
+// Central countdown runner — no innerHTML span tricks
+let tryAgainIv = null;
+function runAdCountdown(onComplete, completeBtnText) {
   const btn = document.getElementById("tryAgainPlayBtn");
-  const secEl = document.getElementById("tryAgainSec");
   const cdEl = document.getElementById("tryAgainCountdown");
   btn.disabled = true; btn.style.opacity = ".4";
-  btn.innerHTML = "⏳ Starting (" + secs + "s)";
+  btn.textContent = "⏳ 15s";
+  btn.onclick = null;
   if (tryAgainIv) clearInterval(tryAgainIv);
-  // Override what happens when ad finishes — start replay not bonus
-  btn.onclick = () => startReplayAfterAd(prevScore);
+  let secs = 15;
+  cdEl.textContent = secs;
   tryAgainIv = setInterval(() => {
     secs--;
-    secEl.textContent = secs;
     cdEl.textContent = secs;
-    btn.innerHTML = "⏳ Starting (" + secs + "s)";
+    btn.textContent = "⏳ " + secs + "s";
     if (secs <= 0) {
       clearInterval(tryAgainIv);
-      btn.disabled = false; btn.style.opacity = "1";
-      btn.innerHTML = "▶ Try for Better Score!";
+      tryAgainIv = null;
+      btn.disabled = false;
+      btn.style.opacity = "1";
+      btn.textContent = completeBtnText;
+      btn.onclick = onComplete;
     }
   }, 1000);
 }
 function startReplayAfterAd(prevScore) {
   if (tryAgainIv) clearInterval(tryAgainIv);
   document.getElementById("tryAgainAdOv").classList.add("off");
-  // Restore daily word (in case bonusRound changed it)
   const dailyWord = getTodayWord();
   const thKey = getTodayTheme();
   G.word = dailyWord; G.theme = THEMES[thKey];
@@ -2216,6 +2211,22 @@ function startReplayAfterAd(prevScore) {
   document.getElementById("psMax").textContent = max;
   G.replayPrevScore = prevScore;
   G.isReplay = true;
+  startGame();
+}
+function startContinuousAfterAd() {
+  if (tryAgainIv) clearInterval(tryAgainIv);
+  document.getElementById("tryAgainAdOv").classList.add("off");
+  // Switch to endurance/continuous mode with daily word
+  const dailyWord = getTodayWord();
+  const thKey = getTodayTheme();
+  G.word = dailyWord; G.theme = THEMES[thKey];
+  G.possible = findAllValidWords(dailyWord);
+  renderWord(dailyWord);
+  G.difficulty = "endurance";
+  document.getElementById("wordLbl").textContent = "Continuous Mode";
+  const max = totalPossiblePoints(G.possible);
+  document.getElementById("scMax").textContent = max;
+  document.getElementById("psMax").textContent = max;
   startGame();
 }
 function closeTryAgainAd() {
