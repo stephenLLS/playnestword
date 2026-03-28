@@ -216,7 +216,20 @@ const DICTIONARY = new Set([
 // ── Added v3: additional missing words ──
 "rear","sear","pear","seal","veal","bead","lead","mead","seam","ream","team","moan",
 "gnaw","thaw","skew","spew","ears","cock","hock","jock","cloak","croak","frock","smock",
-// ── Added v4: common gameplay words ──
+// ── Added v5: comprehensive missing words found via game word audit ──
+"dung","rung",
+"boner","carts","darts","donor","goner","hovel","kings","navel","parts","rings","sings","stung","tarts","tenor","thine","toner","warts","wings",
+"assign","benign","berths","bested","births","burden","carvel","caster","design","digest","donors","earths","eights","ensign","faster","fonder",
+"forest","garden","garnet","girths","golden","gravel","grovel","harden","hearts","hinter","honest","honors","hornet","hunger","inerts","ingest",
+"inters","jested","leaden","lender","linger","longer","magnet","maiden","malign","manors","marvel","master","minors","minter","modest","nested",
+"pardon","pastor","planet","resign","rested","ringer","shovel","signer","signet","sonnet","taster","tenors","tested","tights","tinter","toners",
+"travel","vaster","vested","warden","waster","winter","wooden","worths","yonder","berths","earths","hearts","girths","births",
+"benders","besting","bringer","casting","consign","contest","crested","fainter","fasting","fenders","genders","heights","jesting","lasting",
+"lenders","menders","nesting","painter","pointer","ponders","printer","protest","renders","resting","senders","slinger","stinger","suggest",
+"tenders","testing","vesting","weights","wonders","younger","zesting","blasting","cresting","interest","manifest",
+"attesting","digesting","ingesting","investing","restoring","surrender",
+"contesting","protesting","suggesting","manifesting",
+"fonders","yonders","clinger","wringer","swinger","strings","springs","stings","brings","clings","flings","slings","swings","wrings",
 "thin","hers","thing","shine","thins","siren","reins","grins","hires","nicer","singe",
 "rinse","inset","might","right","tight","write","sting","sling","swing","prong","wrong",
 "among","spine","twine","whine","think","things","shines","shined","shiner","shrine",
